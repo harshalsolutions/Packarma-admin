@@ -27,11 +27,6 @@ const menuItems: MenuItem[] = [
         icon: VscDebugBreakpointDataUnverified,
       },
       {
-        name: "Benefits",
-        path: "/master/subscription-benefits",
-        icon: VscDebugBreakpointDataUnverified,
-      },
-      {
         name: "Banner",
         path: "/master/banner",
         icon: VscDebugBreakpointDataUnverified,

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Spinner } from "flowbite-react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaInfoCircle } from "react-icons/fa";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline } from "react-icons/md";
+import { IoMdAdd, IoMdRemove } from "react-icons/io";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 
 interface Subscription {
@@ -13,6 +14,7 @@ interface Subscription {
   amount: number;
   duration: number;
   status: string;
+  benefits: string;
 }
 
 interface PaginationData {
@@ -41,6 +43,8 @@ const SubscriptionPage: React.FC = () => {
   const [credit_amount, setCredit_amount] = useState("");
   const [amount, setAmount] = useState("");
   const [duration, setDuration] = useState("");
+  const [benefits, setBenefits] = useState<string[]>([]);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   useEffect(() => {
     fetchSubscriptions();
@@ -85,6 +89,7 @@ const SubscriptionPage: React.FC = () => {
     setCredit_amount("");
     setAmount("");
     setDuration("");
+    setBenefits([]);
     setIsFormOpen(true);
   };
 
@@ -94,6 +99,9 @@ const SubscriptionPage: React.FC = () => {
     setCredit_amount(subscription.credit_amount.toString());
     setAmount(subscription.amount.toString());
     setDuration(subscription.duration.toString());
+    setBenefits(
+      subscription.benefits.split("#").filter((b) => b.trim() !== "")
+    );
     setIsFormOpen(true);
   };
 
@@ -104,6 +112,22 @@ const SubscriptionPage: React.FC = () => {
     setCredit_amount("");
     setAmount("");
     setDuration("");
+    setBenefits([]);
+  };
+
+  const addBenefit = () => {
+    setBenefits([...benefits, ""]);
+  };
+
+  const removeBenefit = (index: number) => {
+    const newBenefits = benefits.filter((_, i) => i !== index);
+    setBenefits(newBenefits);
+  };
+
+  const updateBenefit = (index: number, value: string) => {
+    const newBenefits = [...benefits];
+    newBenefits[index] = value;
+    setBenefits(newBenefits);
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -114,20 +138,36 @@ const SubscriptionPage: React.FC = () => {
         credit_amount: Number(credit_amount),
         amount: Number(amount),
         duration: Number(duration),
+        benefits: benefits.join("#"),
       };
+      let response;
       if (editingSubscription) {
-        await axios.put(
+        response = await axios.put(
           `${BACKEND_API_KEY}/master/subscription/${editingSubscription.id}`,
           formData
         );
       } else {
-        await axios.post(`${BACKEND_API_KEY}/master/subscription`, formData);
+        response = await axios.post(
+          `${BACKEND_API_KEY}/master/subscription`,
+          formData
+        );
       }
+
       closeForm();
       fetchSubscriptions();
     } catch (err) {
       setError("Failed to save subscription");
     }
+  };
+
+  const openBenefitsPopup = (benefits: string) => {
+    setBenefits(benefits.split("#"));
+    setIsPopupOpen(true);
+  };
+
+  const closeBenefitsPopup = () => {
+    setIsPopupOpen(false);
+    setBenefits([]);
   };
 
   return (
@@ -184,6 +224,9 @@ const SubscriptionPage: React.FC = () => {
                       Duration
                     </th>
                     <th scope="col" className="px-6 py-3">
+                      Benefits
+                    </th>
+                    <th scope="col" className="px-6 py-3">
                       <span className="sr-only">Actions</span>
                     </th>
                   </tr>
@@ -209,6 +252,21 @@ const SubscriptionPage: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 text-gray-900">
                           {subscription.duration} days
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {subscription.benefits ? (
+                            <button
+                              onClick={() =>
+                                openBenefitsPopup(subscription.benefits)
+                              }
+                              className="text-xl text-blue-600 dark:text-blue-500 hover:underline"
+                              aria-label="View Benefits"
+                            >
+                              <FaInfoCircle />
+                            </button>
+                          ) : (
+                            "No Data!"
+                          )}
                         </td>
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
@@ -274,7 +332,7 @@ const SubscriptionPage: React.FC = () => {
       )}
 
       {isFormOpen && (
-        <div className="w-[40%] mx-auto mt-10">
+        <div className="w-[50%] mx-auto my-10">
           <h3 className="text-xl font-semibold leading-6 text-gray-900 mb-4">
             {editingSubscription ? "Edit Subscription" : "Add New Subscription"}
           </h3>
@@ -343,6 +401,36 @@ const SubscriptionPage: React.FC = () => {
                 required
               />
             </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Benefits
+              </label>
+              {benefits.map((benefit, index) => (
+                <div key={index} className="flex mb-2">
+                  <input
+                    type="text"
+                    value={benefit}
+                    onChange={(e) => updateBenefit(index, e.target.value)}
+                    className="flex-grow rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 mr-2"
+                    placeholder="Enter a benefit"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeBenefit(index)}
+                    className="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+                  >
+                    <IoMdRemove />
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addBenefit}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 flex justify-center items-center"
+              >
+                <IoMdAdd className="mr-1" /> Add Benefit
+              </button>
+            </div>
             <div className="flex justify-end mt-4">
               <button
                 type="button"
@@ -361,6 +449,27 @@ const SubscriptionPage: React.FC = () => {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {isPopupOpen && (
+        <div className="fixed inset-0 bg-black z-40 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full">
+            <h3 className="text-xl font-semibold mb-4">Benefits</h3>
+            <ul className="list-disc list-inside">
+              {benefits.map((benefit, index) => (
+                <li key={index} className="mb-2">
+                  {benefit}
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={closeBenefitsPopup}
+              className="mt-4 px-4 py-2 bg-lime-500 text-black rounded hover:bg-lime-600"
+            >
+              Close
+            </button>
+          </div>
         </div>
       )}
     </div>

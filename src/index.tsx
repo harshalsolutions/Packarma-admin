@@ -24,7 +24,6 @@ import Product from "./pages/Product Master/Product";
 import PackagingMaterial from "./pages/Product Master/PackagingMaterial";
 import PackagingSolution from "./pages/Product Master/PackagingSolution";
 import NavbarSidebarLayout from "./layouts/navbar-sidebar";
-import SubscriptionBenfits from "./pages/Master/SubscriptionBenfits";
 import CreditMaster from "./pages/Master/CreditMaster";
 import ManageRoles from "./pages/Staff/ManageRoles";
 import ManageStaff from "./pages/Staff/ManageStaff";
@@ -76,16 +75,6 @@ root.render(
               <ProtectedRoute>
                 <NavbarSidebarLayout>
                   <SubscriptionPage />
-                </NavbarSidebarLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/master/subscription-benefits"
-            element={
-              <ProtectedRoute>
-                <NavbarSidebarLayout>
-                  <SubscriptionBenfits />
                 </NavbarSidebarLayout>
               </ProtectedRoute>
             }
