@@ -9,7 +9,6 @@ import { BrowserRouter } from "react-router-dom";
 import DashboardPage from "./pages/Dashboard";
 import SignInPage from "./pages/Authentication/sign-in";
 import { Toaster } from "react-hot-toast";
-import StatePage from "./pages/Master/StatePage";
 import SubscriptionPage from "./pages/Master/SubscriptionPage";
 import BannerPage from "./pages/Master/BannerPage";
 import AdsPage from "./pages/Master/AdsPage";
@@ -21,10 +20,21 @@ import PackagingMachine from "./pages/Product Master/PackagingMachine";
 import PackagingTreatment from "./pages/Product Master/PackagingTreatment";
 import StorageCondition from "./pages/Product Master/StorageCondition";
 import MeasurementUnit from "./pages/Product Master/MeasurementUnit";
-import Product from "./pages/Product Master/product";
+import Product from "./pages/Product Master/Product";
 import PackagingMaterial from "./pages/Product Master/PackagingMaterial";
 import PackagingSolution from "./pages/Product Master/PackagingSolution";
 import NavbarSidebarLayout from "./layouts/navbar-sidebar";
+import SubscriptionBenfits from "./pages/Master/SubscriptionBenfits";
+import CreditMaster from "./pages/Master/CreditMaster";
+import ManageRoles from "./pages/Staff/ManageRoles";
+import ManageStaff from "./pages/Staff/ManageStaff";
+import CreditPurchase from "./pages/Customer Section/CreditPurchase";
+import CustomerEnquiry from "./pages/Customer Section/CustomerEnquiry";
+import Refer from "./pages/Customer Section/Refer";
+import UserList from "./pages/Customer Section/UserList";
+import UserAddresses from "./pages/Customer Section/UserAddresses";
+import UserSubscription from "./pages/Customer Section/UserSubscription";
+import DownloadSubscription from "./pages/Customer Section/DownloadSubscription";
 
 const container = document.getElementById("root");
 
@@ -61,21 +71,21 @@ root.render(
           />
           {/* Master routes */}
           <Route
-            path="/master/state"
-            element={
-              <ProtectedRoute>
-                <NavbarSidebarLayout>
-                  <StatePage />
-                </NavbarSidebarLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="/master/subscription"
             element={
               <ProtectedRoute>
                 <NavbarSidebarLayout>
                   <SubscriptionPage />
+                </NavbarSidebarLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/master/subscription-benefits"
+            element={
+              <ProtectedRoute>
+                <NavbarSidebarLayout>
+                  <SubscriptionBenfits />
                 </NavbarSidebarLayout>
               </ProtectedRoute>
             }
@@ -96,6 +106,16 @@ root.render(
               <ProtectedRoute>
                 <NavbarSidebarLayout>
                   <AdsPage />
+                </NavbarSidebarLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/master/credit-master"
+            element={
+              <ProtectedRoute>
+                <NavbarSidebarLayout>
+                  <CreditMaster />
                 </NavbarSidebarLayout>
               </ProtectedRoute>
             }
@@ -207,6 +227,118 @@ root.render(
               <ProtectedRoute>
                 <NavbarSidebarLayout>
                   <PackagingSolution />
+                </NavbarSidebarLayout>
+              </ProtectedRoute>
+            }
+          />
+          {/* Customer Section */}
+          <Route
+            path="/customer-section/customer-enquiry"
+            element={
+              <ProtectedRoute>
+                <NavbarSidebarLayout>
+                  <CustomerEnquiry />
+                </NavbarSidebarLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer-section/credit-purchase"
+            element={
+              <ProtectedRoute>
+                <NavbarSidebarLayout>
+                  <CreditPurchase />
+                </NavbarSidebarLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer-section/refer"
+            element={
+              <ProtectedRoute>
+                <NavbarSidebarLayout>
+                  <Refer />
+                </NavbarSidebarLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer/user-list"
+            element={
+              <ProtectedRoute>
+                <NavbarSidebarLayout>
+                  <UserList />
+                </NavbarSidebarLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer/user-address-list"
+            element={
+              <ProtectedRoute>
+                <NavbarSidebarLayout>
+                  <UserAddresses />
+                </NavbarSidebarLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer/referral-info"
+            element={
+              <ProtectedRoute>
+                <NavbarSidebarLayout>
+                  <Refer />
+                </NavbarSidebarLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer/user-subscription"
+            element={
+              <ProtectedRoute>
+                <NavbarSidebarLayout>
+                  <UserSubscription />
+                </NavbarSidebarLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer/download-subscription"
+            element={
+              <ProtectedRoute>
+                <NavbarSidebarLayout>
+                  <DownloadSubscription />
+                </NavbarSidebarLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer/enquiry"
+            element={
+              <ProtectedRoute>
+                <NavbarSidebarLayout>
+                  <CustomerEnquiry />
+                </NavbarSidebarLayout>
+              </ProtectedRoute>
+            }
+          />
+          {/* Staff Section */}
+          <Route
+            path="/staff/manage-staff"
+            element={
+              <ProtectedRoute>
+                <NavbarSidebarLayout>
+                  <ManageStaff />
+                </NavbarSidebarLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/staff/manage-roles"
+            element={
+              <ProtectedRoute>
+                <NavbarSidebarLayout>
+                  <ManageRoles />
                 </NavbarSidebarLayout>
               </ProtectedRoute>
             }

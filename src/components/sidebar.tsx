@@ -22,13 +22,13 @@ const menuItems: MenuItem[] = [
     icon: HiOutlineSquares2X2,
     submenu: [
       {
-        name: "State",
-        path: "/master/state",
+        name: "Subscription",
+        path: "/master/subscription",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
-        name: "Subscription",
-        path: "/master/subscription",
+        name: "Benefits",
+        path: "/master/subscription-benefits",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
@@ -39,6 +39,11 @@ const menuItems: MenuItem[] = [
       {
         name: "Ads",
         path: "/master/ads",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+      {
+        name: "Credit Master",
+        path: "/master/credit-master",
         icon: VscDebugBreakpointDataUnverified,
       },
     ],
@@ -64,7 +69,7 @@ const menuItems: MenuItem[] = [
         icon: VscDebugBreakpointDataUnverified,
       },
       {
-        name: "Packing Type",
+        name: "Packaging Type",
         path: "/product-master/packing-type",
         icon: VscDebugBreakpointDataUnverified,
       },
@@ -99,8 +104,8 @@ const menuItems: MenuItem[] = [
         icon: VscDebugBreakpointDataUnverified,
       },
       {
-        name: "Packaging Solution",
-        path: "/product-master/packaging-solution",
+        name: "Packaging Solutions",
+        path: "/product-master/packaging-solutions",
         icon: VscDebugBreakpointDataUnverified,
       },
     ],
@@ -110,13 +115,50 @@ const menuItems: MenuItem[] = [
     path: "/customer",
     icon: HiUsers,
     submenu: [
-      { name: "User List", path: "/customer/user-list", icon: HiUsers },
-      { name: "Approved List", path: "/customer/approved-list", icon: HiUsers },
+      {
+        name: "User List",
+        path: "/customer/user-list",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+      {
+        name: "User Address List",
+        path: "/customer/user-address-list",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+      {
+        name: "Refer",
+        path: "/customer/refer",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+      {
+        name: "Referral Info of All",
+        path: "/customer/referral-info",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+      {
+        name: "User Subscription",
+        path: "/customer/user-subscription",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+      {
+        name: "Download Subscription",
+        path: "/customer/download-subscription",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+      {
+        name: "Credit Purchase",
+        path: "/customer/credit-purchase",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+      {
+        name: "Customer Enquiry (Search History)",
+        path: "/customer/enquiry",
+        icon: VscDebugBreakpointDataUnverified,
+      },
     ],
   },
 ];
-
-const ExampleSidebar: FC = function () {
+const SidebarComponent: FC = function () {
   const [currentPage, setCurrentPage] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
@@ -133,7 +175,7 @@ const ExampleSidebar: FC = function () {
           label={item.name}
           open={currentPage.startsWith(item.path)}
         >
-          {item.submenu.map(renderMenuItem)}
+          <div className="p-0">{item.submenu.map(renderMenuItem)}</div>
         </Sidebar.Collapse>
       ) : (
         <Sidebar.Item
@@ -156,27 +198,14 @@ const ExampleSidebar: FC = function () {
   );
 
   return (
-    <Sidebar aria-label="Sidebar with multi-level dropdown example">
+    <Sidebar>
       <div className="flex h-full flex-col justify-between py-2">
-        <div>
-          <form className="pb-3 md:hidden">
-            <TextInput
-              icon={HiSearch}
-              type="search"
-              placeholder="Search"
-              required
-              size={32}
-            />
-          </form>
-          <Sidebar.Items>
-            <Sidebar.ItemGroup>
-              {menuItems.map(renderMenuItem)}
-            </Sidebar.ItemGroup>
-          </Sidebar.Items>
-        </div>
+        <Sidebar.Items>
+          <Sidebar.ItemGroup>{menuItems.map(renderMenuItem)}</Sidebar.ItemGroup>
+        </Sidebar.Items>
       </div>
     </Sidebar>
   );
 };
 
-export default ExampleSidebar;
+export default SidebarComponent;
