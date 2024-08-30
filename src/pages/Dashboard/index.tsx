@@ -2,22 +2,19 @@
 import { Badge, Dropdown, Table, useTheme } from "flowbite-react";
 import type { FC } from "react";
 import Chart from "react-apexcharts";
-import NavbarSidebarLayout from "../layouts/navbar-sidebar";
 
 const DashboardPage: FC = function () {
   return (
-    <NavbarSidebarLayout>
-      <div className="px-4 pt-6">
-        <SalesThisWeek />
-        <div className="my-6">
-          <LatestTransactions />
-        </div>
-        <LatestCustomers />
-        <div className="my-6">
-          <AcquisitionOverview />
-        </div>
+    <div className="px-4 pt-6">
+      <SalesThisWeek />
+      <div className="my-6">
+        <LatestTransactions />
       </div>
-    </NavbarSidebarLayout>
+      <LatestCustomers />
+      <div className="my-6">
+        <AcquisitionOverview />
+      </div>
+    </div>
   );
 };
 

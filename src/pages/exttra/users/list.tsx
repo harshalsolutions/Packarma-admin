@@ -23,7 +23,7 @@ import {
   HiPlus,
   HiTrash,
 } from "react-icons/hi";
-import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
+import NavbarSidebarLayout from "../../../layouts/navbar-sidebar";
 
 const UserListPage: FC = function () {
   return (

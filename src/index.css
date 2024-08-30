@@ -1,8 +1,13 @@
 /* see https://github.com/themesberg/flowbite-admin-dashboard/blob/main/src/css/input.css */
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+* {
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
 
 /* chart styles */
 .apexcharts-tooltip {

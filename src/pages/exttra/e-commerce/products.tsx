@@ -22,7 +22,7 @@ import {
   HiTrash,
   HiUpload,
 } from "react-icons/hi";
-import NavbarSidebarLayout from "../../layouts/navbar-sidebar";
+import NavbarSidebarLayout from "../../../layouts/navbar-sidebar";
 import { Pagination } from "../users/list";
 
 const EcommerceProductsPage: FC = function () {
