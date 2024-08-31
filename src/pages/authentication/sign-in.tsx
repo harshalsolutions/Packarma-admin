@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 
 const SignInPage: FC = function () {
   const [email, setEmail] = useState("");
@@ -14,13 +15,10 @@ const SignInPage: FC = function () {
     e.preventDefault();
     const loadingToast = toast.loading("Signing in...");
     try {
-      const response = await axios.post(
-        `${import.meta.env["VITE_ADMIN_BACKEND_LINK"]}/auth/login`,
-        {
-          emailid: email,
-          password,
-        }
-      );
+      const response = await axios.post(`${BACKEND_API_KEY}/auth/login`, {
+        emailid: email,
+        password,
+      });
       localStorage.setItem("token", response.data.data.token);
       toast.success("Login successful!", { id: loadingToast });
       navigate("/");
@@ -33,12 +31,8 @@ const SignInPage: FC = function () {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">
-        <div className="flex items-center justify-center mb-8">
-          {/* <img
-            alt="Flowbite logo"
-            src="https://flowbite.com/docs/images/logo.svg"
-            className="h-10 mr-3"
-          /> */}
+        <div className="flex items-center flex-col justify-center mb-8">
+          <img alt="Logo" src="/logo.jpg" className="h-20 mb-3" />
           <span className="text-2xl font-semibold dark:text-white">
             Packarma Admin
           </span>
