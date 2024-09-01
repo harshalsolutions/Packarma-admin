@@ -41,7 +41,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     };
 
     fetchUserData();
-  }, [token, userContext]);
+  }, [token]);
 
   if (!token) {
     return <Navigate to="/login" />;
