@@ -6,6 +6,7 @@ import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline } from "react-icons/md";
 import { IoMdAdd, IoMdRemove } from "react-icons/io";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
+import EntriesPerPage from "../../components/EntriesComp";
 
 interface Subscription {
   id: number;
@@ -185,18 +186,10 @@ const SubscriptionPage: React.FC = () => {
       )}
       {!isFormOpen && (
         <>
-          <div className="mb-4 text-sm flex items-center justify-end">
-            <h2 className="text-sm mr-2">Entries Per Page:</h2>
-            <select
-              className="border rounded px-2 py-1 mr-3 text-sm"
-              value={entriesPerPage}
-              onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-            >
-              <option value="10">10</option>
-              <option value="25">25</option>
-              <option value="50">50</option>
-            </select>
-          </div>
+          <EntriesPerPage
+            entriesPerPage={entriesPerPage}
+            setEntriesPerPage={setEntriesPerPage}
+          />
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <Spinner size="xl" />
@@ -297,46 +290,52 @@ const SubscriptionPage: React.FC = () => {
               </table>
             </div>
           )}
-          <div className="mt-4 flex justify-center items-center mb-8">
-            <button
-              className="px-2 py-1 rounded mr-2 disabled:opacity-50"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              aria-label="Previous page"
-            >
-              <FaChevronLeft />
-            </button>
-            {[...Array(pagination.totalPages)].map((_, index) => (
+          <p className="my-4 text-sm">
+            Showing {subscriptions.length} out of {pagination.totalItems}{" "}
+            Subscriptions
+          </p>
+          {pagination.totalItems >= 10 && (
+            <div className="mt-4 flex justify-center items-center mb-8">
               <button
-                key={index + 1}
-                className={`px-2 py-1 rounded border mr-2 ${
-                  index + 1 === pagination.currentPage
-                    ? "bg-lime-500 text-white"
-                    : ""
-                }`}
-                onClick={() => setCurrentPage(index + 1)}
+                className="px-2 py-1 rounded mr-2 disabled:opacity-50"
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                aria-label="Previous page"
               >
-                {index + 1}
+                <FaChevronLeft />
               </button>
-            ))}
-            <button
-              className="px-2 py-1 rounded disabled:opacity-50"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === pagination.totalPages}
-              aria-label="Next page"
-            >
-              <FaChevronRight />
-            </button>
-          </div>
+              {[...Array(pagination.totalPages)].map((_, index) => (
+                <button
+                  key={index + 1}
+                  className={`px-2 py-1 rounded border mr-2 ${
+                    index + 1 === pagination.currentPage
+                      ? "bg-lime-500 text-white"
+                      : ""
+                  }`}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </button>
+              ))}
+              <button
+                className="px-2 py-1 rounded disabled:opacity-50"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === pagination.totalPages}
+                aria-label="Next page"
+              >
+                <FaChevronRight />
+              </button>
+            </div>
+          )}
         </>
       )}
 
       {isFormOpen && (
-        <div className="w-[50%] mx-auto my-10">
+        <div className="mx-auto my-10 w-[80%]">
           <h3 className="text-xl font-semibold leading-6 text-gray-900 mb-4">
             {editingSubscription ? "Edit Subscription" : "Add New Subscription"}
           </h3>
-          <form onSubmit={handleFormSubmit}>
+          <form onSubmit={handleFormSubmit} className="grid grid-cols-2 gap-5">
             <div className="mb-4">
               <label
                 htmlFor="name"
@@ -401,7 +400,7 @@ const SubscriptionPage: React.FC = () => {
                 required
               />
             </div>
-            <div className="mb-4">
+            <div className="mb-4 col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Benefits
               </label>
@@ -431,7 +430,7 @@ const SubscriptionPage: React.FC = () => {
                 <IoMdAdd className="mr-1" /> Add Benefit
               </button>
             </div>
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-center items-center mt-4 col-span-2">
               <button
                 type="button"
                 onClick={closeForm}
