@@ -64,7 +64,7 @@ const menuItems: MenuItem[] = [
         icon: VscDebugBreakpointDataUnverified,
       },
       {
-        name: "Packaging Type",
+        name: "Packing Type",
         path: "/product-master/packing-type",
         icon: VscDebugBreakpointDataUnverified,
       },

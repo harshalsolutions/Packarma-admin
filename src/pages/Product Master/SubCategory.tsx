@@ -413,17 +413,6 @@ const SubCategoryPage: React.FC = () => {
               >
                 Status
               </label>
-              <div className="flex items-center">
-                <span className="mr-2">
-                  {status === "active" ? "Active" : "Inactive"}
-                </span>
-                <ToggleSwitch
-                  checked={status === "active"}
-                  onChange={() =>
-                    setStatus(status === "active" ? "inactive" : "active")
-                  }
-                />
-              </div>
             </div>
             <div className="flex justify-end mt-4">
               <button

@@ -201,6 +201,9 @@ const ProductForm: React.FC = () => {
                       Name
                     </th>
                     <th scope="col" className="px-6 py-3">
+                      Description
+                    </th>
+                    <th scope="col" className="px-6 py-3">
                       Image
                     </th>
                     <th scope="col" className="px-6 py-3">
@@ -223,6 +226,9 @@ const ProductForm: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                           {productForm.name}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {productForm.short_description}
                         </td>
                         <td className="px-6 py-4 text-gray-900">
                           <img
@@ -366,17 +372,6 @@ const ProductForm: React.FC = () => {
               >
                 Status
               </label>
-              <div className="flex items-center">
-                <span className="mr-2">
-                  {status === "active" ? "Active" : "Inactive"}
-                </span>
-                <ToggleSwitch
-                  checked={status === "active"}
-                  onChange={() =>
-                    setStatus(status === "active" ? "inactive" : "active")
-                  }
-                />
-              </div>
             </div>
             <div className="mb-4">
               <label
