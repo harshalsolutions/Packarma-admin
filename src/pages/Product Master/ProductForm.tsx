@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
-import { MdDeleteOutline } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import DetailsPopup from "../../components/DetailsPopup";
 
 interface ProductForm {
   id: number;
@@ -14,6 +15,8 @@ interface ProductForm {
   image: string;
   status: string;
   short_description: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Pagination {
@@ -43,6 +46,8 @@ const ProductForm: React.FC = () => {
     itemsPerPage: 10,
   });
   const [shortDescription, setShortDescription] = useState("");
+  const [selectedProductForm, setSelectedProductForm] =
+    useState<ProductForm | null>(null);
 
   useEffect(() => {
     fetchProductForm();
@@ -247,15 +252,22 @@ const ProductForm: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
+                            onClick={() => setSelectedProductForm(productForm)}
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                            aria-label="Info"
+                          >
+                            <MdOutlineRemoveRedEye />
+                          </button>
+                          <button
                             onClick={() => openEditForm(productForm)}
-                            className="text-xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
+                            className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
                             aria-label="Edit"
                           >
                             <TbEdit />
                           </button>
                           <button
                             onClick={() => deleteProductForm(productForm.id)}
-                            className="text-xl text-red-600 dark:text-red-500 hover:underline"
+                            className="text-2xl text-red-600 dark:text-red-500 hover:underline"
                             aria-label="Delete"
                           >
                             <MdDeleteOutline />
@@ -365,14 +377,7 @@ const ProductForm: React.FC = () => {
                 />
               </div>
             )}
-            <div className="mb-4">
-              <label
-                htmlFor="status"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Status
-              </label>
-            </div>
+
             <div className="mb-4">
               <label
                 htmlFor="short_description"
@@ -407,6 +412,39 @@ const ProductForm: React.FC = () => {
             </div>
           </form>
         </div>
+      )}
+      {selectedProductForm && (
+        <DetailsPopup
+          title="Product Form Details"
+          fields={[
+            { label: "ID", value: selectedProductForm.id.toString() },
+            { label: "Name", value: selectedProductForm.name },
+            {
+              label: "Image",
+              value: (
+                <img
+                  src={BACKEND_MEDIA_LINK + selectedProductForm.image}
+                  alt={selectedProductForm.name}
+                  className="w-24 h-24 object-cover"
+                />
+              ),
+            },
+            {
+              label: "Status",
+              value:
+                selectedProductForm.status === "active" ? "Active" : "Inactive",
+            },
+            {
+              label: "Created At",
+              value: new Date(selectedProductForm.createdAt).toLocaleString(),
+            },
+            {
+              label: "Updated At",
+              value: new Date(selectedProductForm.updatedAt).toLocaleString(),
+            },
+          ]}
+          onClose={() => setSelectedProductForm(null)}
+        />
       )}
     </div>
   );

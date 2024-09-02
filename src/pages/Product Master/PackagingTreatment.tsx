@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
-import { MdDeleteOutline } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-
+import DetailsPopup from "../../components/DetailsPopup";
 interface PackagingTreatment {
   id: number;
   name: string;
@@ -15,6 +15,8 @@ interface PackagingTreatment {
   status: string;
   featured: number;
   short_description: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface PaginationData {
@@ -47,6 +49,8 @@ const PackagingTreatmentPage: React.FC = () => {
     itemsPerPage: 10,
   });
   const [shortDescription, setShortDescription] = useState("");
+  const [selectedPackagingTreatment, setSelectedPackagingTreatment] =
+    useState<PackagingTreatment | null>(null);
 
   useEffect(() => {
     fetchPackagingTreatments();
@@ -282,8 +286,17 @@ const PackagingTreatmentPage: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
+                            onClick={() =>
+                              setSelectedPackagingTreatment(packagingTreatment)
+                            }
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                            aria-label="Info"
+                          >
+                            <MdOutlineRemoveRedEye />
+                          </button>
+                          <button
                             onClick={() => openEditForm(packagingTreatment)}
-                            className="text-xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
+                            className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
                             aria-label="Edit"
                           >
                             <TbEdit />
@@ -292,7 +305,7 @@ const PackagingTreatmentPage: React.FC = () => {
                             onClick={() =>
                               deletePackagingTreatment(packagingTreatment.id)
                             }
-                            className="text-xl text-red-600 dark:text-red-500 hover:underline"
+                            className="text-2xl text-red-600 dark:text-red-500 hover:underline"
                             aria-label="Delete"
                           >
                             <MdDeleteOutline />
@@ -454,6 +467,49 @@ const PackagingTreatmentPage: React.FC = () => {
             </div>
           </form>
         </div>
+      )}
+      {selectedPackagingTreatment && (
+        <DetailsPopup
+          title="Packaging Treatment Details"
+          fields={[
+            { label: "ID", value: selectedPackagingTreatment.id.toString() },
+            { label: "Name", value: selectedPackagingTreatment.name },
+            {
+              label: "Image",
+              value: (
+                <img
+                  src={BACKEND_MEDIA_LINK + selectedPackagingTreatment.image}
+                  alt={selectedPackagingTreatment.name}
+                  className="w-24 h-24 object-cover"
+                />
+              ),
+            },
+            {
+              label: "Featured",
+              value: selectedPackagingTreatment.featured === 1 ? "Yes" : "No",
+            },
+            {
+              label: "Status",
+              value:
+                selectedPackagingTreatment.status === "active"
+                  ? "Active"
+                  : "Inactive",
+            },
+            {
+              label: "Created At",
+              value: new Date(
+                selectedPackagingTreatment.createdAt
+              ).toLocaleString(),
+            },
+            {
+              label: "Updated At",
+              value: new Date(
+                selectedPackagingTreatment.updatedAt
+              ).toLocaleString(),
+            },
+          ]}
+          onClose={() => setSelectedPackagingTreatment(null)}
+        />
       )}
     </div>
   );

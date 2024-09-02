@@ -2,17 +2,20 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
-import { MdDeleteOutline } from "react-icons/md";
-import { BACKEND_API_KEY } from "../../../utils/ApiKey";
+import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
+import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import DetailsPopup from "../../components/DetailsPopup";
 
 interface PackingTypeForm {
   id: number;
   name: string;
   status: string;
   short_description: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Pagination {
@@ -29,7 +32,7 @@ const PackingType: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingPackingTypeForm, setEditingPackingTypeForm] =
+  const [editingPackagingType, setEditingPackagingType] =
     useState<PackingTypeForm | null>(null);
   const [name, setName] = useState("");
   const [status, setStatus] = useState("");
@@ -40,6 +43,8 @@ const PackingType: React.FC = () => {
     itemsPerPage: 10,
   });
   const [shortDescription, setShortDescription] = useState("");
+  const [selectedPackagingType, setSelectedPackagingType] =
+    useState<PackingTypeForm | null>(null);
 
   useEffect(() => {
     fetchPackingTypeForm();
@@ -79,14 +84,14 @@ const PackingType: React.FC = () => {
   };
 
   const openAddForm = () => {
-    setEditingPackingTypeForm(null);
+    setEditingPackagingType(null);
     setName("");
     setStatus("active");
     setIsFormOpen(true);
   };
 
   const openEditForm = (packingTypeForm: PackingTypeForm) => {
-    setEditingPackingTypeForm(packingTypeForm);
+    setEditingPackagingType(packingTypeForm);
     setName(packingTypeForm.name);
     setStatus(packingTypeForm.status);
     setShortDescription(packingTypeForm.short_description);
@@ -95,7 +100,7 @@ const PackingType: React.FC = () => {
 
   const closeForm = () => {
     setIsFormOpen(false);
-    setEditingPackingTypeForm(null);
+    setEditingPackagingType(null);
     setName("");
     setStatus("");
     setShortDescription("");
@@ -111,9 +116,9 @@ const PackingType: React.FC = () => {
       formData.append("type", "packingtype");
 
       let response;
-      if (editingPackingTypeForm) {
+      if (editingPackagingType) {
         response = await axios.put(
-          `${BACKEND_API_KEY}/product/packing-types/${editingPackingTypeForm.id}`,
+          `${BACKEND_API_KEY}/product/packing-types/${editingPackagingType.id}`,
           formData,
           {
             headers: {
@@ -228,8 +233,17 @@ const PackingType: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
+                            onClick={() =>
+                              setSelectedPackagingType(packingTypeForm)
+                            }
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                            aria-label="Info"
+                          >
+                            <MdOutlineRemoveRedEye />
+                          </button>
+                          <button
                             onClick={() => openEditForm(packingTypeForm)}
-                            className="text-xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
+                            className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
                             aria-label="Edit"
                           >
                             <TbEdit />
@@ -238,7 +252,7 @@ const PackingType: React.FC = () => {
                             onClick={() =>
                               deletePackingTypeForm(packingTypeForm.id)
                             }
-                            className="text-xl text-red-600 dark:text-red-500 hover:underline"
+                            className="text-2xl text-red-600 dark:text-red-500 hover:underline"
                             aria-label="Delete"
                           >
                             <MdDeleteOutline />
@@ -300,7 +314,7 @@ const PackingType: React.FC = () => {
       {isFormOpen && (
         <div className="w-[50%] mx-auto my-10">
           <h3 className="text-xl font-semibold leading-6 text-gray-900 mb-4">
-            {editingPackingTypeForm
+            {editingPackagingType
               ? "Edit Packing Type"
               : "Add New Packing Type"}
           </h3>
@@ -321,14 +335,7 @@ const PackingType: React.FC = () => {
                 required
               />
             </div>
-            <div className="mb-4">
-              <label
-                htmlFor="status"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Status
-              </label>
-            </div>
+
             <div className="mb-4">
               <label
                 htmlFor="short_description"
@@ -356,13 +363,38 @@ const PackingType: React.FC = () => {
                 type="submit"
                 className="px-4 py-2 text-sm font-medium text-black bg-lime-500 rounded-md hover:bg-lime-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
               >
-                {editingPackingTypeForm
+                {editingPackagingType
                   ? "Update Packing Type"
                   : "Add Packing Type"}
               </button>
             </div>
           </form>
         </div>
+      )}
+      {selectedPackagingType && (
+        <DetailsPopup
+          title="Packaging Type Details"
+          fields={[
+            { label: "ID", value: selectedPackagingType.id.toString() },
+            { label: "Name", value: selectedPackagingType.name },
+            {
+              label: "Status",
+              value:
+                selectedPackagingType.status === "active"
+                  ? "Active"
+                  : "Inactive",
+            },
+            {
+              label: "Created At",
+              value: new Date(selectedPackagingType.createdAt).toLocaleString(),
+            },
+            {
+              label: "Updated At",
+              value: new Date(selectedPackagingType.updatedAt).toLocaleString(),
+            },
+          ]}
+          onClose={() => setSelectedPackagingType(null)}
+        />
       )}
     </div>
   );

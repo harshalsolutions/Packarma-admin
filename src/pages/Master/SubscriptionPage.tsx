@@ -264,14 +264,14 @@ const SubscriptionPage: React.FC = () => {
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
                             onClick={() => openEditForm(subscription)}
-                            className="text-xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
+                            className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
                             aria-label="Edit"
                           >
                             <TbEdit />
                           </button>
                           <button
                             onClick={() => deleteSubscription(subscription.id)}
-                            className="text-xl text-red-600 dark:text-red-500 hover:underline"
+                            className="text-2xl text-red-600 dark:text-red-500 hover:underline"
                             aria-label="Delete"
                           >
                             <MdDeleteOutline />

@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
-import { MdDeleteOutline } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import DetailsPopup from "../../components/DetailsPopup";
 
 interface PackagingMachine {
   id: number;
@@ -14,6 +15,8 @@ interface PackagingMachine {
   image: string;
   status: string;
   short_description: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Pagination {
@@ -45,6 +48,8 @@ const PackagingMachine: React.FC = () => {
     itemsPerPage: 10,
   });
   const [shortDescription, setShortDescription] = useState("");
+  const [selectedPackagingMachine, setSelectedPackagingMachine] =
+    useState<PackagingMachine | null>(null);
 
   useEffect(() => {
     fetchPackagingMachine();
@@ -256,8 +261,17 @@ const PackagingMachine: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
+                            onClick={() =>
+                              setSelectedPackagingMachine(packagingMachine)
+                            }
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                            aria-label="Info"
+                          >
+                            <MdOutlineRemoveRedEye />
+                          </button>
+                          <button
                             onClick={() => openEditForm(packagingMachine)}
-                            className="text-xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
+                            className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
                             aria-label="Edit"
                           >
                             <TbEdit />
@@ -266,7 +280,7 @@ const PackagingMachine: React.FC = () => {
                             onClick={() =>
                               deletePackagingMachine(packagingMachine.id)
                             }
-                            className="text-xl text-red-600 dark:text-red-500 hover:underline"
+                            className="text-2xl text-red-600 dark:text-red-500 hover:underline"
                             aria-label="Delete"
                           >
                             <MdDeleteOutline />
@@ -378,14 +392,7 @@ const PackagingMachine: React.FC = () => {
                 />
               </div>
             )}
-            <div className="mb-4">
-              <label
-                htmlFor="status"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Status
-              </label>
-            </div>
+
             <div className="mb-4">
               <label
                 htmlFor="short_description"
@@ -420,6 +427,45 @@ const PackagingMachine: React.FC = () => {
             </div>
           </form>
         </div>
+      )}
+      {selectedPackagingMachine && (
+        <DetailsPopup
+          title="Category Details"
+          fields={[
+            { label: "ID", value: selectedPackagingMachine.id.toString() },
+            { label: "Name", value: selectedPackagingMachine.name },
+            {
+              label: "Image",
+              value: (
+                <img
+                  src={BACKEND_MEDIA_LINK + selectedPackagingMachine.image}
+                  alt={selectedPackagingMachine.name}
+                  className="w-24 h-24 object-cover"
+                />
+              ),
+            },
+            {
+              label: "Status",
+              value:
+                selectedPackagingMachine.status === "active"
+                  ? "Active"
+                  : "Inactive",
+            },
+            {
+              label: "Created At",
+              value: new Date(
+                selectedPackagingMachine.createdAt
+              ).toLocaleString(),
+            },
+            {
+              label: "Updated At",
+              value: new Date(
+                selectedPackagingMachine.updatedAt
+              ).toLocaleString(),
+            },
+          ]}
+          onClose={() => setSelectedPackagingMachine(null)}
+        />
       )}
     </div>
   );

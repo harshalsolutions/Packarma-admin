@@ -2,17 +2,20 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
-import { MdDeleteOutline } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import DetailsPopup from "../../components/DetailsPopup";
 
 interface Category {
   id: number;
   name: string;
   image: string;
   status: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface PaginationData {
@@ -40,6 +43,9 @@ const CategoryPage: React.FC = () => {
     totalItems: 0,
     itemsPerPage: 10,
   });
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
 
   useEffect(() => {
     fetchCategories();
@@ -67,7 +73,7 @@ const CategoryPage: React.FC = () => {
     }
   };
 
-  const deleteCategory = async (id: number) => {
+  const deleteCategory = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
         await axios.delete(`${BACKEND_API_KEY}/product/categories/${id}`);
@@ -233,15 +239,24 @@ const CategoryPage: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
+                            onClick={() => setSelectedCategory(category)}
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                            aria-label="Info"
+                          >
+                            <MdOutlineRemoveRedEye />
+                          </button>
+                          <button
                             onClick={() => openEditForm(category)}
-                            className="text-xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
+                            className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-4"
                             aria-label="Edit"
                           >
                             <TbEdit />
                           </button>
                           <button
-                            onClick={() => deleteCategory(category.id)}
-                            className="text-xl text-red-600 dark:text-red-500 hover:underline"
+                            onClick={() =>
+                              deleteCategory(category.id.toString())
+                            }
+                            className="text-2xl text-red-600 dark:text-red-500 hover:underline"
                             aria-label="Delete"
                           >
                             <MdDeleteOutline />
@@ -354,23 +369,6 @@ const CategoryPage: React.FC = () => {
               </div>
             )}
 
-            <div className="mb-4">
-              <label
-                htmlFor="status"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Status
-              </label>
-              <div className="flex items-center">
-                <span className="mr-2">
-                  {status === "active" ? "Active" : "Inactive"}
-                </span>
-                <ToggleSwitch
-                  checked={status === "active"}
-                  onChange={() => setStatus(status ? "active" : "inactive")}
-                />
-              </div>
-            </div>
             <div className="flex justify-end mt-4">
               <button
                 type="button"
@@ -388,6 +386,39 @@ const CategoryPage: React.FC = () => {
             </div>
           </form>
         </div>
+      )}
+      {selectedCategory && (
+        <DetailsPopup
+          title="Category Details"
+          fields={[
+            { label: "ID", value: selectedCategory.id.toString() },
+            { label: "Name", value: selectedCategory.name },
+            {
+              label: "Image",
+              value: (
+                <img
+                  src={BACKEND_MEDIA_LINK + selectedCategory.image}
+                  alt={selectedCategory.name}
+                  className="w-24 h-24 object-cover"
+                />
+              ),
+            },
+            {
+              label: "Status",
+              value:
+                selectedCategory.status === "active" ? "Active" : "Inactive",
+            },
+            {
+              label: "Created At",
+              value: new Date(selectedCategory.createdAt).toLocaleString(),
+            },
+            {
+              label: "Updated At",
+              value: new Date(selectedCategory.updatedAt).toLocaleString(),
+            },
+          ]}
+          onClose={() => setSelectedCategory(null)}
+        />
       )}
     </div>
   );
