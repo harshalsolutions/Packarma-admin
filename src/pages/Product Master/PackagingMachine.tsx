@@ -74,7 +74,9 @@ const PackagingMachine: React.FC = () => {
         }
       );
       setPackagingMachine(response.data.data.packaging_machine || []);
-      setPagination(response.data.data.pagination);
+      if (response.data.data.pagination) {
+        setPagination(response.data.data.pagination);
+      }
       setLoading(false);
       setError(null);
     } catch (err) {

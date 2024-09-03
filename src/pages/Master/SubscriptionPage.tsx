@@ -3,12 +3,14 @@ import axios from "axios";
 import { Spinner } from "flowbite-react";
 import { FaChevronLeft, FaChevronRight, FaInfoCircle } from "react-icons/fa";
 import { TbEdit } from "react-icons/tb";
-import { MdDeleteOutline } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { IoMdAdd, IoMdRemove } from "react-icons/io";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
 import { ErrorComp } from "../../components/ErrorComp";
-
+import DetailsPopup from "../../components/DetailsPopup";
+import CustomPopup from "../../components/CustomPopup";
+import toast from "react-hot-toast";
 interface Subscription {
   id: number;
   type: string;
@@ -17,6 +19,8 @@ interface Subscription {
   duration: number;
   status: string;
   benefits: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface PaginationData {
@@ -47,6 +51,12 @@ const SubscriptionPage: React.FC = () => {
   const [duration, setDuration] = useState("");
   const [benefits, setBenefits] = useState<string[]>([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedSubscription, setSelectedSubscription] =
+    useState<Subscription | null>(null);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     fetchSubscriptions();
@@ -65,24 +75,14 @@ const SubscriptionPage: React.FC = () => {
         }
       );
       setSubscriptions(response.data.data.subscriptions || []);
-      setPagination(response.data.data.pagination);
+      if (response.data.data.pagination) {
+        setPagination(response.data.data.pagination);
+      }
       setLoading(false);
       setError(null);
     } catch (err) {
-      setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
       setSubscriptions([]);
-    }
-  };
-
-  const deleteSubscription = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this subscription?")) {
-      try {
-        await axios.delete(`${BACKEND_API_KEY}/master/subscription/${id}`);
-        fetchSubscriptions();
-      } catch (err) {
-        setError("Failed to delete subscription");
-      }
     }
   };
 
@@ -171,6 +171,35 @@ const SubscriptionPage: React.FC = () => {
   const closeBenefitsPopup = () => {
     setIsPopupOpen(false);
     setBenefits([]);
+  };
+
+  const deleteSubscription = (id: number) => {
+    setSelectedSubscriptionId(id);
+    setIsDeletePopupOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedSubscriptionId !== null) {
+      const loadingToast = toast.loading("Deleting subscription...");
+      try {
+        await axios.delete(
+          `${BACKEND_API_KEY}/master/subscription/${selectedSubscriptionId}`
+        );
+        fetchSubscriptions();
+        toast.success("Subscription deleted successfully");
+      } catch (err) {
+        toast.error("Failed to delete subscription");
+      } finally {
+        toast.dismiss(loadingToast);
+        setIsDeletePopupOpen(false);
+        setSelectedSubscription(null);
+      }
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeletePopupOpen(false);
+    setSelectedSubscription(null);
   };
 
   return (
@@ -264,6 +293,15 @@ const SubscriptionPage: React.FC = () => {
                           )}
                         </td>
                         <td className="px-6 py-4 text-gray-900 text-right">
+                          <button
+                            onClick={() =>
+                              setSelectedSubscriptionId(subscription.id)
+                            }
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                            aria-label="Info"
+                          >
+                            <MdOutlineRemoveRedEye />
+                          </button>
                           <button
                             onClick={() => openEditForm(subscription)}
                             className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
@@ -454,7 +492,55 @@ const SubscriptionPage: React.FC = () => {
           </form>
         </div>
       )}
-
+      {selectedSubscription && (
+        <DetailsPopup
+          title="Subscription Details"
+          fields={[
+            { label: "ID", value: selectedSubscription.id.toString() },
+            { label: "Name", value: selectedSubscription.type },
+            { label: "Price", value: selectedSubscription.amount.toString() },
+            {
+              label: "Credit Amount",
+              value: selectedSubscription.credit_amount.toString(),
+            },
+            {
+              label: "Duration",
+              value: selectedSubscription.duration.toString(),
+            },
+            {
+              label: "Benefits",
+              value: (
+                <ul>
+                  {selectedSubscription.benefits
+                    .split("#")
+                    .map((benefit, index) => (
+                      <li key={index}>
+                        {index + 1}. {benefit}
+                      </li>
+                    ))}
+                </ul>
+              ),
+            },
+            {
+              label: "Created At",
+              value: new Date(selectedSubscription.createdAt).toLocaleString(),
+            },
+            {
+              label: "Updated At",
+              value: new Date(selectedSubscription.updatedAt).toLocaleString(),
+            },
+          ]}
+          onClose={() => setSelectedSubscription(null)}
+        />
+      )}
+      {isDeletePopupOpen && (
+        <CustomPopup
+          title="Confirm Deletion"
+          description="Are you sure you want to delete this banner?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
       {isPopupOpen && (
         <div className="fixed inset-0 bg-black z-40 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg max-w-md w-full">

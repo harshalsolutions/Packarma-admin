@@ -52,6 +52,7 @@ const CreditMaster: React.FC = () => {
       toast.success("Credit updated successfully");
     } catch (err) {
       toast.dismiss();
+      toast.dismiss();
       toast.error("Failed to save data");
       setError("Failed to save data");
     }

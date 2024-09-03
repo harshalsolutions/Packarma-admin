@@ -71,7 +71,9 @@ const StorageCondition: React.FC = () => {
         }
       );
       setStorageCondition(response.data.data.storageConditions || []);
-      setPagination(response.data.data.pagination);
+      if (response.data.data.pagination) {
+        setPagination(response.data.data.pagination);
+      }
       setLoading(false);
       setError(null);
     } catch (err) {

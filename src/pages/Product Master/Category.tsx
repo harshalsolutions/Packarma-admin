@@ -71,7 +71,9 @@ const CategoryPage: React.FC = () => {
         }
       );
       setCategories(response.data.data.categories || []);
-      setPagination(response.data.data.pagination);
+      if (response.data.data.pagination) {
+        setPagination(response.data.data.pagination);
+      }
       setLoading(false);
       setError(null);
     } catch (err) {
@@ -173,6 +175,7 @@ const CategoryPage: React.FC = () => {
       closeForm();
       fetchCategories();
     } catch (err) {
+      toast.dismiss();
       toast.error("Failed to save category");
     } finally {
       toast.dismiss(loadingToast);

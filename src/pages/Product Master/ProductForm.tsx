@@ -72,7 +72,9 @@ const ProductForm: React.FC = () => {
         }
       );
       setProductForm(response.data.data.productForms || []);
-      setPagination(response.data.data.pagination);
+      if (response.data.data.pagination) {
+        setPagination(response.data.data.pagination);
+      }
       setLoading(false);
       setError(null);
     } catch (err) {
@@ -441,6 +443,10 @@ const ProductForm: React.FC = () => {
           fields={[
             { label: "ID", value: selectedProductForm.id.toString() },
             { label: "Name", value: selectedProductForm.name },
+            {
+              label: "Description",
+              value: selectedProductForm.short_description,
+            },
             {
               label: "Image",
               value: (

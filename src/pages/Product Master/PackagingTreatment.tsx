@@ -75,7 +75,9 @@ const PackagingTreatmentPage: React.FC = () => {
         }
       );
       setPackagingTreatments(response.data.data.packaging_treatments || []);
-      setPagination(response.data.data.pagination);
+      if (response.data.data.pagination) {
+        setPagination(response.data.data.pagination);
+      }
       setLoading(false);
       setError(null);
     } catch (err) {

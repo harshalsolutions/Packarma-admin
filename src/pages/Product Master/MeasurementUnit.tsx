@@ -72,7 +72,9 @@ const MeasurementUnit: React.FC = () => {
         }
       );
       setMeasurementUnits(response.data.data.measurementUnits || []);
-      setPagination(response.data.data.pagination);
+      if (response.data.data.pagination) {
+        setPagination(response.data.data.pagination);
+      }
       setLoading(false);
       setError(null);
     } catch (err) {

@@ -78,7 +78,9 @@ const SubCategoryPage: React.FC = () => {
         }
       );
       setSubCategories(response.data.data.subcategories || []);
-      setPagination(response.data.data.pagination);
+      if (response.data.data.pagination) {
+        setPagination(response.data.data.pagination);
+      }
       setLoading(false);
       setError(null);
     } catch (err) {

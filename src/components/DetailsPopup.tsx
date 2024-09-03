@@ -15,17 +15,17 @@ const DetailsPopup: React.FC<PopupProps> = ({ title, fields, onClose }) => (
         <h3 className="text-2xl font-bold">{title}</h3>
         <button onClick={onClose}>
           <span className="inline-block">
-            <MdClose size={30} />
+            <MdClose size={20} />
           </span>
         </button>
       </div>
-      <div className="overflow-y-auto max-h-[500px]">
+      <div className="overflow-y-auto max-h-[400px]">
         <table className="w-full text-sm text-left border border-gray-800">
           <tbody>
             {fields.map((field, index) => (
               <tr key={index} className="border-b border-gray-800">
                 <td className="font-medium p-2 border-r border-gray-800">
-                  {field.label}:
+                  {field.label}
                 </td>
                 <td className="p-2 flex items-center">
                   {field.label === "Featured" && field.value === "Yes" ? (

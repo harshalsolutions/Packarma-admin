@@ -61,7 +61,7 @@ const BannerPage: React.FC = () => {
   const [selectedBanner, setSelectedBanner] = useState<Banner | null>(null);
   const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
   const [bannerIdToDelete, setBannerIdToDelete] = useState<number | null>(null);
-
+  const [activityLog, setActivityLog] = useState<any>(null);
   useEffect(() => {
     fetchBanners();
   }, [currentPage, entriesPerPage]);
@@ -79,7 +79,9 @@ const BannerPage: React.FC = () => {
         }
       );
       setBanners(response.data.data.banners || []);
-      setPagination(response.data.data.pagination);
+      if (response.data.data.pagination) {
+        setPagination(response.data.data.pagination);
+      }
       setLoading(false);
       setError(null);
     } catch (err) {
@@ -163,9 +165,14 @@ const BannerPage: React.FC = () => {
       const formData = new FormData();
       formData.append("title", title);
       formData.append("description", description);
-      // Format the date strings to match SQL expectations
-      formData.append("start_date_time", new Date(startDateTime).toISOString());
-      formData.append("end_date_time", new Date(endDateTime).toISOString());
+      formData.append(
+        "start_date_time",
+        new Date(startDateTime).toISOString().slice(0, 19).replace("T", " ")
+      );
+      formData.append(
+        "end_date_time",
+        new Date(endDateTime).toISOString().slice(0, 19).replace("T", " ")
+      );
       formData.append("link", link);
       formData.append("app_page", appPage);
       formData.append("status", status);
@@ -177,7 +184,7 @@ const BannerPage: React.FC = () => {
       let response;
       if (editingBanner) {
         response = await axios.put(
-          `${BACKEND_API_KEY}/master/update-banners/${editingBanner.id}`,
+          `${BACKEND_API_KEY}/master/update-banner/${editingBanner.id}`,
           formData,
           {
             headers: {
@@ -203,6 +210,7 @@ const BannerPage: React.FC = () => {
       fetchBanners();
     } catch (err) {
       console.log(err);
+      toast.dismiss();
       toast.error("Failed to save banner");
     } finally {
       toast.dismiss(loadingToast);
@@ -212,13 +220,48 @@ const BannerPage: React.FC = () => {
   const toggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
-      await axios.put(`${BACKEND_API_KEY}/master/get-banners/${id}`, {
+      await axios.put(`${BACKEND_API_KEY}/master/update-banner/${id}`, {
         status: newStatus,
       });
       fetchBanners();
     } catch (err) {
       setError("Failed to update status");
     }
+  };
+
+  const fetchActivityLog = async (bannerId: number, type: string) => {
+    try {
+      const response = await axios.get(
+        `${BACKEND_API_KEY}/master/banner/activity-log/${bannerId}`
+      );
+      if (
+        type === "clicks" &&
+        response.data.data.activityStats.total_clicks > 0
+      ) {
+        setActivityLog({
+          type: type,
+          userData: response.data.data.userData[type],
+        });
+      } else if (
+        type === "views" &&
+        response.data.data.activityStats.total_views > 0
+      ) {
+        setActivityLog({
+          type: type,
+          userData: response.data.data.userData[type],
+        });
+      }
+    } catch (err) {
+      toast.dismiss();
+    }
+  };
+
+  const handleViewClick = (banner: Banner, type: string) => {
+    fetchActivityLog(banner.id, type);
+  };
+
+  const handleClickClick = (banner: Banner, type: string) => {
+    fetchActivityLog(banner.id, type);
   };
 
   return (
@@ -258,9 +301,6 @@ const BannerPage: React.FC = () => {
                       Title
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Link
-                    </th>
-                    <th scope="col" className="px-6 py-3">
                       Views
                     </th>
                     <th scope="col" className="px-6 py-3">
@@ -289,19 +329,26 @@ const BannerPage: React.FC = () => {
                           {banner.title}
                         </td>
                         <td className="px-6 py-4 text-gray-900">
-                          <a
-                            href={banner.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <div
+                            className="px-2 py-4 text-gray-900 flex justify-start items-start  cursor-pointer"
+                            onClick={() => handleViewClick(banner, "views")}
                           >
-                            {banner.link}
-                          </a>
+                            <span>{banner.total_views}</span>
+                            <span className="bg-lime-400 ml-2 px-2 py-1 rounded-full">
+                              <MdOutlineRemoveRedEye />
+                            </span>
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-gray-900">
-                          {banner.total_views}
-                        </td>
-                        <td className="px-6 py-4 text-gray-900">
-                          {banner.total_clicks}
+                          <div
+                            className="px-2 py-4 text-gray-900 flex justify-start items-start  cursor-pointer"
+                            onClick={() => handleClickClick(banner, "clicks")}
+                          >
+                            <span>{banner.total_clicks}</span>
+                            <span className="bg-lime-400 ml-2 px-2 py-1 rounded-full">
+                              <MdOutlineRemoveRedEye />
+                            </span>
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <img
@@ -397,11 +444,11 @@ const BannerPage: React.FC = () => {
       )}
 
       {isFormOpen && (
-        <div className="w-[50%] mx-auto my-10">
+        <div className="mx-auto my-10 w-[80%]">
           <h3 className="text-xl font-semibold leading-6 text-gray-900 mb-4">
             {editingBanner ? "Edit Banner" : "Add New Banner"}
           </h3>
-          <form onSubmit={handleFormSubmit}>
+          <form onSubmit={handleFormSubmit} className="grid grid-cols-2 gap-5">
             <div className="mb-4">
               <label
                 htmlFor="title"
@@ -526,7 +573,7 @@ const BannerPage: React.FC = () => {
               </div>
             )}
 
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end mt-4 items-center">
               <button
                 type="button"
                 onClick={closeForm}
@@ -551,6 +598,14 @@ const BannerPage: React.FC = () => {
             { label: "ID", value: selectedBanner.id.toString() },
             { label: "Title", value: selectedBanner.title },
             { label: "Description", value: selectedBanner.description },
+            {
+              label: "Total Views",
+              value: selectedBanner.total_views.toString(),
+            },
+            {
+              label: "Total Clicks",
+              value: selectedBanner.total_clicks.toString(),
+            },
             { label: "Start Date Time", value: selectedBanner.start_date_time },
             { label: "End Date Time", value: selectedBanner.end_date_time },
             { label: "Link", value: selectedBanner.link },
@@ -587,6 +642,16 @@ const BannerPage: React.FC = () => {
           description="Are you sure you want to delete this banner?"
           onConfirm={handleConfirmDelete}
           onCancel={handleCancelDelete}
+        />
+      )}
+      {activityLog && (
+        <DetailsPopup
+          title={activityLog.type === "views" ? "Views Data" : "Clicks Data"}
+          fields={activityLog.userData.map((item: any) => ({
+            label: item.firstname + " " + item.lastname,
+            value: new Date(item.activity_timestamp).toLocaleString(),
+          }))}
+          onClose={() => setActivityLog(null)}
         />
       )}
     </div>

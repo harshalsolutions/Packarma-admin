@@ -69,7 +69,9 @@ const PackingType: React.FC = () => {
         }
       );
       setPackingTypeForm(response.data.data.packingTypes || []);
-      setPagination(response.data.data.pagination);
+      if (response.data.data.pagination) {
+        setPagination(response.data.data.pagination);
+      }
       setLoading(false);
       setError(null);
     } catch (err) {
@@ -128,31 +130,22 @@ const PackingType: React.FC = () => {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append("short_description", shortDescription);
-      formData.append("status", status);
+      const data = {
+        name: name,
+        status: status,
+        short_description: shortDescription,
+      };
 
       let response;
       if (editingPackagingType) {
         response = await axios.put(
           `${BACKEND_API_KEY}/product/packing-types/${editingPackagingType.id}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
+          data
         );
       } else {
         response = await axios.post(
-          `${BACKEND_API_KEY}/product/packing-type`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
+          `${BACKEND_API_KEY}/product/packing-types`,
+          data
         );
       }
 
