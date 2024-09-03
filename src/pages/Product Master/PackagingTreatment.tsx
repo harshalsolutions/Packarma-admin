@@ -9,6 +9,8 @@ import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
+import CustomPopup from "../../components/CustomPopup";
+
 interface PackagingTreatment {
   id: number;
   name: string;
@@ -52,6 +54,9 @@ const PackagingTreatmentPage: React.FC = () => {
   const [shortDescription, setShortDescription] = useState("");
   const [selectedPackagingTreatment, setSelectedPackagingTreatment] =
     useState<PackagingTreatment | null>(null);
+  const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
+  const [packagingTreatmentIdToDelete, setPackagingTreatmentIdToDelete] =
+    useState<number | null>(null);
 
   useEffect(() => {
     fetchPackagingTreatments();
@@ -72,28 +77,35 @@ const PackagingTreatmentPage: React.FC = () => {
       setPackagingTreatments(response.data.data.packaging_treatments || []);
       setPagination(response.data.data.pagination);
       setLoading(false);
+      setError(null);
     } catch (err) {
-      setError("Failed to fetch data");
       setLoading(false);
-      setPackagingTreatments([]);
     }
   };
 
-  const deletePackagingTreatment = async (id: number) => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this packaging treatment?"
-      )
-    ) {
+  const deletePackagingTreatment = (id: number) => {
+    setPackagingTreatmentIdToDelete(id);
+    setDeletePopupOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (packagingTreatmentIdToDelete !== null) {
       try {
         await axios.delete(
-          `${BACKEND_API_KEY}/product/packaging-treatment/${id}`
+          `${BACKEND_API_KEY}/product/packaging-treatment/${packagingTreatmentIdToDelete}`
         );
         fetchPackagingTreatments();
       } catch (err) {
         setError("Failed to delete packaging treatment");
       }
+      setDeletePopupOpen(false);
+      setPackagingTreatmentIdToDelete(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeletePopupOpen(false);
+    setPackagingTreatmentIdToDelete(null);
   };
 
   const openAddForm = () => {
@@ -512,6 +524,14 @@ const PackagingTreatmentPage: React.FC = () => {
             },
           ]}
           onClose={() => setSelectedPackagingTreatment(null)}
+        />
+      )}
+      {isDeletePopupOpen && (
+        <CustomPopup
+          title="Confirm Deletion"
+          description="Are you sure you want to delete this packaging treatment?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
         />
       )}
     </div>

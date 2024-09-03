@@ -8,8 +8,9 @@ import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
-import { toast } from "react-hot-toast";
 import { ErrorComp } from "../../components/ErrorComp";
+import CustomPopup from "../../components/CustomPopup";
+import toast from "react-hot-toast";
 
 interface Category {
   id: number;
@@ -48,13 +49,16 @@ const CategoryPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
+  const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
+  const [categoryIdToDelete, setCategoryIdToDelete] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     fetchCategories();
   }, [currentPage, entriesPerPage]);
 
   const fetchCategories = async () => {
-    const loadingToast = toast.loading("Loading categories...");
     try {
       setLoading(true);
       const response = await axios.get(
@@ -69,27 +73,39 @@ const CategoryPage: React.FC = () => {
       setCategories(response.data.data.categories || []);
       setPagination(response.data.data.pagination);
       setLoading(false);
+      setError(null);
     } catch (err) {
-      toast.error("Failed to fetch data");
-    } finally {
-      toast.dismiss(loadingToast);
       setLoading(false);
     }
   };
 
-  const deleteCategory = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this category?")) {
+  const deleteCategory = (id: string) => {
+    setCategoryIdToDelete(Number(id));
+    setDeletePopupOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (categoryIdToDelete !== null) {
       const loadingToast = toast.loading("Deleting category...");
       try {
-        await axios.delete(`${BACKEND_API_KEY}/product/categories/${id}`);
+        await axios.delete(
+          `${BACKEND_API_KEY}/product/categories/${categoryIdToDelete}`
+        );
         fetchCategories();
         toast.success("Category deleted successfully");
       } catch (err) {
         toast.error("Failed to delete category");
       } finally {
         toast.dismiss(loadingToast);
+        setDeletePopupOpen(false);
+        setCategoryIdToDelete(null);
       }
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeletePopupOpen(false);
+    setCategoryIdToDelete(null);
   };
 
   const openAddForm = () => {
@@ -288,10 +304,12 @@ const CategoryPage: React.FC = () => {
               </table>
             </div>
           )}
-          <p className="my-4 text-sm">
-            Showing {categories.length} out of {pagination.totalItems}{" "}
-            Categories
-          </p>
+          {!error && (
+            <p className="my-4 text-sm">
+              Showing {categories.length} out of {pagination.totalItems}{" "}
+              Categories
+            </p>
+          )}
           {pagination.totalItems >= 10 && (
             <div className="mt-4 flex justify-center items-center mb-8">
               <button
@@ -431,6 +449,14 @@ const CategoryPage: React.FC = () => {
             },
           ]}
           onClose={() => setSelectedCategory(null)}
+        />
+      )}
+      {isDeletePopupOpen && (
+        <CustomPopup
+          title="Confirm Deletion"
+          description="Are you sure you want to delete this category?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
         />
       )}
     </div>

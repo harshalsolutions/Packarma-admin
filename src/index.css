@@ -191,3 +191,27 @@
 ::-webkit-scrollbar {
   display: none;
 }
+
+.fade-in {
+  animation: fadeIn 0.5s ease;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.scale-in {
+  animation: fadeIn 0.1ms ease-in;
+}
+@keyframes fadeIn {
+  from {
+    scale: 0;
+  }
+  to {
+    scale: 1;
+  }
+}

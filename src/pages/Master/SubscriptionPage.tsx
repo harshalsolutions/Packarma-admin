@@ -7,6 +7,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { IoMdAdd, IoMdRemove } from "react-icons/io";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
+import { ErrorComp } from "../../components/ErrorComp";
 
 interface Subscription {
   id: number;
@@ -66,8 +67,9 @@ const SubscriptionPage: React.FC = () => {
       setSubscriptions(response.data.data.subscriptions || []);
       setPagination(response.data.data.pagination);
       setLoading(false);
+      setError(null);
     } catch (err) {
-      setError("Failed to fetch data");
+      setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
       setSubscriptions([]);
     }
@@ -195,7 +197,7 @@ const SubscriptionPage: React.FC = () => {
               <Spinner size="xl" />
             </div>
           ) : error ? (
-            <ErrorComp error={error} onRetry={fetchPackagingTreatments} />
+            <ErrorComp error={error} onRetry={fetchSubscriptions} />
           ) : (
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -290,10 +292,12 @@ const SubscriptionPage: React.FC = () => {
               </table>
             </div>
           )}
-          <p className="my-4 text-sm">
-            Showing {subscriptions.length} out of {pagination.totalItems}{" "}
-            Subscriptions
-          </p>
+          {!error && (
+            <p className="my-4 text-sm">
+              Showing {subscriptions.length} out of {pagination.totalItems}{" "}
+              Subscriptions
+            </p>
+          )}
           {pagination.totalItems >= 10 && (
             <div className="mt-4 flex justify-center items-center mb-8">
               <button

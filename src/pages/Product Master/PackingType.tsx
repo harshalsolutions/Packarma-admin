@@ -3,12 +3,13 @@ import axios from "axios";
 import { Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
-import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
+import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
+import CustomPopup from "../../components/CustomPopup";
 
 interface PackingTypeForm {
   id: number;
@@ -46,6 +47,10 @@ const PackingType: React.FC = () => {
   const [shortDescription, setShortDescription] = useState("");
   const [selectedPackagingType, setSelectedPackagingType] =
     useState<PackingTypeForm | null>(null);
+  const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
+  const [packingTypeIdToDelete, setPackingTypeIdToDelete] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     fetchPackingTypeForm();
@@ -66,22 +71,35 @@ const PackingType: React.FC = () => {
       setPackingTypeForm(response.data.data.packingTypes || []);
       setPagination(response.data.data.pagination);
       setLoading(false);
+      setError(null);
     } catch (err) {
-      setError("Failed to fetch data");
       setLoading(false);
-      setPackingTypeForm([]);
     }
   };
 
-  const deletePackingTypeForm = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this packing type?")) {
+  const deletePackingTypeForm = (id: number) => {
+    setPackingTypeIdToDelete(id);
+    setDeletePopupOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (packingTypeIdToDelete !== null) {
       try {
-        await axios.delete(`${BACKEND_API_KEY}/product/packing-types/${id}`);
+        await axios.delete(
+          `${BACKEND_API_KEY}/product/packing-types/${packingTypeIdToDelete}`
+        );
         fetchPackingTypeForm();
       } catch (err) {
         setError("Failed to delete packing type");
       }
+      setDeletePopupOpen(false);
+      setPackingTypeIdToDelete(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeletePopupOpen(false);
+    setPackingTypeIdToDelete(null);
   };
 
   const openAddForm = () => {
@@ -271,10 +289,12 @@ const PackingType: React.FC = () => {
               </table>
             </div>
           )}
-          <p className="my-4 text-sm">
-            Showing {packingTypeForm.length} out of {pagination.totalItems}{" "}
-            Packing Type
-          </p>
+          {!error && (
+            <p className="my-4 text-sm">
+              Showing {packingTypeForm.length} out of {pagination.totalItems}{" "}
+              Packing Type
+            </p>
+          )}
           {pagination.totalItems >= 10 && (
             <div className="mt-4 flex justify-center items-center mb-8">
               <button
@@ -394,6 +414,14 @@ const PackingType: React.FC = () => {
             },
           ]}
           onClose={() => setSelectedPackagingType(null)}
+        />
+      )}
+      {isDeletePopupOpen && (
+        <CustomPopup
+          title="Confirm Deletion"
+          description="Are you sure you want to delete this packing type?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
         />
       )}
     </div>

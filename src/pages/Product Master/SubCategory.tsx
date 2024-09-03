@@ -8,8 +8,9 @@ import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
-import { toast } from "react-hot-toast"; // Add this import
+import { toast } from "react-hot-toast";
 import { ErrorComp } from "../../components/ErrorComp";
+import CustomPopup from "../../components/CustomPopup";
 
 interface SubCategory {
   id: number;
@@ -54,6 +55,10 @@ const SubCategoryPage: React.FC = () => {
   });
   const [selectedSubcategory, setSelectedSubcategory] =
     useState<SubCategory | null>(null);
+  const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
+  const [subCategoryIdToDelete, setSubCategoryIdToDelete] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     fetchSubCategories();
@@ -63,7 +68,6 @@ const SubCategoryPage: React.FC = () => {
   const fetchSubCategories = async () => {
     try {
       setLoading(true);
-      toast.loading("Loading subcategories...");
       const response = await axios.get(
         `${BACKEND_API_KEY}/product/subcategories`,
         {
@@ -76,13 +80,9 @@ const SubCategoryPage: React.FC = () => {
       setSubCategories(response.data.data.subcategories || []);
       setPagination(response.data.data.pagination);
       setLoading(false);
-      toast.dismiss();
+      setError(null);
     } catch (err) {
-      setError("Failed to fetch data");
       setLoading(false);
-      setSubCategories([]);
-      toast.dismiss();
-      toast.error("Failed to fetch subcategories");
     }
   };
 
@@ -95,18 +95,31 @@ const SubCategoryPage: React.FC = () => {
     }
   };
 
-  const deleteSubCategory = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this subcategory?")) {
+  const deleteSubCategory = (id: number) => {
+    setSubCategoryIdToDelete(id);
+    setDeletePopupOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (subCategoryIdToDelete !== null) {
       try {
-        await axios.delete(`${BACKEND_API_KEY}/product/subcategories/${id}`);
+        await axios.delete(
+          `${BACKEND_API_KEY}/product/subcategories/${subCategoryIdToDelete}`
+        );
         fetchSubCategories();
         toast.success("Subcategory deleted successfully!");
       } catch (err) {
         setError("Failed to delete subcategory");
-        toast.dismiss();
         toast.error("Failed to delete subcategory");
       }
+      setDeletePopupOpen(false);
+      setSubCategoryIdToDelete(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeletePopupOpen(false);
+    setSubCategoryIdToDelete(null);
   };
 
   const openAddForm = () => {
@@ -318,10 +331,12 @@ const SubCategoryPage: React.FC = () => {
               </table>
             </div>
           )}
-          <p className="my-4 text-sm">
-            Showing {subCategories.length} out of {pagination.totalItems}{" "}
-            Subcategories
-          </p>
+          {!error && (
+            <p className="my-4 text-sm">
+              Showing {subCategories.length} out of {pagination.totalItems}{" "}
+              Subcategories
+            </p>
+          )}
           {pagination.totalItems >= 10 && (
             <div className="mt-4 flex justify-center items-center mb-8">
               <button
@@ -457,7 +472,7 @@ const SubCategoryPage: React.FC = () => {
           title="Subcategory Details"
           fields={[
             { label: "ID", value: selectedSubcategory.id.toString() },
-            { label: "Name", value: selectedSubcategory.name },
+            { label: "Subcategory Name", value: selectedSubcategory.name },
             {
               label: "Image",
               value: (
@@ -467,6 +482,10 @@ const SubCategoryPage: React.FC = () => {
                   className="w-24 h-24 object-cover"
                 />
               ),
+            },
+            {
+              label: "Category",
+              value: selectedSubcategory.category_name,
             },
             {
               label: "Status",
@@ -483,6 +502,14 @@ const SubCategoryPage: React.FC = () => {
             },
           ]}
           onClose={() => setSelectedSubcategory(null)}
+        />
+      )}
+      {isDeletePopupOpen && (
+        <CustomPopup
+          title="Confirm Deletion"
+          description="Are you sure you want to delete this subcategory?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
         />
       )}
     </div>

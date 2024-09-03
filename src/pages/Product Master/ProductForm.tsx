@@ -9,6 +9,7 @@ import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
+import CustomPopup from "../../components/CustomPopup";
 
 interface ProductForm {
   id: number;
@@ -49,6 +50,10 @@ const ProductForm: React.FC = () => {
   const [shortDescription, setShortDescription] = useState("");
   const [selectedProductForm, setSelectedProductForm] =
     useState<ProductForm | null>(null);
+  const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
+  const [productIdToDelete, setProductIdToDelete] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     fetchProductForm();
@@ -69,22 +74,36 @@ const ProductForm: React.FC = () => {
       setProductForm(response.data.data.productForms || []);
       setPagination(response.data.data.pagination);
       setLoading(false);
+      setError(null);
     } catch (err) {
-      setError("Failed to fetch data");
       setLoading(false);
       setProductForm([]);
     }
   };
 
   const deleteProductForm = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this product form?")) {
+    setProductIdToDelete(id);
+    setDeletePopupOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (productIdToDelete !== null) {
       try {
-        await axios.delete(`${BACKEND_API_KEY}/product/product-form/${id}`);
+        await axios.delete(
+          `${BACKEND_API_KEY}/product/product-form/${productIdToDelete}`
+        );
         fetchProductForm();
       } catch (err) {
         setError("Failed to delete product form");
       }
+      setDeletePopupOpen(false);
+      setProductIdToDelete(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeletePopupOpen(false);
+    setProductIdToDelete(null);
   };
 
   const openAddForm = () => {
@@ -287,10 +306,12 @@ const ProductForm: React.FC = () => {
               </table>
             </div>
           )}
-          <p className="my-4 text-sm">
-            Showing {productForm.length} out of {pagination.totalItems} Product
-            Form
-          </p>
+          {!error && (
+            <p className="my-4 text-sm">
+              Showing {productForm.length} out of {pagination.totalItems}{" "}
+              Product Form
+            </p>
+          )}
           {pagination.totalItems >= 10 && (
             <div className="mt-4 flex justify-center items-center mb-8">
               <button
@@ -445,6 +466,14 @@ const ProductForm: React.FC = () => {
             },
           ]}
           onClose={() => setSelectedProductForm(null)}
+        />
+      )}
+      {isDeletePopupOpen && (
+        <CustomPopup
+          title="Confirm Deletion"
+          description="Are you sure you want to delete this product?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
         />
       )}
     </div>

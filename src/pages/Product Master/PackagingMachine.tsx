@@ -9,6 +9,7 @@ import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
+import CustomPopup from "../../components/CustomPopup";
 
 interface PackagingMachine {
   id: number;
@@ -51,6 +52,10 @@ const PackagingMachine: React.FC = () => {
   const [shortDescription, setShortDescription] = useState("");
   const [selectedPackagingMachine, setSelectedPackagingMachine] =
     useState<PackagingMachine | null>(null);
+  const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
+  const [packagingMachineIdToDelete, setPackagingMachineIdToDelete] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     fetchPackagingMachine();
@@ -71,26 +76,35 @@ const PackagingMachine: React.FC = () => {
       setPackagingMachine(response.data.data.packaging_machine || []);
       setPagination(response.data.data.pagination);
       setLoading(false);
+      setError(null);
     } catch (err) {
-      setError("Failed to fetch data");
       setLoading(false);
-      setPackagingMachine([]);
     }
   };
 
-  const deletePackagingMachine = async (id: number) => {
-    if (
-      window.confirm("Are you sure you want to delete this packaging machine?")
-    ) {
+  const deletePackagingMachine = (id: number) => {
+    setPackagingMachineIdToDelete(id);
+    setDeletePopupOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (packagingMachineIdToDelete !== null) {
       try {
         await axios.delete(
-          `${BACKEND_API_KEY}/product/packaging-machines/${id}`
+          `${BACKEND_API_KEY}/product/packaging-machines/${packagingMachineIdToDelete}`
         );
         fetchPackagingMachine();
       } catch (err) {
         setError("Failed to delete packaging machine");
       }
+      setDeletePopupOpen(false);
+      setPackagingMachineIdToDelete(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeletePopupOpen(false);
+    setPackagingMachineIdToDelete(null);
   };
 
   const openAddForm = () => {
@@ -300,10 +314,12 @@ const PackagingMachine: React.FC = () => {
               </table>
             </div>
           )}
-          <p className="my-4 text-sm">
-            Showing {packagingMachine.length} out of {pagination.totalItems}{" "}
-            Packaging Machine
-          </p>
+          {!error && (
+            <p className="my-4 text-sm">
+              Showing {packagingMachine.length} out of {pagination.totalItems}{" "}
+              Packaging Machine
+            </p>
+          )}
           {pagination.totalItems >= 10 && (
             <div className="mt-4 flex justify-center items-center mb-8">
               <button
@@ -466,6 +482,14 @@ const PackagingMachine: React.FC = () => {
             },
           ]}
           onClose={() => setSelectedPackagingMachine(null)}
+        />
+      )}
+      {isDeletePopupOpen && (
+        <CustomPopup
+          title="Confirm Deletion"
+          description="Are you sure you want to delete this packaging machine?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
         />
       )}
     </div>

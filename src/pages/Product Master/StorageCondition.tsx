@@ -9,6 +9,7 @@ import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
+import CustomPopup from "../../components/CustomPopup";
 
 interface StorageCondition {
   id: number;
@@ -48,6 +49,10 @@ const StorageCondition: React.FC = () => {
   const [shortDescription, setShortDescription] = useState("");
   const [selectedStorageCondition, setSelectedStorageCondition] =
     useState<StorageCondition | null>(null);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [selectedStorageConditionId, setSelectedStorageConditionId] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     fetchStorageCondition();
@@ -68,25 +73,9 @@ const StorageCondition: React.FC = () => {
       setStorageCondition(response.data.data.storageConditions || []);
       setPagination(response.data.data.pagination);
       setLoading(false);
+      setError(null);
     } catch (err) {
-      setError("Failed to fetch data");
       setLoading(false);
-      setStorageCondition([]);
-    }
-  };
-
-  const deletePackingTypeForm = async (id: number) => {
-    if (
-      window.confirm("Are you sure you want to delete this storage condition?")
-    ) {
-      try {
-        await axios.delete(
-          `${BACKEND_API_KEY}/product/storage-conditions/${id}`
-        );
-        fetchStorageCondition();
-      } catch (err) {
-        setError("Failed to delete storage condition");
-      }
     }
   };
 
@@ -152,6 +141,31 @@ const StorageCondition: React.FC = () => {
     } catch (err) {
       setError("Failed to update status");
     }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedStorageConditionId !== null) {
+      try {
+        await axios.delete(
+          `${BACKEND_API_KEY}/product/storage-conditions/${selectedStorageConditionId}`
+        );
+        fetchStorageCondition();
+      } catch (err) {
+        setError("Failed to delete storage condition");
+      }
+      setIsDeletePopupOpen(false);
+      setSelectedStorageConditionId(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeletePopupOpen(false);
+    setSelectedStorageConditionId(null);
+  };
+
+  const deleteStorageCondition = async (id: number) => {
+    setSelectedStorageConditionId(id);
+    setIsDeletePopupOpen(true);
   };
 
   return (
@@ -247,7 +261,7 @@ const StorageCondition: React.FC = () => {
                           </button>
                           <button
                             onClick={() =>
-                              deletePackingTypeForm(storageCondition.id)
+                              deleteStorageCondition(storageCondition.id)
                             }
                             className="text-2xl text-red-600 dark:text-red-500 hover:underline"
                             aria-label="Delete"
@@ -260,7 +274,7 @@ const StorageCondition: React.FC = () => {
                   ) : (
                     <tr>
                       <td colSpan={6} className="px-6 py-4 text-center">
-                        No packing type found
+                        No storage condition found
                       </td>
                     </tr>
                   )}
@@ -268,10 +282,12 @@ const StorageCondition: React.FC = () => {
               </table>
             </div>
           )}
-          <p className="my-4 text-sm">
-            Showing {storageCondition.length} out of {pagination.totalItems}{" "}
-            Storage Condition
-          </p>
+          {!error && (
+            <p className="my-4 text-sm">
+              Showing {storageCondition.length} out of {pagination.totalItems}{" "}
+              Storage Condition
+            </p>
+          )}
           {pagination.totalItems >= 10 && (
             <div className="mt-4 flex justify-center items-center mb-8">
               <button
@@ -399,6 +415,14 @@ const StorageCondition: React.FC = () => {
             },
           ]}
           onClose={() => setSelectedStorageCondition(null)}
+        />
+      )}
+      {isDeletePopupOpen && (
+        <CustomPopup
+          title="Confirm Deletion"
+          description="Are you sure you want to delete this storage condition?"
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
         />
       )}
     </div>
