@@ -8,6 +8,7 @@ import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
+import { ErrorComp } from "../../components/ErrorComp";
 interface PackagingTreatment {
   id: number;
   name: string;
@@ -216,7 +217,7 @@ const PackagingTreatmentPage: React.FC = () => {
               <Spinner size="xl" />
             </div>
           ) : error ? (
-            <div className="text-red-500">{error}</div>
+            <ErrorComp error={error} onRetry={fetchPackagingTreatments} />
           ) : (
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -324,10 +325,12 @@ const PackagingTreatmentPage: React.FC = () => {
               </table>
             </div>
           )}
-          <p className="my-4 text-sm">
-            Showing {packagingTreatments.length} out of {pagination.totalItems}{" "}
-            Packaging Treatments
-          </p>
+          {!error && (
+            <p className="my-4 text-sm">
+              Showing {packagingTreatments.length} out of{" "}
+              {pagination.totalItems} Packaging Treatments
+            </p>
+          )}
           {pagination.totalItems >= 10 && (
             <div className="mt-4 flex justify-center items-center mb-8">
               <button

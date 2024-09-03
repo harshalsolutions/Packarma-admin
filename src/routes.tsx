@@ -184,7 +184,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/product-master/packaging-solution"
+      path="/product-master/packaging-solutions"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>

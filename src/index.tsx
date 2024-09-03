@@ -18,7 +18,7 @@ if (!container) {
 const root = createRoot(container);
 
 root.render(
-  <StrictMode>
+  <>
     <Toaster position="bottom-right" />
     <UserProvider>
       <Flowbite theme={{ theme }}>
@@ -27,5 +27,5 @@ root.render(
         </BrowserRouter>
       </Flowbite>
     </UserProvider>
-  </StrictMode>
+  </>
 );

@@ -8,6 +8,7 @@ import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
+import { ErrorComp } from "../../components/ErrorComp";
 
 interface PackingTypeForm {
   id: number;
@@ -113,7 +114,6 @@ const PackingType: React.FC = () => {
       formData.append("name", name);
       formData.append("short_description", shortDescription);
       formData.append("status", status);
-      formData.append("type", "packingtype");
 
       let response;
       if (editingPackagingType) {
@@ -148,7 +148,7 @@ const PackingType: React.FC = () => {
   const toggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
-      await axios.put(`${BACKEND_API_KEY}/product/packing-typess/${id}`, {
+      await axios.put(`${BACKEND_API_KEY}/product/packing-types/${id}`, {
         status: newStatus,
       });
       fetchPackingTypeForm();
@@ -181,7 +181,7 @@ const PackingType: React.FC = () => {
               <Spinner size="xl" />
             </div>
           ) : error ? (
-            <div className="text-red-500">{error}</div>
+            <ErrorComp error={error} onRetry={fetchPackingTypeForm} />
           ) : (
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">

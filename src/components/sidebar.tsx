@@ -146,7 +146,7 @@ const menuItems: MenuItem[] = [
         icon: VscDebugBreakpointDataUnverified,
       },
       {
-        name: "Customer Enquiry (Search History)",
+        name: "Customer Enquiry",
         path: "/customer/enquiry",
         icon: VscDebugBreakpointDataUnverified,
       },
@@ -183,10 +183,12 @@ const SidebarComponent: FC = function () {
             />
           )}
           className={`${
+            item.name !== "Dashboard" ? "!pl-2 !text-sm" : "font-medium"
+          } ${
             item.path === currentPage ? "bg-lime-500 hover:bg-lime-500" : ""
           } cursor-pointer`}
         >
-          {item.name}
+          <span className="whitespace-normal">{item.name}</span>
         </Sidebar.Item>
       )}
     </div>

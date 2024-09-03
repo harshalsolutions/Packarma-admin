@@ -8,6 +8,7 @@ import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
+import { ErrorComp } from "../../components/ErrorComp";
 
 interface StorageCondition {
   id: number;
@@ -129,7 +130,7 @@ const StorageCondition: React.FC = () => {
         );
       } else {
         response = await axios.post(
-          `${BACKEND_API_KEY}/product/storage-condition`,
+          `${BACKEND_API_KEY}/product/storage-conditions`,
           data
         );
       }
@@ -177,7 +178,7 @@ const StorageCondition: React.FC = () => {
               <Spinner size="xl" />
             </div>
           ) : error ? (
-            <div className="text-red-500">{error}</div>
+            <ErrorComp error={error} onRetry={fetchStorageCondition} />
           ) : (
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -373,6 +374,10 @@ const StorageCondition: React.FC = () => {
           fields={[
             { label: "ID", value: selectedStorageCondition.id.toString() },
             { label: "Name", value: selectedStorageCondition.name },
+            {
+              label: "Short Description",
+              value: selectedStorageCondition.short_description,
+            },
             {
               label: "Status",
               value:

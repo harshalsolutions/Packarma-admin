@@ -8,6 +8,8 @@ import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
+import { toast } from "react-hot-toast"; // Add this import
+import { ErrorComp } from "../../components/ErrorComp";
 
 interface SubCategory {
   id: number;
@@ -61,6 +63,7 @@ const SubCategoryPage: React.FC = () => {
   const fetchSubCategories = async () => {
     try {
       setLoading(true);
+      toast.loading("Loading subcategories...");
       const response = await axios.get(
         `${BACKEND_API_KEY}/product/subcategories`,
         {
@@ -73,10 +76,13 @@ const SubCategoryPage: React.FC = () => {
       setSubCategories(response.data.data.subcategories || []);
       setPagination(response.data.data.pagination);
       setLoading(false);
+      toast.dismiss();
     } catch (err) {
       setError("Failed to fetch data");
       setLoading(false);
       setSubCategories([]);
+      toast.dismiss();
+      toast.error("Failed to fetch subcategories");
     }
   };
 
@@ -94,8 +100,11 @@ const SubCategoryPage: React.FC = () => {
       try {
         await axios.delete(`${BACKEND_API_KEY}/product/subcategories/${id}`);
         fetchSubCategories();
+        toast.success("Subcategory deleted successfully!");
       } catch (err) {
         setError("Failed to delete subcategory");
+        toast.dismiss();
+        toast.error("Failed to delete subcategory");
       }
     }
   };
@@ -155,6 +164,7 @@ const SubCategoryPage: React.FC = () => {
             },
           }
         );
+        toast.success("Subcategory updated successfully!");
       } else {
         response = await axios.post(
           `${BACKEND_API_KEY}/product/subcategories`,
@@ -165,12 +175,15 @@ const SubCategoryPage: React.FC = () => {
             },
           }
         );
+        toast.success("Subcategory added successfully!");
       }
 
       closeForm();
       fetchSubCategories();
     } catch (err) {
       setError("Failed to save subcategory");
+      toast.dismiss();
+      toast.error("Failed to save subcategory");
     }
   };
 
@@ -183,6 +196,8 @@ const SubCategoryPage: React.FC = () => {
       fetchSubCategories();
     } catch (err) {
       setError("Failed to update status");
+      toast.dismiss();
+      toast.error("Failed to update status");
     }
   };
 
@@ -210,7 +225,7 @@ const SubCategoryPage: React.FC = () => {
               <Spinner size="xl" />
             </div>
           ) : error ? (
-            <div className="text-red-500">{error}</div>
+            <ErrorComp error={error} onRetry={fetchSubCategories} />
           ) : (
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">

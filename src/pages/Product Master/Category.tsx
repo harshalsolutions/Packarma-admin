@@ -8,6 +8,8 @@ import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
+import { toast } from "react-hot-toast";
+import { ErrorComp } from "../../components/ErrorComp";
 
 interface Category {
   id: number;
@@ -52,6 +54,7 @@ const CategoryPage: React.FC = () => {
   }, [currentPage, entriesPerPage]);
 
   const fetchCategories = async () => {
+    const loadingToast = toast.loading("Loading categories...");
     try {
       setLoading(true);
       const response = await axios.get(
@@ -67,19 +70,24 @@ const CategoryPage: React.FC = () => {
       setPagination(response.data.data.pagination);
       setLoading(false);
     } catch (err) {
-      setError("Failed to fetch data");
+      toast.error("Failed to fetch data");
+    } finally {
+      toast.dismiss(loadingToast);
       setLoading(false);
-      setCategories([]);
     }
   };
 
   const deleteCategory = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
+      const loadingToast = toast.loading("Deleting category...");
       try {
         await axios.delete(`${BACKEND_API_KEY}/product/categories/${id}`);
         fetchCategories();
+        toast.success("Category deleted successfully");
       } catch (err) {
-        setError("Failed to delete category");
+        toast.error("Failed to delete category");
+      } finally {
+        toast.dismiss(loadingToast);
       }
     }
   };
@@ -111,6 +119,7 @@ const CategoryPage: React.FC = () => {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const loadingToast = toast.loading("Saving category...");
     try {
       const formData = new FormData();
       formData.append("name", name);
@@ -131,6 +140,7 @@ const CategoryPage: React.FC = () => {
             },
           }
         );
+        toast.success("Category updated successfully");
       } else {
         response = await axios.post(
           `${BACKEND_API_KEY}/product/categories`,
@@ -141,12 +151,15 @@ const CategoryPage: React.FC = () => {
             },
           }
         );
+        toast.success("Category added successfully");
       }
 
       closeForm();
       fetchCategories();
     } catch (err) {
-      setError("Failed to save category");
+      toast.error("Failed to save category");
+    } finally {
+      toast.dismiss(loadingToast);
     }
   };
 
@@ -186,7 +199,7 @@ const CategoryPage: React.FC = () => {
               <Spinner size="xl" />
             </div>
           ) : error ? (
-            <div className="text-red-500">{error}</div>
+            <ErrorComp error={error} onRetry={fetchCategories} />
           ) : (
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
