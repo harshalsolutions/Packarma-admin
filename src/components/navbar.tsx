@@ -45,15 +45,15 @@ const ExampleNavbar: FC = function () {
           </div>
         </div>
       </div>
-      {showPopup && ( // Render the popup conditionally
+      {showPopup && (
         <CustomPopup
           title="Confirm Logout"
           description="Are you sure you want to logout?"
           onConfirm={() => {
             handleLogout();
-            setShowPopup(false); // Close popup after confirming
+            setShowPopup(false);
           }}
-          onCancel={() => setShowPopup(false)} // Close popup on cancel
+          onCancel={() => setShowPopup(false)}
         />
       )}
     </Navbar>

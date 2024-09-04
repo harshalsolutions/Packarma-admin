@@ -30,12 +30,7 @@ const DetailsPopup: React.FC<PopupProps> = ({ title, fields, onClose }) => (
         <table className="w-full text-sm text-left border ">
           <tbody>
             {fields.map((field, index) => (
-              <tr
-                key={index}
-                className={`border-b  ${
-                  index % 2 === 0 ? "bg-gray-200" : "bg-white"
-                }`}
-              >
+              <tr key={index} className={`border-b`}>
                 <td className="font-medium p-3 border-r ">{field.label}</td>
                 <td className="p-3 flex items-center">
                   {field.label === "Featured" && field.value === "Yes" ? (
