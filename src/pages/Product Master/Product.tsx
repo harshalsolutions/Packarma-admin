@@ -287,7 +287,7 @@ const Product: React.FC = () => {
             <ErrorComp error={error} onRetry={fetchProducts} />
           ) : (
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <table className="w-full overflow-x-auto text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
                     <th scope="col" className="px-6 py-3">
@@ -295,6 +295,15 @@ const Product: React.FC = () => {
                     </th>
                     <th scope="col" className="px-6 py-3">
                       Name
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Category
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Sub-Category
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Product Form
                     </th>
                     <th scope="col" className="px-6 py-3">
                       Image
@@ -321,10 +330,33 @@ const Product: React.FC = () => {
                           {product.product_name}
                         </td>
                         <td className="px-6 py-4 text-gray-900">
+                          {
+                            categories.find(
+                              (category) => category.id === product.category_id
+                            )?.name
+                          }
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {
+                            subCategories.find(
+                              (category) =>
+                                category.id === product.sub_category_id
+                            )?.name
+                          }
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {
+                            productForms.find(
+                              (category) =>
+                                category.id === product.product_form_id
+                            )?.name
+                          }
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
                           <img
                             src={BACKEND_MEDIA_LINK + product.product_image}
                             alt={product.product_name}
-                            className="w-16 h-16 object-cover"
+                            className="w-20 h-20 object-cover"
                           />
                         </td>
                         <td className="px-6 py-4 text-gray-900">
@@ -335,7 +367,7 @@ const Product: React.FC = () => {
                             }
                           />
                         </td>
-                        <td className="px-6 py-4 text-gray-900 text-right">
+                        <td className="px-6 py-4 text-gray-900 text-right whitespace-nowrap">
                           <button
                             onClick={() => setSelectedProduct(product)}
                             className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"

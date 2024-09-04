@@ -262,7 +262,7 @@ const PackagingMachine: React.FC = () => {
                           <img
                             src={BACKEND_MEDIA_LINK + packagingMachine.image}
                             alt={packagingMachine.name}
-                            className="w-16 h-16 object-cover"
+                            className="w-20 h-20 object-cover"
                           />
                         </td>
                         <td className="px-6 py-4 text-gray-900">

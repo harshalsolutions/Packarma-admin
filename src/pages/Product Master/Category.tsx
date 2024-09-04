@@ -258,7 +258,7 @@ const CategoryPage: React.FC = () => {
                           <img
                             src={BACKEND_MEDIA_LINK + category.image}
                             alt={category.name}
-                            className="w-16 h-16 object-cover"
+                            className="w-20 h-20 object-cover"
                           />
                         </td>
                         <td className="px-6 py-4 text-gray-900">
