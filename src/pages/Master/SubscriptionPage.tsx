@@ -295,7 +295,7 @@ const SubscriptionPage: React.FC = () => {
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
                             onClick={() =>
-                              setSelectedSubscriptionId(subscription.id)
+                              setSelectedSubscription(subscription)
                             }
                             className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
                             aria-label="Info"
@@ -541,6 +541,7 @@ const SubscriptionPage: React.FC = () => {
           onCancel={handleCancelDelete}
         />
       )}
+
       {isPopupOpen && (
         <div className="fixed inset-0 bg-black z-40 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg max-w-md w-full">

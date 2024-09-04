@@ -9,8 +9,12 @@ interface PopupProps {
 }
 
 const DetailsPopup: React.FC<PopupProps> = ({ title, fields, onClose }) => (
-  <div className="fixed inset-0 flex items-center z-50 justify-center bg-black bg-opacity-50">
-    <div className="bg-white p-8 rounded shadow-lg w-[50%]">
+  <section
+    className={`h-[100vh] w-full fixed top-0 left-0 z-50 backdrop-blur-sm bg-black/50 flex justify-center items-center`}
+  >
+    <div
+      className={`bg-white rounded-md w-[45%] p-6 transition-transform transform scale-in`}
+    >
       <div className="flex justify-between w-full items-center mb-5">
         <h3 className="text-2xl font-bold">{title}</h3>
         <button onClick={onClose}>
@@ -46,7 +50,7 @@ const DetailsPopup: React.FC<PopupProps> = ({ title, fields, onClose }) => (
         </table>
       </div>
     </div>
-  </div>
+  </section>
 );
 
 export default DetailsPopup;
