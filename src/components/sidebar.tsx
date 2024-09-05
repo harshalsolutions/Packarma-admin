@@ -6,6 +6,8 @@ import { HiChartPie, HiUsers } from "react-icons/hi";
 import { VscDebugBreakpointDataUnverified } from "react-icons/vsc";
 import { HiOutlineSquares2X2 } from "react-icons/hi2";
 import { IconType } from "react-icons";
+import { RiFileExcel2Line, RiSettings4Line } from "react-icons/ri";
+import { FiHeadphones } from "react-icons/fi";
 
 interface MenuItem {
   name: string;
@@ -152,6 +154,50 @@ const menuItems: MenuItem[] = [
       },
     ],
   },
+  {
+    name: "Staff",
+    path: "/staff",
+    icon: HiUsers,
+    submenu: [
+      {
+        name: "Manage Roles",
+        path: "/staff/roles",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+      {
+        name: "Manage Staff",
+        path: "/staff/manage",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+    ],
+  },
+  {
+    name: "Contact Us",
+    path: "/contact-us",
+    icon: FiHeadphones,
+    submenu: [
+      {
+        name: "Customer",
+        path: "/contact-us/customer",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+      {
+        name: "System Details",
+        path: "/contact-us/system-details",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+    ],
+  },
+  {
+    name: "Report",
+    path: "/report",
+    icon: RiFileExcel2Line,
+  },
+  {
+    name: "General Settings",
+    path: "/general-settings",
+    icon: RiSettings4Line,
+  },
 ];
 const SidebarComponent: FC = function () {
   const [currentPage, setCurrentPage] = useState("");
@@ -195,7 +241,7 @@ const SidebarComponent: FC = function () {
   );
 
   return (
-    <Sidebar className="lg:w-[18%] flex-grow h-[100vh] pt-16">
+    <Sidebar className="lg:w-[24%] flex-grow h-[100vh] pt-16">
       <div className="flex flex-col justify-between">
         <Sidebar.Items>
           <Sidebar.ItemGroup>{menuItems.map(renderMenuItem)}</Sidebar.ItemGroup>

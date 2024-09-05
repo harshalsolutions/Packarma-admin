@@ -27,6 +27,10 @@ import UserSubscription from "./pages/Customer Section/UserSubscription";
 import DownloadSubscription from "./pages/Customer Section/DownloadSubscription";
 import ManageRoles from "./pages/Staff/ManageRoles";
 import ManageStaff from "./pages/Staff/ManageStaff";
+import Settings from "./pages/GeneralSettings/settings";
+import Customer from "./pages/Contact Us/Customer";
+import SystemDetails from "./pages/Contact Us/SystemDetails";
+import Report from "./pages/Report/Report";
 
 const AppRoutes = () => (
   <Routes>
@@ -296,7 +300,17 @@ const AppRoutes = () => (
     />
     {/* Staff Section */}
     <Route
-      path="/staff/manage-staff"
+      path="/staff/roles"
+      element={
+        <ProtectedRoute>
+          <NavbarSidebarLayout>
+            <ManageRoles />
+          </NavbarSidebarLayout>
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/staff/manage"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -305,12 +319,45 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     />
+    {/* Contact Us Section */}
     <Route
-      path="/staff/manage-roles"
+      path="/contact-us/customer"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
-            <ManageRoles />
+            <Customer />
+          </NavbarSidebarLayout>
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/contact-us/system-details"
+      element={
+        <ProtectedRoute>
+          <NavbarSidebarLayout>
+            <SystemDetails />
+          </NavbarSidebarLayout>
+        </ProtectedRoute>
+      }
+    />
+    {/* Report */}
+    <Route
+      path="/report"
+      element={
+        <ProtectedRoute>
+          <NavbarSidebarLayout>
+            <Report />
+          </NavbarSidebarLayout>
+        </ProtectedRoute>
+      }
+    />
+    {/* General Settings */}
+    <Route
+      path="/general-settings"
+      element={
+        <ProtectedRoute>
+          <NavbarSidebarLayout>
+            <Settings />
           </NavbarSidebarLayout>
         </ProtectedRoute>
       }

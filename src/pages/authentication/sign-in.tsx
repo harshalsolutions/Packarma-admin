@@ -29,7 +29,7 @@ const SignInPage: FC = function () {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8 sm:px-6 lg:px-8">
+    <div className="flex flex-col items-center justify-center bg-white min-h-screen px-4 py-8 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">
         <div className="flex items-center flex-col justify-center mb-8">
           <img alt="Logo" src="/logo.jpg" className="h-20 mb-3" />

@@ -115,7 +115,7 @@ const Customer: React.FC = () => {
         ) : error ? (
           <ErrorComp error={error} onRetry={fetchCustomerForm} />
         ) : (
-          <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+          <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-6">
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
@@ -128,9 +128,9 @@ const Customer: React.FC = () => {
                   <th scope="col" className="px-6 py-3">
                     Email Address
                   </th>
-                  <th scope="col" className="px-6 py-3">
+                  {/* <th scope="col" className="px-6 py-3">
                     Phone Number
-                  </th>
+                  </th> */}
                   <th scope="col" className="px-6 py-3">
                     GST Number
                   </th>
@@ -161,9 +161,9 @@ const Customer: React.FC = () => {
                       <td className="px-6 py-4 text-gray-900">
                         {customerForm.email}
                       </td>
-                      <td className="px-6 py-4 text-gray-900">
+                      {/* <td className="px-6 py-4 text-gray-900">
                         {customerForm.country_code} {customerForm.phone_number}
-                      </td>
+                      </td> */}
                       <td className="px-6 py-4 text-gray-900">
                         {customerForm.gst_number}
                       </td>

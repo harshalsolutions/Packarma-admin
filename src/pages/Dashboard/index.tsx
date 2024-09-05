@@ -40,7 +40,7 @@ const DashboardPage: FC = function () {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto pb-10">
       <p className="text-2xl font-bold capitalize px-10 my-6">
         Welcome to the dashboard 🚀
       </p>
