@@ -1,8 +1,6 @@
 import { createRoot } from "react-dom/client";
 
 import "./index.css";
-import theme from "./flowbite-theme";
-import { Flowbite } from "flowbite-react";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import AppRoutes from "./routes";
@@ -20,11 +18,9 @@ root.render(
   <>
     <Toaster position="bottom-right" />
     <UserProvider>
-      <Flowbite theme={{ theme }}>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </Flowbite>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
     </UserProvider>
   </>
 );
