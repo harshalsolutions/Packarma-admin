@@ -334,9 +334,11 @@ const BannerPage: React.FC = () => {
                             onClick={() => handleViewClick(banner, "views")}
                           >
                             <span>{banner.total_views}</span>
-                            <span className="bg-lime-400 ml-2 px-2 py-1 rounded-full">
-                              <MdOutlineRemoveRedEye />
-                            </span>
+                            {banner.total_views != 0 && (
+                              <span className="bg-lime-400 ml-2 px-2 py-1 rounded-full">
+                                <MdOutlineRemoveRedEye />
+                              </span>
+                            )}
                           </div>
                         </td>
                         <td className="px-6 py-4 text-gray-900">
@@ -345,9 +347,11 @@ const BannerPage: React.FC = () => {
                             onClick={() => handleClickClick(banner, "clicks")}
                           >
                             <span>{banner.total_clicks}</span>
-                            <span className="bg-lime-400 ml-2 px-2 py-1 rounded-full">
-                              <MdOutlineRemoveRedEye />
-                            </span>
+                            {banner.total_clicks != 0 && (
+                              <span className="bg-lime-400 ml-2 px-2 py-1 rounded-full">
+                                <MdOutlineRemoveRedEye />
+                              </span>
+                            )}
                           </div>
                         </td>
                         <td className="px-6 py-4 text-gray-900 text-right">

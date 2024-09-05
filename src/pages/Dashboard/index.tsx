@@ -2,19 +2,55 @@
 import { Badge, Dropdown, Table, useTheme } from "flowbite-react";
 import type { FC } from "react";
 import Chart from "react-apexcharts";
+import { FiUser } from "react-icons/fi";
+
+const CustomCard = function ({
+  title,
+  value,
+  icon,
+}: {
+  title: string;
+  value: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-lg bg-white p-4 shadow w-full dark:bg-gray-800 flex justify-between items-center">
+      {icon && <span className="text-3xl">{icon}</span>}
+      <div className="flex justify-end items-end flex-col">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+          {title}
+        </h3>
+        <p className="text-2xl font-bold text-gray-900 dark:text-white">
+          {value}
+        </p>
+      </div>
+    </div>
+  );
+};
 
 const DashboardPage: FC = function () {
   return (
-    <div className="px-4 pt-6">
-      <SalesThisWeek />
-      <div className="my-6">
-        <LatestTransactions />
-      </div>
-      <LatestCustomers />
-      <div className="my-6">
-        <AcquisitionOverview />
-      </div>
-    </div>
+    // <div className="px-4 pt-6">
+    //   <SalesThisWeek />
+    //   <div className="my-6">
+    //     <LatestTransactions />
+    //   </div>
+    //   <LatestCustomers />
+    //   <div className="my-6">
+    //     <AcquisitionOverview />
+    //   </div>
+    // </div>
+    <>
+      <p className="text-2xl font-bold capitalize px-10 my-6">
+        Welcome to the dashboard
+      </p>
+      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 shadow-md mt-10 px-10">
+        <CustomCard title="Total Users" value="100" icon={<FiUser />} />
+        <CustomCard title="Total Users" value="100" icon={<FiUser />} />
+        <CustomCard title="Total Users" value="100" icon={<FiUser />} />
+        <CustomCard title="Total Users" value="100" icon={<FiUser />} />
+      </section>
+    </>
   );
 };
 
