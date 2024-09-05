@@ -168,9 +168,8 @@ const SubCategoryPage: React.FC = () => {
         formData.append("image", image);
       }
 
-      let response;
       if (editingSubCategory) {
-        response = await axios.put(
+        await axios.put(
           `${BACKEND_API_KEY}/product/subcategories/${editingSubCategory.id}`,
           formData,
           {
@@ -181,15 +180,11 @@ const SubCategoryPage: React.FC = () => {
         );
         toast.success("Subcategory updated successfully!");
       } else {
-        response = await axios.post(
-          `${BACKEND_API_KEY}/product/subcategories`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        await axios.post(`${BACKEND_API_KEY}/product/subcategories`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         toast.success("Subcategory added successfully!");
       }
 

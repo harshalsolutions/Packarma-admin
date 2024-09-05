@@ -149,9 +149,8 @@ const ProductForm: React.FC = () => {
         formData.append("image", image);
       }
 
-      let response;
       if (editingProductForm) {
-        response = await axios.put(
+        await axios.put(
           `${BACKEND_API_KEY}/product/product-form/${editingProductForm.id}`,
           formData,
           {
@@ -161,15 +160,11 @@ const ProductForm: React.FC = () => {
           }
         );
       } else {
-        response = await axios.post(
-          `${BACKEND_API_KEY}/product/product-form`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        await axios.post(`${BACKEND_API_KEY}/product/product-form`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
       }
 
       closeForm();

@@ -142,14 +142,13 @@ const PackagingMaterial: React.FC = () => {
         special_feature: specialFeature,
       };
 
-      let response;
       if (editingPackagingMaterial) {
-        response = await axios.put(
+        await axios.put(
           `${BACKEND_API_KEY}/product/packaging-materials/${editingPackagingMaterial.id}`,
           data
         );
       } else {
-        response = await axios.post(
+        await axios.post(
           `${BACKEND_API_KEY}/product/packaging-materials`,
           data
         );

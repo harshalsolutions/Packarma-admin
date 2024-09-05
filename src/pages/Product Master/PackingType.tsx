@@ -136,17 +136,13 @@ const PackingType: React.FC = () => {
         short_description: shortDescription,
       };
 
-      let response;
       if (editingPackagingType) {
-        response = await axios.put(
+        await axios.put(
           `${BACKEND_API_KEY}/product/packing-types/${editingPackagingType.id}`,
           data
         );
       } else {
-        response = await axios.post(
-          `${BACKEND_API_KEY}/product/packing-types`,
-          data
-        );
+        await axios.post(`${BACKEND_API_KEY}/product/packing-types`, data);
       }
 
       closeForm();

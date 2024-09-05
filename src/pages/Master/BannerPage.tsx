@@ -181,9 +181,8 @@ const BannerPage: React.FC = () => {
         formData.append("banner", bannerImage);
       }
 
-      let response;
       if (editingBanner) {
-        response = await axios.put(
+        await axios.put(
           `${BACKEND_API_KEY}/master/update-banner/${editingBanner.id}`,
           formData,
           {
@@ -194,15 +193,11 @@ const BannerPage: React.FC = () => {
         );
         toast.success("Banner updated successfully");
       } else {
-        response = await axios.post(
-          `${BACKEND_API_KEY}/master/add-banner`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        await axios.post(`${BACKEND_API_KEY}/master/add-banner`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         toast.success("Banner added successfully");
       }
 

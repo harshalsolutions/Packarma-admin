@@ -153,9 +153,8 @@ const PackagingTreatmentPage: React.FC = () => {
         formData.append("image", image);
       }
 
-      let response;
       if (editingPackagingTreatment) {
-        response = await axios.put(
+        await axios.put(
           `${BACKEND_API_KEY}/product/packaging-treatment/${editingPackagingTreatment.id}`,
           formData,
           {
@@ -165,7 +164,7 @@ const PackagingTreatmentPage: React.FC = () => {
           }
         );
       } else {
-        response = await axios.post(
+        await axios.post(
           `${BACKEND_API_KEY}/product/packaging-treatment`,
           formData,
           {

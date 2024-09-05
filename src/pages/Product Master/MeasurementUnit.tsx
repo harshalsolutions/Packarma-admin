@@ -62,7 +62,7 @@ const MeasurementUnit: React.FC = () => {
   const fetchMeasurementUnits = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
+      let response = await axios.get(
         `${BACKEND_API_KEY}/product/measurement-units`,
         {
           params: {
@@ -115,17 +115,13 @@ const MeasurementUnit: React.FC = () => {
         status: status,
       };
 
-      let response;
       if (editingMeasurementUnit) {
-        response = await axios.put(
+        await axios.put(
           `${BACKEND_API_KEY}/product/measurement-units/${editingMeasurementUnit.id}`,
           data
         );
       } else {
-        response = await axios.post(
-          `${BACKEND_API_KEY}/product/measurement-units`,
-          data
-        );
+        await axios.post(`${BACKEND_API_KEY}/product/measurement-units`, data);
       }
 
       closeForm();

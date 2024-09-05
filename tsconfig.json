@@ -24,7 +24,8 @@
     "sourceMap": true,
     "strict": true,
     "target": "ESNext",
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "module": "esnext"
   },
   "exclude": ["node_modules"],
   "include": [

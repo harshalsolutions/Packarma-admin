@@ -150,9 +150,8 @@ const PackagingMachine: React.FC = () => {
         formData.append("image", image);
       }
 
-      let response;
       if (editingPackagingMachine) {
-        response = await axios.put(
+        await axios.put(
           `${BACKEND_API_KEY}/product/packaging-machines/${editingPackagingMachine.id}`,
           formData,
           {
@@ -162,7 +161,7 @@ const PackagingMachine: React.FC = () => {
           }
         );
       } else {
-        response = await axios.post(
+        await axios.post(
           `${BACKEND_API_KEY}/product/packaging-machines`,
           formData,
           {

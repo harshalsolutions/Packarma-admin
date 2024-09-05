@@ -1,5 +1,4 @@
 import { Badge } from "flowbite-react";
-import React from "react";
 import { MdClose } from "react-icons/md";
 import { BACKEND_MEDIA_LINK } from "../../utils/ApiKey";
 

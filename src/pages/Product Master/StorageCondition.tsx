@@ -113,17 +113,13 @@ const StorageCondition: React.FC = () => {
         status: status,
       };
 
-      let response;
       if (editingStorageCondition) {
-        response = await axios.put(
+        await axios.put(
           `${BACKEND_API_KEY}/product/storage-conditions/${editingStorageCondition.id}`,
           data
         );
       } else {
-        response = await axios.post(
-          `${BACKEND_API_KEY}/product/storage-conditions`,
-          data
-        );
+        await axios.post(`${BACKEND_API_KEY}/product/storage-conditions`, data);
       }
 
       closeForm();

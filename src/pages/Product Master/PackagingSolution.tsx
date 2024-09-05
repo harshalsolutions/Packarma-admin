@@ -192,14 +192,13 @@ const PackagingSolutions: React.FC = () => {
       status: formPackagingSolutions?.status,
     };
     try {
-      let response;
       if (type === "edit") {
-        response = await axios.put(
+        await axios.put(
           `${BACKEND_API_KEY}/product/packaging-solutions/${formPackagingSolutions?.id}`,
           data
         );
       } else {
-        response = await axios.post(
+        await axios.post(
           `${BACKEND_API_KEY}/product/packaging-solutions`,
           data
         );

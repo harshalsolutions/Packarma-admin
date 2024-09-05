@@ -1,8 +1,8 @@
-import { Sidebar, TextInput } from "flowbite-react";
+import { Sidebar } from "flowbite-react";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { HiChartPie, HiSearch, HiUsers } from "react-icons/hi";
+import { HiChartPie, HiUsers } from "react-icons/hi";
 import { VscDebugBreakpointDataUnverified } from "react-icons/vsc";
 import { HiOutlineSquares2X2 } from "react-icons/hi2";
 import { IconType } from "react-icons";

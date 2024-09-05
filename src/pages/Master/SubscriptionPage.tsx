@@ -143,17 +143,14 @@ const SubscriptionPage: React.FC = () => {
         duration: Number(duration),
         benefits: benefits.join("#"),
       };
-      let response;
+
       if (editingSubscription) {
-        response = await axios.put(
+        await axios.put(
           `${BACKEND_API_KEY}/master/subscription/${editingSubscription.id}`,
           formData
         );
       } else {
-        response = await axios.post(
-          `${BACKEND_API_KEY}/master/subscription`,
-          formData
-        );
+        await axios.post(`${BACKEND_API_KEY}/master/subscription`, formData);
       }
 
       closeForm();

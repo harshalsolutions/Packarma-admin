@@ -147,9 +147,8 @@ const CategoryPage: React.FC = () => {
         formData.append("image", image);
       }
 
-      let response;
       if (editingCategory) {
-        response = await axios.put(
+        await axios.put(
           `${BACKEND_API_KEY}/product/categories/${editingCategory.id}`,
           formData,
           {
@@ -160,15 +159,11 @@ const CategoryPage: React.FC = () => {
         );
         toast.success("Category updated successfully");
       } else {
-        response = await axios.post(
-          `${BACKEND_API_KEY}/product/categories`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        await axios.post(`${BACKEND_API_KEY}/product/categories`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         toast.success("Category added successfully");
       }
 

@@ -213,9 +213,8 @@ const Product: React.FC = () => {
         formData.append("product_image", image);
       }
 
-      let response;
       if (editingProduct) {
-        response = await axios.put(
+        await axios.put(
           `${BACKEND_API_KEY}/product/update-product/${editingProduct.id}`,
           formData,
           {
@@ -226,15 +225,11 @@ const Product: React.FC = () => {
         );
         toast.success("Product updated successfully");
       } else {
-        response = await axios.post(
-          `${BACKEND_API_KEY}/product/add-product`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        await axios.post(`${BACKEND_API_KEY}/product/add-product`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         toast.success("Product added successfully");
       }
 

@@ -186,9 +186,8 @@ const AdvertisementPage: React.FC = () => {
         formData.append("advertisement_image", image);
       }
 
-      let response;
       if (editingAdvertisement) {
-        response = await axios.put(
+        await axios.put(
           `${BACKEND_API_KEY}/master/update-advertisement/${editingAdvertisement.id}`,
           formData,
           {
@@ -199,7 +198,7 @@ const AdvertisementPage: React.FC = () => {
         );
         toast.success("Advertisement updated successfully");
       } else {
-        response = await axios.post(
+        await axios.post(
           `${BACKEND_API_KEY}/master/add-advertisement`,
           formData,
           {

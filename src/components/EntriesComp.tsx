@@ -1,5 +1,3 @@
-import React from "react";
-
 interface EntriesPerPageProps {
   entriesPerPage: number;
   setEntriesPerPage: (value: number) => void;
