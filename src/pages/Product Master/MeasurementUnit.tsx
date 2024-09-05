@@ -169,7 +169,7 @@ const MeasurementUnit: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto mt-8 px-4">
+    <div className="max-w-7xl mx-auto mt-8 px-4">
       <h1 className="text-2xl font-bold mb-4 border-l-8 text-black border-lime-500 pl-2">
         Manage Measurement Units
       </h1>

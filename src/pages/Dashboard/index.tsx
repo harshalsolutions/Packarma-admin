@@ -1,7 +1,6 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-// import { Badge, Dropdown, Table, useTheme } from "flowbite-react";
+import { ApexOptions } from "apexcharts";
 import type { FC } from "react";
-// import Chart from "react-apexcharts";
+import Chart from "react-apexcharts";
 import { FiUser } from "react-icons/fi";
 
 const CustomCard = function ({
@@ -14,43 +13,58 @@ const CustomCard = function ({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="container mx-auto px-4 rounded-lg bg-white p-4 shadow dark:bg-gray-800 flex justify-between items-center">
-      {icon && <span className="text-3xl">{icon}</span>}
-      <div className="flex justify-end items-end flex-col">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-          {title}
-        </h3>
-        <p className="text-2xl font-bold text-gray-900 dark:text-white">
-          {value}
-        </p>
+    <div className="p-4 bg-[#fff] shadow rounded-xl w-full flex justify-between items-center">
+      <div className="flex justify-between items-start flex-col">
+        <p className="font-normal text-slate-500 text-sm">{title}</p>
+        <p className="font-semibold text-xl my-2">{value}</p>
       </div>
+      <div className="mr-2 text-2xl">{icon}</div>
     </div>
   );
 };
 
 const DashboardPage: FC = function () {
+  const chartOptions = {
+    chart: {
+      type: "bar",
+    },
+    xaxis: {
+      categories: ["Referred Users", "Normal Users"],
+    },
+    series: [
+      {
+        name: "Users",
+        data: [30, 70],
+      },
+    ],
+  };
+
   return (
-    // <div className="px-4 pt-6">
-    //   <SalesThisWeek />
-    //   <div className="my-6">
-    //     <LatestTransactions />
-    //   </div>
-    //   <LatestCustomers />
-    //   <div className="my-6">
-    //     <AcquisitionOverview />
-    //   </div>
-    // </div>
-    <>
+    <div className="max-w-7xl mx-auto">
       <p className="text-2xl font-bold capitalize px-10 my-6">
-        Welcome to the dashboard
+        Welcome to the dashboard 🚀
       </p>
-      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 shadow-md mt-10 px-10">
-        <CustomCard title="Total Users" value="100" icon={<FiUser />} />
-        <CustomCard title="Total Users" value="100" icon={<FiUser />} />
-        <CustomCard title="Total Users" value="100" icon={<FiUser />} />
-        <CustomCard title="Total Users" value="100" icon={<FiUser />} />
+      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-10 px-10">
+        <CustomCard title="Active Projects" value="25" icon={<FiUser />} />
+        <CustomCard title="Pending Approvals" value="15" icon={<FiUser />} />
+        <CustomCard title="Completed Tasks" value="120" icon={<FiUser />} />
+        <CustomCard title="New Signups" value="30" icon={<FiUser />} />
+        <CustomCard title="Total Revenue" value="5,000" icon={<FiUser />} />
+        <CustomCard title="User Feedback" value="85%" icon={<FiUser />} />
+        <CustomCard title="Support" value="8" icon={<FiUser />} />
+        <CustomCard title="Monthly Visitors" value="1,200" icon={<FiUser />} />
       </section>
-    </>
+
+      <section className="mt-10 px-10 bg-white rounded-lg shadow-md p-4 mx-8">
+        <h3 className="text-xl font-bold">User Comparison</h3>
+        <Chart
+          options={chartOptions as ApexOptions}
+          series={chartOptions.series}
+          type="bar"
+          height={350}
+        />
+      </section>
+    </div>
   );
 };
 
@@ -804,6 +818,38 @@ const DashboardPage: FC = function () {
 //           </div>
 //         </div>
 //       </div>
+//     </div>
+//   );
+// };
+
+// const AcquisitionOverview: FC = function () {
+//   return (
+//     <div className="rounded-lg bg-white p-4 shadow dark:bg-gray-800 sm:p-6 xl:p-8">
+//       <h3 className="mb-6 text-xl font-bold leading-none text-gray-900 dark:text-white">
+//         Acquisition Overview
+//       </h3>
+//       <div className="flex flex-col">
+//         <div className="overflow-x-auto rounded-lg">
+//           <div className="inline-block min-w-full align-middle">
+//             <div className="overflow-hidden shadow sm:rounded-lg">
+//               <Table className="min-w-full table-fixed">
+//                 <Table.Head>
+//                   <Table.HeadCell className="whitespace-nowrap rounded-l border-x-0 bg-gray-50 py-3 px-4 text-left align-middle text-xs font-semibold uppercase text-gray-700 dark:bg-gray-700 dark:text-white">
+//                     Top Channels
+//                   </Table.HeadCell>
+//                   <Table.HeadCell className="whitespace-nowrap border-x-0 bg-gray-50 py-3 px-4 text-left align-middle text-xs font-semibold uppercase text-gray-700 dark:bg-gray-700 dark:text-white">
+//                     Users
+//                   </Table.HeadCell>
+//                   <Table.HeadCell className="min-w-[140px] whitespace-nowrap rounded-r border-x-0 bg-gray-50 py-3 px-4 text-left align-middle text-xs font-semibold uppercase text-gray-700 dark:bg-gray-700 dark:text-white">
+//                     Acquisition
+//                   </Table.HeadCell>
+//                 </Table.Head>
+//                 <Table.Body className="divide-y divide-gray-100 dark:divide-gray-700">
+//                   <Table.Row className="text-gray-500 dark:text-gray-400">
+//                     <Table.Cell className="whitespace-nowrap border-t-0 p-4 text-left align-middle text-sm font-normal">
+//                       Organic Search
+//                     </Table.Cell>
+//                     <Table.Cell className="whitespace-nowrap border-t-0 p-4 align-middle text-xs font-medium text-gray-900 dark:text-white">
 //       <div className="flex items-center justify-between pt-3 sm:pt-6">
 //         <Datepicker />
 //         <div className="shrink-0">

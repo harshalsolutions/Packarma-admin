@@ -195,8 +195,8 @@ const SidebarComponent: FC = function () {
   );
 
   return (
-    <Sidebar>
-      <div className="flex flex-grow h-[90vh] flex-col justify-between py-2">
+    <Sidebar className="lg:w-[18%] mt-16">
+      <div className="flex flex-grow h-[100vh] flex-col justify-between py-2">
         <Sidebar.Items>
           <Sidebar.ItemGroup>{menuItems.map(renderMenuItem)}</Sidebar.ItemGroup>
         </Sidebar.Items>

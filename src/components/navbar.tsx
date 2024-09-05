@@ -23,7 +23,10 @@ const ExampleNavbar: FC = function () {
   };
 
   return (
-    <Navbar fluid className="bg-gray-100 border-b shadow-sm">
+    <Navbar
+      fluid
+      className="bg-gray-100 border-b shadow-sm absolute top-0 w-full z-40"
+    >
       <div className="w-full">
         <div className="flex items-center justify-between">
           <div className="flex items-center">

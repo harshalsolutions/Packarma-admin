@@ -8,7 +8,7 @@ const NavbarSidebarLayout: FC<PropsWithChildren> = function ({ children }) {
       <Navbar />
       <div className="flex items-start">
         <Sidebar />
-        <main className="relative flex-grow h-[90vh] w-full overflow-y-auto bg-gray-100 dark:bg-gray-900">
+        <main className="relative flex-grow h-[100vh] mt-16 w-full overflow-y-auto bg-gray-100 dark:bg-gray-900">
           {children}
         </main>
       </div>

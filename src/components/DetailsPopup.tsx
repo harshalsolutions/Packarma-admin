@@ -25,7 +25,7 @@ const DetailsPopup: React.FC<PopupProps> = ({ title, fields, onClose }) => (
           </span>
         </button>
       </div>
-      <div className="overflow-y-auto max-h-[400px]">
+      <div className="overflow-y-auto max-h-[70vh]">
         <table className="w-full text-sm text-left border ">
           <tbody>
             {fields.map((field, index) => (
