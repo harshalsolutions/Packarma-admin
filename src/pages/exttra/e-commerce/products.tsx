@@ -27,7 +27,7 @@ import { Pagination } from "../users/list";
 
 const EcommerceProductsPage: FC = function () {
   return (
-    <NavbarSidebarLayout isFooter={false}>
+    <NavbarSidebarLayout>
       <div className="block items-center justify-between border-b border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800 sm:flex">
         <div className="mb-1 w-full">
           <div className="mb-4">
