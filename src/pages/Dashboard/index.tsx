@@ -55,14 +55,45 @@ const DashboardPage: FC = function () {
         <CustomCard title="Monthly Visitors" value="1,200" icon={<FiUser />} />
       </section>
 
-      <section className="mt-10 px-10 bg-white rounded-lg shadow-md p-4 mx-8">
-        <h3 className="text-xl font-bold">User Comparison</h3>
-        <Chart
-          options={chartOptions as ApexOptions}
-          series={chartOptions.series}
-          type="bar"
-          height={350}
-        />
+      <section className="flex justify-between">
+        <div className="mt-10 px-10 bg-white rounded-lg shadow-md p-4 mx-8 w-[45%]">
+          <h3 className="text-xl font-bold">User Comparison</h3>
+          <Chart
+            options={chartOptions as ApexOptions}
+            series={chartOptions.series}
+            type="bar"
+            height={350}
+          />
+        </div>
+        <div className="mt-10 px-10 bg-white rounded-lg shadow-md p-4 mx-8 w-[45%]">
+          <h3 className="text-xl font-bold">Referral Task Completion</h3>
+          <Chart
+            options={
+              {
+                chart: {
+                  type: "bar",
+                },
+                xaxis: {
+                  categories: ["Accounts Created", "Subscriptions Bought"],
+                },
+                series: [
+                  {
+                    name: "Users",
+                    data: [54, 100 - 54],
+                  },
+                ],
+              } as ApexOptions
+            }
+            series={[
+              {
+                name: "Users",
+                data: [54, 100 - 54],
+              },
+            ]}
+            type="bar"
+            height={350}
+          />
+        </div>
       </section>
     </div>
   );
