@@ -8,7 +8,7 @@ const EntriesPerPage: React.FC<EntriesPerPageProps> = ({
   setEntriesPerPage,
 }) => {
   return (
-    <div className="mb-4 text-sm flex items-center justify-end">
+    <div className="ml-4 text-sm flex items-center justify-end">
       <h2 className="text-sm mr-2">Entries Per Page:</h2>
       <select
         className="border rounded px-2 py-1 mr-3 text-sm"

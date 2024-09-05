@@ -14,7 +14,7 @@ const CustomCard = function ({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg bg-white p-4 shadow w-full dark:bg-gray-800 flex justify-between items-center">
+    <div className="container mx-auto px-4 rounded-lg bg-white p-4 shadow dark:bg-gray-800 flex justify-between items-center">
       {icon && <span className="text-3xl">{icon}</span>}
       <div className="flex justify-end items-end flex-col">
         <h3 className="text-sm font-semibold text-gray-900 dark:text-white">

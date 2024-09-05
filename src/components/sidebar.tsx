@@ -120,13 +120,13 @@ const menuItems: MenuItem[] = [
         path: "/customer/user-address-list",
         icon: VscDebugBreakpointDataUnverified,
       },
+      // {
+      //   name: "Refer",
+      //   path: "/customer/refer",
+      //   icon: VscDebugBreakpointDataUnverified,
+      // },
       {
-        name: "Refer",
-        path: "/customer/refer",
-        icon: VscDebugBreakpointDataUnverified,
-      },
-      {
-        name: "Referral Info of All",
+        name: "Referral Information",
         path: "/customer/referral-info",
         icon: VscDebugBreakpointDataUnverified,
       },
@@ -196,7 +196,7 @@ const SidebarComponent: FC = function () {
 
   return (
     <Sidebar>
-      <div className="flex h-full flex-col justify-between py-2">
+      <div className="flex flex-grow h-[90vh] flex-col justify-between py-2">
         <Sidebar.Items>
           <Sidebar.ItemGroup>{menuItems.map(renderMenuItem)}</Sidebar.ItemGroup>
         </Sidebar.Items>

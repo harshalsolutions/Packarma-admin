@@ -197,19 +197,21 @@ const PackagingMachine: React.FC = () => {
         Manage Packaging Machine
       </h1>
       {!isFormOpen && (
-        <button
-          onClick={openAddForm}
-          className="bg-lime-500 text-black px-4 py-2 rounded mb-4 block ml-auto mr-4"
-        >
-          Add New Packaging Machine
-        </button>
-      )}
-      {!isFormOpen && (
-        <>
+        <div className="flex justify-between items-center w-full my-6">
           <EntriesPerPage
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
           />
+          <button
+            onClick={openAddForm}
+            className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+          >
+            Add New Packaging Machine
+          </button>
+        </div>
+      )}
+      {!isFormOpen && (
+        <>
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <Spinner size="xl" />

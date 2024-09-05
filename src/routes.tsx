@@ -275,6 +275,16 @@ const AppRoutes = () => (
       }
     />
     <Route
+      path="/customer/credit-purchase"
+      element={
+        <ProtectedRoute>
+          <NavbarSidebarLayout>
+            <CreditPurchase />
+          </NavbarSidebarLayout>
+        </ProtectedRoute>
+      }
+    />
+    <Route
       path="/customer/enquiry"
       element={
         <ProtectedRoute>
