@@ -257,6 +257,12 @@ const Refer: React.FC = () => {
                 : "Not Completed",
             },
             {
+              label: "Redemption Status",
+              value: selectedRefer.subscription_completed
+                ? "Completed"
+                : "Not Completed",
+            },
+            {
               label: "Created At",
               value: new Date(selectedRefer.createdAt)?.toLocaleString(),
             },

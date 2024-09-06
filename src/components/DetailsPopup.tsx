@@ -61,6 +61,13 @@ const renderBadge = (label: string, value: string | JSX.Element) => {
       value
     );
   }
+  if (label === "Redemption Status") {
+    return value === "Completed" ? (
+      <Badge color="success">Completed</Badge>
+    ) : (
+      <Badge color="failure">Not Completed</Badge>
+    );
+  }
   return value;
 };
 
