@@ -5,6 +5,7 @@ interface User {
   name: string;
   email: string;
   access: string[];
+  token: string;
 }
 
 const UserContext = createContext<{
@@ -18,6 +19,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     name: "",
     email: "",
     access: [],
+    token: "",
   });
 
   return (

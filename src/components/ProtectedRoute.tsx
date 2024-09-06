@@ -32,6 +32,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             name: response.data.data.name,
             email: response.data.data.email,
             access: response.data.data.access,
+            token: token,
           });
         } catch (error) {
           navigate("/login");
