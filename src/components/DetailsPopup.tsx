@@ -8,6 +8,62 @@ interface PopupProps {
   onClose: () => void;
 }
 
+const renderBadge = (label: string, value: string | JSX.Element) => {
+  if (label === "Featured") {
+    return value === "Yes" ? (
+      <Badge color="success">Yes</Badge>
+    ) : (
+      <Badge color="failure">No</Badge>
+    );
+  }
+  if (label === "Status") {
+    return value === "Active" ? (
+      <Badge color="success">Active</Badge>
+    ) : (
+      <Badge color="failure">Inactive</Badge>
+    );
+  }
+  if (
+    (label === "Subscription Status" || label === "Account Created") &&
+    value === "Completed"
+  ) {
+    return <Badge color="success">Completed</Badge>;
+  }
+  if (
+    (label === "Subscription Status" || label === "Account Created") &&
+    value === "Not Completed"
+  ) {
+    return <Badge color="failure">Not Completed</Badge>;
+  }
+  if (label === "GST Document Link" && value !== null) {
+    return (
+      <a
+        href={`${BACKEND_MEDIA_LINK}${value}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-500 hover:text-blue-600"
+      >
+        <button>Open Link</button>
+      </a>
+    );
+  }
+  if (label === "Email Verified") {
+    return value === "Yes" ? (
+      <Badge color="success">Verified</Badge>
+    ) : (
+      <Badge color="failure">Not Verified</Badge>
+    );
+  }
+  if (label === "Email Verified At") {
+    return value === "Not Verified" ? (
+      <Badge color="failure">Not Verified</Badge>
+    ) : (
+      value
+    );
+  }
+  return value;
+};
+
 const DetailsPopup: React.FC<PopupProps> = ({ title, fields, onClose }) => (
   <section
     onClick={onClose}
@@ -32,35 +88,7 @@ const DetailsPopup: React.FC<PopupProps> = ({ title, fields, onClose }) => (
               <tr key={index} className={`border-b`}>
                 <td className="font-medium p-3 border-r ">{field.label}</td>
                 <td className="p-3 flex items-center">
-                  {field.label === "Featured" && field.value === "Yes" ? (
-                    <Badge color="success">Yes</Badge>
-                  ) : field.label === "Featured" && field.value === "No" ? (
-                    <Badge color="failure">No</Badge>
-                  ) : field.label === "Status" && field.value === "Active" ? (
-                    <Badge color="success">Active</Badge>
-                  ) : field.label === "Status" && field.value === "Inactive" ? (
-                    <Badge color="failure">Inactive</Badge>
-                  ) : (field.label === "Subscription Status" ||
-                      field.label === "Account Created") &&
-                    field.value === "Completed" ? (
-                    <Badge color="success">Completed</Badge>
-                  ) : (field.label === "Subscription Status" ||
-                      field.label === "Account Created") &&
-                    field.value === "Not Completed" ? (
-                    <Badge color="failure">Not Completed</Badge>
-                  ) : field.label === "GST Document Link" &&
-                    field.value !== null ? (
-                    <a
-                      href={`${BACKEND_MEDIA_LINK}${field.value}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:text-blue-600"
-                    >
-                      <button>Open Link</button>
-                    </a>
-                  ) : (
-                    field.value
-                  )}
+                  {renderBadge(field.label, field.value)}
                 </td>
               </tr>
             ))}

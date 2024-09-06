@@ -249,12 +249,18 @@ const Customer: React.FC = () => {
             { label: "Email", value: selectedCustomer.email },
             {
               label: "Phone Number",
-              value:
-                selectedCustomer.country_code +
-                " " +
-                selectedCustomer.phone_number,
+              value: selectedCustomer.country_code
+                ? selectedCustomer.country_code +
+                  " " +
+                  selectedCustomer.phone_number
+                : "Not provided",
             },
-            { label: "GST Number", value: selectedCustomer.gst_number },
+            {
+              label: "GST Number",
+              value: selectedCustomer.gst_number
+                ? selectedCustomer.gst_number
+                : "Not provided",
+            },
             { label: "Credits", value: selectedCustomer.credits?.toString() },
             {
               label: "Email Verified",
@@ -264,11 +270,13 @@ const Customer: React.FC = () => {
               label: "Email Verified At",
               value: selectedCustomer.email_verified_at
                 ? new Date(selectedCustomer.email_verified_at)?.toLocaleString()
-                : "Not verified",
+                : "Not Verified",
             },
             {
               label: "GST Document Link",
-              value: selectedCustomer.gst_document_link,
+              value: selectedCustomer.gst_document_link
+                ? selectedCustomer.gst_document_link
+                : "Not Provided",
             },
             {
               label: "Created At",

@@ -122,14 +122,9 @@ const menuItems: MenuItem[] = [
         path: "/customer/user-address-list",
         icon: VscDebugBreakpointDataUnverified,
       },
-      // {
-      //   name: "Refer",
-      //   path: "/customer/refer",
-      //   icon: VscDebugBreakpointDataUnverified,
-      // },
       {
-        name: "Referral Information",
-        path: "/customer/referral-info",
+        name: "Refer",
+        path: "/customer/refer",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
