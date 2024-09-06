@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../utils/axiosInstance";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import { ErrorComp } from "../../components/ErrorComp";
 import toast from "react-hot-toast";
@@ -26,9 +26,7 @@ const CreditMaster: React.FC = () => {
   const fetchCreditMaster = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `${BACKEND_API_KEY}/master/credit-master`
-      );
+      const response = await api.get(`${BACKEND_API_KEY}/master/credit-master`);
       setCreditMaster(response.data.data);
       setLoading(false);
       setError(null);
@@ -46,7 +44,7 @@ const CreditMaster: React.FC = () => {
         credit_percentage: creditMaster.credit_percentage,
         credit_price: creditMaster.credit_price,
       };
-      await axios.post(`${BACKEND_API_KEY}/master/credit-master`, formData);
+      await api.post(`${BACKEND_API_KEY}/master/credit-master`, formData);
       fetchCreditMaster();
       toast.dismiss();
       toast.success("Credit updated successfully");

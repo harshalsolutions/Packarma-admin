@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
@@ -71,17 +71,13 @@ const Product: React.FC = () => {
 
   useEffect(() => {
     fetchProducts();
-    fetchCategories();
-    fetchSubCategories();
-    fetchProductForms();
-    fetchPackagingTreatments();
-    fetchMeasurementUnits();
+    fetchAllData;
   }, [currentPage, entriesPerPage]);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
+      const response = await api.get(
         `${BACKEND_API_KEY}/product/get-products`,
         {
           params: {
@@ -96,40 +92,38 @@ const Product: React.FC = () => {
       }
       setLoading(false);
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
     }
   };
 
-  const fetchCategories = async () => {
-    const response = await axios.get(`${BACKEND_API_KEY}/product/categories`);
-    setCategories(response.data.data.categories);
-  };
+  const fetchAllData = async () => {
+    try {
+      const [
+        categoriesResponse,
+        subCategoriesResponse,
+        productFormsResponse,
+        packagingTreatmentsResponse,
+        measurementUnitsResponse,
+      ] = await Promise.all([
+        api.get(`${BACKEND_API_KEY}/product/categories`),
+        api.get(`${BACKEND_API_KEY}/product/subcategories`),
+        api.get(`${BACKEND_API_KEY}/product/product-form`),
+        api.get(`${BACKEND_API_KEY}/product/packaging-treatment`),
+        api.get(`${BACKEND_API_KEY}/product/measurement-units`),
+      ]);
 
-  const fetchSubCategories = async () => {
-    const response = await axios.get(
-      `${BACKEND_API_KEY}/product/subcategories`
-    );
-    setSubCategories(response.data.data.subcategories);
-  };
-
-  const fetchProductForms = async () => {
-    const response = await axios.get(`${BACKEND_API_KEY}/product/product-form`);
-    setProductForms(response.data.data.productForms);
-  };
-
-  const fetchPackagingTreatments = async () => {
-    const response = await axios.get(
-      `${BACKEND_API_KEY}/product/packaging-treatment`
-    );
-    setPackagingTreatments(response.data.data.packaging_treatments);
-  };
-
-  const fetchMeasurementUnits = async () => {
-    const response = await axios.get(
-      `${BACKEND_API_KEY}/product/measurement-units`
-    );
-    setMeasurementUnits(response.data.data.measurementUnits);
+      setCategories(categoriesResponse.data.data.categories);
+      setSubCategories(subCategoriesResponse.data.data.subcategories);
+      setProductForms(productFormsResponse.data.data.productForms);
+      setPackagingTreatments(
+        packagingTreatmentsResponse.data.data.packaging_treatments
+      );
+      setMeasurementUnits(measurementUnitsResponse.data.data.measurementUnits);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
+    }
   };
 
   const deleteProduct = (id: string) => {
@@ -141,7 +135,7 @@ const Product: React.FC = () => {
     if (productIdToDelete !== null) {
       const loadingToast = toast.loading("Deleting product...");
       try {
-        await axios.delete(
+        await api.delete(
           `${BACKEND_API_KEY}/product/delete-product/${productIdToDelete}`
         );
         fetchProducts();
@@ -214,7 +208,7 @@ const Product: React.FC = () => {
       }
 
       if (editingProduct) {
-        await axios.put(
+        await api.put(
           `${BACKEND_API_KEY}/product/update-product/${editingProduct.id}`,
           formData,
           {
@@ -225,7 +219,7 @@ const Product: React.FC = () => {
         );
         toast.success("Product updated successfully");
       } else {
-        await axios.post(`${BACKEND_API_KEY}/product/add-product`, formData, {
+        await api.post(`${BACKEND_API_KEY}/product/add-product`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -246,7 +240,7 @@ const Product: React.FC = () => {
   const toggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
-      await axios.put(`${BACKEND_API_KEY}/product/update-product/${id}`, {
+      await api.put(`${BACKEND_API_KEY}/product/update-product/${id}`, {
         status: newStatus,
       });
       fetchProducts();

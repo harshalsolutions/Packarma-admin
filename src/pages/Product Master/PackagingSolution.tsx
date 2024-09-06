@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
@@ -92,7 +92,7 @@ const PackagingSolutions: React.FC = () => {
   const fetchPackagingSolutions = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
+      const response = await api.get(
         `${BACKEND_API_KEY}/product/packaging-solutions`,
         {
           params: {
@@ -107,7 +107,8 @@ const PackagingSolutions: React.FC = () => {
       }
       setLoading(false);
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
     }
   };
@@ -125,15 +126,15 @@ const PackagingSolutions: React.FC = () => {
         storageConditionsResponse,
         unitsResponse,
       ] = await Promise.all([
-        axios.get(`${BACKEND_API_KEY}/product/get-products`),
-        axios.get(`${BACKEND_API_KEY}/product/categories`),
-        axios.get(`${BACKEND_API_KEY}/product/product-form`),
-        axios.get(`${BACKEND_API_KEY}/product/packaging-treatment`),
-        axios.get(`${BACKEND_API_KEY}/product/packing-types`),
-        axios.get(`${BACKEND_API_KEY}/product/packaging-machines`),
-        axios.get(`${BACKEND_API_KEY}/product/packaging-materials`),
-        axios.get(`${BACKEND_API_KEY}/product/storage-conditions`),
-        axios.get(`${BACKEND_API_KEY}/product/measurement-units`),
+        api.get(`${BACKEND_API_KEY}/product/get-products`),
+        api.get(`${BACKEND_API_KEY}/product/categories`),
+        api.get(`${BACKEND_API_KEY}/product/product-form`),
+        api.get(`${BACKEND_API_KEY}/product/packaging-treatment`),
+        api.get(`${BACKEND_API_KEY}/product/packing-types`),
+        api.get(`${BACKEND_API_KEY}/product/packaging-machines`),
+        api.get(`${BACKEND_API_KEY}/product/packaging-materials`),
+        api.get(`${BACKEND_API_KEY}/product/storage-conditions`),
+        api.get(`${BACKEND_API_KEY}/product/measurement-units`),
       ]);
 
       setProducts(productsResponse.data.data.products);
@@ -147,8 +148,10 @@ const PackagingSolutions: React.FC = () => {
         storageConditionsResponse.data.data.storageConditions
       );
       setMeasurementUnits(unitsResponse.data.data.measurementUnits);
-    } catch (err) {
-      setError("Failed to fetch select options");
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.message || "Failed to fetch select options"
+      );
     }
   };
 
@@ -193,15 +196,12 @@ const PackagingSolutions: React.FC = () => {
     };
     try {
       if (type === "edit") {
-        await axios.put(
+        await api.put(
           `${BACKEND_API_KEY}/product/packaging-solutions/${formPackagingSolutions?.id}`,
           data
         );
       } else {
-        await axios.post(
-          `${BACKEND_API_KEY}/product/packaging-solutions`,
-          data
-        );
+        await api.post(`${BACKEND_API_KEY}/product/packaging-solutions`, data);
       }
 
       closeForm();
@@ -217,7 +217,7 @@ const PackagingSolutions: React.FC = () => {
   const toggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
-      await axios.put(`${BACKEND_API_KEY}/product/packaging-solutions/${id}`, {
+      await api.put(`${BACKEND_API_KEY}/product/packaging-solutions/${id}`, {
         status: newStatus,
       });
       fetchPackagingSolutions();
@@ -229,7 +229,7 @@ const PackagingSolutions: React.FC = () => {
   const handleConfirmDelete = async () => {
     if (selectedPackagingSolutionsId !== null) {
       try {
-        await axios.delete(
+        await api.delete(
           `${BACKEND_API_KEY}/product/packaging-solutions/${selectedPackagingSolutionsId}`
         );
         fetchPackagingSolutions();

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
@@ -64,7 +64,7 @@ const PackagingMachine: React.FC = () => {
   const fetchPackagingMachine = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
+      const response = await api.get(
         `${BACKEND_API_KEY}/product/packaging-machines`,
         {
           params: {
@@ -79,7 +79,8 @@ const PackagingMachine: React.FC = () => {
       }
       setLoading(false);
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
     }
   };
@@ -92,7 +93,7 @@ const PackagingMachine: React.FC = () => {
   const handleConfirmDelete = async () => {
     if (packagingMachineIdToDelete !== null) {
       try {
-        await axios.delete(
+        await api.delete(
           `${BACKEND_API_KEY}/product/packaging-machines/${packagingMachineIdToDelete}`
         );
         fetchPackagingMachine();
@@ -151,7 +152,7 @@ const PackagingMachine: React.FC = () => {
       }
 
       if (editingPackagingMachine) {
-        await axios.put(
+        await api.put(
           `${BACKEND_API_KEY}/product/packaging-machines/${editingPackagingMachine.id}`,
           formData,
           {
@@ -161,7 +162,7 @@ const PackagingMachine: React.FC = () => {
           }
         );
       } else {
-        await axios.post(
+        await api.post(
           `${BACKEND_API_KEY}/product/packaging-machines`,
           formData,
           {
@@ -182,7 +183,7 @@ const PackagingMachine: React.FC = () => {
   const toggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
-      await axios.put(`${BACKEND_API_KEY}/product/packaging-machines/${id}`, {
+      await api.put(`${BACKEND_API_KEY}/product/packaging-machines/${id}`, {
         status: newStatus,
       });
       fetchPackagingMachine();

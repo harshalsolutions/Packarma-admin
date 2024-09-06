@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
@@ -74,7 +74,7 @@ const AdvertisementPage: React.FC = () => {
   const fetchAdvertisements = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
+      const response = await api.get(
         `${BACKEND_API_KEY}/master/get-advertisements`,
         {
           params: {
@@ -89,7 +89,8 @@ const AdvertisementPage: React.FC = () => {
       }
       setLoading(false);
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
     }
   };
@@ -103,7 +104,7 @@ const AdvertisementPage: React.FC = () => {
     if (advertisementIdToDelete !== null) {
       const loadingToast = toast.loading("Deleting advertisement...");
       try {
-        await axios.delete(
+        await api.delete(
           `${BACKEND_API_KEY}/master/delete-advertisement/${advertisementIdToDelete}`
         );
         fetchAdvertisements();
@@ -187,7 +188,7 @@ const AdvertisementPage: React.FC = () => {
       }
 
       if (editingAdvertisement) {
-        await axios.put(
+        await api.put(
           `${BACKEND_API_KEY}/master/update-advertisement/${editingAdvertisement.id}`,
           formData,
           {
@@ -198,7 +199,7 @@ const AdvertisementPage: React.FC = () => {
         );
         toast.success("Advertisement updated successfully");
       } else {
-        await axios.post(
+        await api.post(
           `${BACKEND_API_KEY}/master/add-advertisement`,
           formData,
           {
@@ -224,12 +225,9 @@ const AdvertisementPage: React.FC = () => {
   const toggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
-      await axios.patch(
-        `${BACKEND_API_KEY}/master/update-advertisement/${id}`,
-        {
-          status: newStatus,
-        }
-      );
+      await api.patch(`${BACKEND_API_KEY}/master/update-advertisement/${id}`, {
+        status: newStatus,
+      });
       fetchAdvertisements();
     } catch (err) {
       setError("Failed to update status");
@@ -238,7 +236,7 @@ const AdvertisementPage: React.FC = () => {
 
   const fetchActivityLog = async (bannerId: number, type: string) => {
     try {
-      const response = await axios.get(
+      const response = await api.get(
         `${BACKEND_API_KEY}/master/advertisement/activity-log/${bannerId}`
       );
       if (
@@ -258,7 +256,8 @@ const AdvertisementPage: React.FC = () => {
           userData: response.data.data.userData[type],
         });
       }
-    } catch (err) {
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
       toast.dismiss();
     }
   };

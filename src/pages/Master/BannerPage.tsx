@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
@@ -69,22 +69,20 @@ const BannerPage: React.FC = () => {
   const fetchBanners = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `${BACKEND_API_KEY}/master/get-banners`,
-        {
-          params: {
-            page: currentPage,
-            limit: entriesPerPage,
-          },
-        }
-      );
+      const response = await api.get(`${BACKEND_API_KEY}/master/get-banners`, {
+        params: {
+          page: currentPage,
+          limit: entriesPerPage,
+        },
+      });
       setBanners(response.data.data.banners || []);
       if (response.data.data.pagination) {
         setPagination(response.data.data.pagination);
       }
       setLoading(false);
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
     }
   };
@@ -98,7 +96,7 @@ const BannerPage: React.FC = () => {
     if (bannerIdToDelete !== null) {
       const loadingToast = toast.loading("Deleting banner...");
       try {
-        await axios.delete(
+        await api.delete(
           `${BACKEND_API_KEY}/master/delete-banners/${bannerIdToDelete}`
         );
         fetchBanners();
@@ -182,7 +180,7 @@ const BannerPage: React.FC = () => {
       }
 
       if (editingBanner) {
-        await axios.put(
+        await api.put(
           `${BACKEND_API_KEY}/master/update-banner/${editingBanner.id}`,
           formData,
           {
@@ -193,7 +191,7 @@ const BannerPage: React.FC = () => {
         );
         toast.success("Banner updated successfully");
       } else {
-        await axios.post(`${BACKEND_API_KEY}/master/add-banner`, formData, {
+        await api.post(`${BACKEND_API_KEY}/master/add-banner`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -215,7 +213,7 @@ const BannerPage: React.FC = () => {
   const toggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
-      await axios.put(`${BACKEND_API_KEY}/master/update-banner/${id}`, {
+      await api.put(`${BACKEND_API_KEY}/master/update-banner/${id}`, {
         status: newStatus,
       });
       fetchBanners();
@@ -226,7 +224,7 @@ const BannerPage: React.FC = () => {
 
   const fetchActivityLog = async (bannerId: number, type: string) => {
     try {
-      const response = await axios.get(
+      const response = await api.get(
         `${BACKEND_API_KEY}/master/banner/activity-log/${bannerId}`
       );
       if (
@@ -246,7 +244,8 @@ const BannerPage: React.FC = () => {
           userData: response.data.data.userData[type],
         });
       }
-    } catch (err) {
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
       toast.dismiss();
     }
   };

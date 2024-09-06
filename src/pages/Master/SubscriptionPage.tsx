@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
 import { FaChevronLeft, FaChevronRight, FaInfoCircle } from "react-icons/fa";
 import { TbEdit } from "react-icons/tb";
@@ -65,7 +65,7 @@ const SubscriptionPage: React.FC = () => {
   const fetchSubscriptions = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
+      const response = await api.get(
         `${BACKEND_API_KEY}/master/subscriptions`,
         {
           params: {
@@ -80,7 +80,8 @@ const SubscriptionPage: React.FC = () => {
       }
       setLoading(false);
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
       setSubscriptions([]);
     }
@@ -145,12 +146,12 @@ const SubscriptionPage: React.FC = () => {
       };
 
       if (editingSubscription) {
-        await axios.put(
+        await api.put(
           `${BACKEND_API_KEY}/master/subscription/${editingSubscription.id}`,
           formData
         );
       } else {
-        await axios.post(`${BACKEND_API_KEY}/master/subscription`, formData);
+        await api.post(`${BACKEND_API_KEY}/master/subscription`, formData);
       }
 
       closeForm();
@@ -179,7 +180,7 @@ const SubscriptionPage: React.FC = () => {
     if (selectedSubscriptionId !== null) {
       const loadingToast = toast.loading("Deleting subscription...");
       try {
-        await axios.delete(
+        await api.delete(
           `${BACKEND_API_KEY}/master/subscription/${selectedSubscriptionId}`
         );
         fetchSubscriptions();

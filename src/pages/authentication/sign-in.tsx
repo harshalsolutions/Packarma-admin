@@ -1,7 +1,7 @@
 import { Button, Card, Label } from "flowbite-react";
 import type { FC } from "react";
 import { useState } from "react";
-import axios from "axios";
+import api from "../../../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
@@ -15,7 +15,7 @@ const SignInPage: FC = function () {
     e.preventDefault();
     const loadingToast = toast.loading("Signing in...");
     try {
-      const response = await axios.post(`${BACKEND_API_KEY}/auth/login`, {
+      const response = await api.post(`${BACKEND_API_KEY}/auth/login`, {
         emailid: email,
         password,
       });

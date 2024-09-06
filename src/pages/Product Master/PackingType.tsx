@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
@@ -59,7 +59,7 @@ const PackingType: React.FC = () => {
   const fetchPackingTypeForm = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
+      const response = await api.get(
         `${BACKEND_API_KEY}/product/packing-types`,
         {
           params: {
@@ -74,7 +74,8 @@ const PackingType: React.FC = () => {
       }
       setLoading(false);
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
     }
   };
@@ -87,7 +88,7 @@ const PackingType: React.FC = () => {
   const handleConfirmDelete = async () => {
     if (packingTypeIdToDelete !== null) {
       try {
-        await axios.delete(
+        await api.delete(
           `${BACKEND_API_KEY}/product/packing-types/${packingTypeIdToDelete}`
         );
         fetchPackingTypeForm();
@@ -137,12 +138,12 @@ const PackingType: React.FC = () => {
       };
 
       if (editingPackagingType) {
-        await axios.put(
+        await api.put(
           `${BACKEND_API_KEY}/product/packing-types/${editingPackagingType.id}`,
           data
         );
       } else {
-        await axios.post(`${BACKEND_API_KEY}/product/packing-types`, data);
+        await api.post(`${BACKEND_API_KEY}/product/packing-types`, data);
       }
 
       closeForm();
@@ -155,7 +156,7 @@ const PackingType: React.FC = () => {
   const toggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
-      await axios.put(`${BACKEND_API_KEY}/product/packing-types/${id}`, {
+      await api.put(`${BACKEND_API_KEY}/product/packing-types/${id}`, {
         status: newStatus,
       });
       fetchPackingTypeForm();

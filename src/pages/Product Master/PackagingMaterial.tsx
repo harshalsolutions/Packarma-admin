@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
@@ -72,7 +72,7 @@ const PackagingMaterial: React.FC = () => {
   const fetchPackagingMaterials = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
+      const response = await api.get(
         `${BACKEND_API_KEY}/product/packaging-materials`,
         {
           params: {
@@ -87,7 +87,8 @@ const PackagingMaterial: React.FC = () => {
       }
       setLoading(false);
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
     }
   };
@@ -143,15 +144,12 @@ const PackagingMaterial: React.FC = () => {
       };
 
       if (editingPackagingMaterial) {
-        await axios.put(
+        await api.put(
           `${BACKEND_API_KEY}/product/packaging-materials/${editingPackagingMaterial.id}`,
           data
         );
       } else {
-        await axios.post(
-          `${BACKEND_API_KEY}/product/packaging-materials`,
-          data
-        );
+        await api.post(`${BACKEND_API_KEY}/product/packaging-materials`, data);
       }
 
       closeForm();
@@ -164,7 +162,7 @@ const PackagingMaterial: React.FC = () => {
   const toggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
-      await axios.put(`${BACKEND_API_KEY}/product/packaging-materials/${id}`, {
+      await api.put(`${BACKEND_API_KEY}/product/packaging-materials/${id}`, {
         status: newStatus,
       });
       fetchPackagingMaterials();
@@ -176,7 +174,7 @@ const PackagingMaterial: React.FC = () => {
   const handleConfirmDelete = async () => {
     if (selectedPackagingMaterialId !== null) {
       try {
-        await axios.delete(
+        await api.delete(
           `${BACKEND_API_KEY}/product/packaging-materials/${selectedPackagingMaterialId}`
         );
         fetchPackagingMaterials();

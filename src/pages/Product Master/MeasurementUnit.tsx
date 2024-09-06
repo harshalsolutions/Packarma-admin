@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
@@ -62,7 +62,7 @@ const MeasurementUnit: React.FC = () => {
   const fetchMeasurementUnits = async () => {
     try {
       setLoading(true);
-      let response = await axios.get(
+      let response = await api.get(
         `${BACKEND_API_KEY}/product/measurement-units`,
         {
           params: {
@@ -77,7 +77,8 @@ const MeasurementUnit: React.FC = () => {
       }
       setLoading(false);
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
     }
   };
@@ -116,12 +117,12 @@ const MeasurementUnit: React.FC = () => {
       };
 
       if (editingMeasurementUnit) {
-        await axios.put(
+        await api.put(
           `${BACKEND_API_KEY}/product/measurement-units/${editingMeasurementUnit.id}`,
           data
         );
       } else {
-        await axios.post(`${BACKEND_API_KEY}/product/measurement-units`, data);
+        await api.post(`${BACKEND_API_KEY}/product/measurement-units`, data);
       }
 
       closeForm();
@@ -134,7 +135,7 @@ const MeasurementUnit: React.FC = () => {
   const toggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
-      await axios.put(`${BACKEND_API_KEY}/product/measurement-units/${id}`, {
+      await api.put(`${BACKEND_API_KEY}/product/measurement-units/${id}`, {
         status: newStatus,
       });
       fetchMeasurementUnits();
@@ -146,7 +147,7 @@ const MeasurementUnit: React.FC = () => {
   const handleConfirmDelete = async () => {
     if (selectedMeasurementUnitId !== null) {
       try {
-        await axios.delete(
+        await api.delete(
           `${BACKEND_API_KEY}/product/measurement-units/${selectedMeasurementUnitId}`
         );
         fetchMeasurementUnits();

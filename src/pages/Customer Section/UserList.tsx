@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
@@ -61,7 +61,7 @@ const Customer: React.FC = () => {
   const fetchCustomerForm = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${BACKEND_API_KEY}/customer/users`, {
+      const response = await api.get(`${BACKEND_API_KEY}/customer/users`, {
         params: {
           page: currentPage,
           limit: entriesPerPage,
@@ -73,7 +73,8 @@ const Customer: React.FC = () => {
       }
       setLoading(false);
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
     }
   };
@@ -81,7 +82,7 @@ const Customer: React.FC = () => {
   const handleConfirmDelete = async () => {
     if (customerIdToDelete !== null) {
       try {
-        await axios.delete(
+        await api.delete(
           `${BACKEND_API_KEY}/product/customers/${customerIdToDelete}`
         );
         fetchCustomerForm();

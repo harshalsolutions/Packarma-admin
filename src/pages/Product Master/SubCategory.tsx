@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
@@ -68,7 +68,7 @@ const SubCategoryPage: React.FC = () => {
   const fetchSubCategories = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
+      const response = await api.get(
         `${BACKEND_API_KEY}/product/subcategories`,
         {
           params: {
@@ -83,17 +83,18 @@ const SubCategoryPage: React.FC = () => {
       }
       setLoading(false);
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
     }
   };
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${BACKEND_API_KEY}/product/categories`);
+      const response = await api.get(`${BACKEND_API_KEY}/product/categories`);
       setCategories(response.data.data.categories || []);
-    } catch (err) {
-      setError("Failed to fetch categories");
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
     }
   };
 
@@ -105,7 +106,7 @@ const SubCategoryPage: React.FC = () => {
   const handleConfirmDelete = async () => {
     if (subCategoryIdToDelete !== null) {
       try {
-        await axios.delete(
+        await api.delete(
           `${BACKEND_API_KEY}/product/subcategories/${subCategoryIdToDelete}`
         );
         fetchSubCategories();
@@ -169,7 +170,7 @@ const SubCategoryPage: React.FC = () => {
       }
 
       if (editingSubCategory) {
-        await axios.put(
+        await api.put(
           `${BACKEND_API_KEY}/product/subcategories/${editingSubCategory.id}`,
           formData,
           {
@@ -180,7 +181,7 @@ const SubCategoryPage: React.FC = () => {
         );
         toast.success("Subcategory updated successfully!");
       } else {
-        await axios.post(`${BACKEND_API_KEY}/product/subcategories`, formData, {
+        await api.post(`${BACKEND_API_KEY}/product/subcategories`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -200,7 +201,7 @@ const SubCategoryPage: React.FC = () => {
   const toggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
-      await axios.put(`${BACKEND_API_KEY}/product/subcategories/${id}`, {
+      await api.put(`${BACKEND_API_KEY}/product/subcategories/${id}`, {
         status: newStatus,
       });
       fetchSubCategories();

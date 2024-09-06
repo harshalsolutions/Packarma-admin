@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
@@ -61,22 +61,20 @@ const CategoryPage: React.FC = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `${BACKEND_API_KEY}/product/categories`,
-        {
-          params: {
-            page: currentPage,
-            limit: entriesPerPage,
-          },
-        }
-      );
+      const response = await api.get(`${BACKEND_API_KEY}/product/categories`, {
+        params: {
+          page: currentPage,
+          limit: entriesPerPage,
+        },
+      });
       setCategories(response.data.data.categories || []);
       if (response.data.data.pagination) {
         setPagination(response.data.data.pagination);
       }
       setLoading(false);
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
     }
   };
@@ -90,7 +88,7 @@ const CategoryPage: React.FC = () => {
     if (categoryIdToDelete !== null) {
       const loadingToast = toast.loading("Deleting category...");
       try {
-        await axios.delete(
+        await api.delete(
           `${BACKEND_API_KEY}/product/categories/${categoryIdToDelete}`
         );
         fetchCategories();
@@ -148,7 +146,7 @@ const CategoryPage: React.FC = () => {
       }
 
       if (editingCategory) {
-        await axios.put(
+        await api.put(
           `${BACKEND_API_KEY}/product/categories/${editingCategory.id}`,
           formData,
           {
@@ -159,7 +157,7 @@ const CategoryPage: React.FC = () => {
         );
         toast.success("Category updated successfully");
       } else {
-        await axios.post(`${BACKEND_API_KEY}/product/categories`, formData, {
+        await api.post(`${BACKEND_API_KEY}/product/categories`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -180,7 +178,7 @@ const CategoryPage: React.FC = () => {
   const toggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
-      await axios.put(`${BACKEND_API_KEY}/product/categories/${id}`, {
+      await api.put(`${BACKEND_API_KEY}/product/categories/${id}`, {
         status: newStatus,
       });
       fetchCategories();

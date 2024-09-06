@@ -1,8 +1,8 @@
-import React, { useEffect, ReactNode } from "react";
+import React, { useEffect, ReactNode, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useUser } from "../context/userContext";
-import axios from "axios";
 import { BACKEND_API_KEY } from "../../utils/ApiKey";
+import api from "../../utils/axiosInstance";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -16,24 +16,22 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const userContext = useUser();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const [isUserDataFetched, setIsUserDataFetched] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (token) {
+      if (token && !userContext?.user.id && !isUserDataFetched) {
         try {
-          const response = await axios.get(
-            `${BACKEND_API_KEY}/auth/get-admin`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
+          const response = await api.get(`${BACKEND_API_KEY}/auth/get-admin`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
           userContext?.setUser({
             id: response.data.data.id,
             name: response.data.data.name,
             email: response.data.data.email,
             access: response.data.data.access,
-            token: token,
           });
+          setIsUserDataFetched(true);
         } catch (error) {
           navigate("/login");
           console.error("Error fetching user data:", error);
@@ -42,7 +40,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     };
 
     fetchUserData();
-  }, [token]);
+  }, [token, userContext?.user.id, isUserDataFetched]);
 
   if (!token) {
     return <Navigate to="/login" />;
