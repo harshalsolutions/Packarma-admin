@@ -40,6 +40,14 @@ const DetailsPopup: React.FC<PopupProps> = ({ title, fields, onClose }) => (
                     <Badge color="success">Active</Badge>
                   ) : field.label === "Status" && field.value === "Inactive" ? (
                     <Badge color="failure">Inactive</Badge>
+                  ) : (field.label === "Subscription Status" ||
+                      field.label === "Account Created") &&
+                    field.value === "Completed" ? (
+                    <Badge color="success">Completed</Badge>
+                  ) : (field.label === "Subscription Status" ||
+                      field.label === "Account Created") &&
+                    field.value === "Not Completed" ? (
+                    <Badge color="failure">Not Completed</Badge>
                   ) : field.label === "GST Document Link" &&
                     field.value !== null ? (
                     <a

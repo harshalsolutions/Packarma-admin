@@ -198,28 +198,9 @@ const AppRoutes = () => (
       }
     />
     {/* Customer Section */}
+
     <Route
-      path="/customer-section/customer-enquiry"
-      element={
-        <ProtectedRoute>
-          <NavbarSidebarLayout>
-            <CustomerEnquiry />
-          </NavbarSidebarLayout>
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/customer-section/credit-purchase"
-      element={
-        <ProtectedRoute>
-          <NavbarSidebarLayout>
-            <CreditPurchase />
-          </NavbarSidebarLayout>
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/customer-section/refer"
+      path="/customer/refer"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -248,16 +229,7 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     />
-    <Route
-      path="/customer/referral-info"
-      element={
-        <ProtectedRoute>
-          <NavbarSidebarLayout>
-            <Refer />
-          </NavbarSidebarLayout>
-        </ProtectedRoute>
-      }
-    />
+
     <Route
       path="/customer/user-subscription"
       element={
@@ -298,6 +270,26 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     />
+    <Route
+      path="/contact-us/customer"
+      element={
+        <ProtectedRoute>
+          <NavbarSidebarLayout>
+            <Customer />
+          </NavbarSidebarLayout>
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/contact-us/system-details"
+      element={
+        <ProtectedRoute>
+          <NavbarSidebarLayout>
+            <SystemDetails />
+          </NavbarSidebarLayout>
+        </ProtectedRoute>
+      }
+    />
     {/* Staff Section */}
     <Route
       path="/staff/roles"
@@ -315,27 +307,6 @@ const AppRoutes = () => (
         <ProtectedRoute>
           <NavbarSidebarLayout>
             <ManageStaff />
-          </NavbarSidebarLayout>
-        </ProtectedRoute>
-      }
-    />
-    {/* Contact Us Section */}
-    <Route
-      path="/contact-us/customer"
-      element={
-        <ProtectedRoute>
-          <NavbarSidebarLayout>
-            <Customer />
-          </NavbarSidebarLayout>
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/contact-us/system-details"
-      element={
-        <ProtectedRoute>
-          <NavbarSidebarLayout>
-            <SystemDetails />
           </NavbarSidebarLayout>
         </ProtectedRoute>
       }
