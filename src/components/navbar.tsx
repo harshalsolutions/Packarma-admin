@@ -16,13 +16,6 @@ const ExampleNavbar: FC = function () {
       name: "",
       email: "",
       id: "",
-      can_create: false,
-      can_delete: false,
-      can_export: false,
-      can_read: false,
-      can_update: false,
-      page_id: 0,
-      page_name: "",
       status: "",
     });
     localStorage.removeItem("token");

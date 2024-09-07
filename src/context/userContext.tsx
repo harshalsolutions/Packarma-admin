@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
-interface Permission {
+export interface Permission {
+  permission_id: number;
   page_id: number;
   page_name: string;
   can_create: number;
@@ -10,7 +11,7 @@ interface Permission {
   can_export?: number;
 }
 
-interface User {
+export interface User {
   id: string;
   name: string;
   email: string;

@@ -31,6 +31,8 @@ import Settings from "./pages/GeneralSettings/settings";
 import Customer from "./pages/Contact Us/Customer";
 import SystemDetails from "./pages/Contact Us/SystemDetails";
 import Report from "./pages/Report/Report";
+import NoAccess from "./NoAccess";
+import NotFoundPage from "./404Page";
 
 const AppRoutes = () => (
   <Routes>
@@ -333,6 +335,9 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     />
+    {/* No Access */}
+    <Route path="/no-access" element={<NoAccess />} />
+    <Route path="*" element={<NotFoundPage />} />
   </Routes>
 );
 
