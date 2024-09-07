@@ -162,7 +162,15 @@ const PackagingSolutions: React.FC = () => {
   };
 
   const openEditForm = (product: PackagingSolutionsInterface) => {
-    setFormPackagingSolutions(product);
+    const selectedProduct = products.find((p) => p.id === product.product_id);
+    setFormPackagingSolutions({
+      ...product,
+      product_category_id:
+        selectedProduct?.category_id || product.product_category_id,
+      product_form_id: selectedProduct?.form_id || product.product_form_id,
+      packaging_treatment_id:
+        selectedProduct?.treatment_id || product.packaging_treatment_id,
+    });
     setIsFormOpen(true);
     setType("edit");
   };
@@ -174,6 +182,9 @@ const PackagingSolutions: React.FC = () => {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const selectedProduct = products.find(
+      (p) => p.id === formPackagingSolutions?.product_id
+    );
     let data = {
       name: formPackagingSolutions?.name,
       structure_type: formPackagingSolutions?.structure_type,
@@ -181,9 +192,14 @@ const PackagingSolutions: React.FC = () => {
       storage_condition_id: formPackagingSolutions?.storage_condition_id,
       display_shelf_life_days: formPackagingSolutions?.display_shelf_life_days,
       product_id: formPackagingSolutions?.product_id,
-      product_category_id: formPackagingSolutions?.product_category_id,
-      product_form_id: formPackagingSolutions?.product_form_id,
-      packaging_treatment_id: formPackagingSolutions?.packaging_treatment_id,
+      product_category_id:
+        selectedProduct?.category_id ||
+        formPackagingSolutions?.product_category_id,
+      product_form_id:
+        selectedProduct?.form_id || formPackagingSolutions?.product_form_id,
+      packaging_treatment_id:
+        selectedProduct?.treatment_id ||
+        formPackagingSolutions?.packaging_treatment_id,
       packing_type_id: formPackagingSolutions?.packing_type_id,
       packaging_machine_id: formPackagingSolutions?.packaging_machine_id,
       packaging_material_id: formPackagingSolutions?.packaging_material_id,
@@ -249,6 +265,19 @@ const PackagingSolutions: React.FC = () => {
   const deletePackagingSolutions = async (id: number) => {
     setSelectedPackagingSolutionsId(id);
     setIsDeletePopupOpen(true);
+  };
+
+  const handleProductChange = (productId: number) => {
+    const selectedProduct = products.find((p) => p.id === productId);
+    if (selectedProduct) {
+      setFormPackagingSolutions((prev) => ({
+        ...prev!,
+        product_id: productId,
+        product_category_id: selectedProduct.category_id,
+        product_form_id: selectedProduct.product_form_id,
+        packaging_treatment_id: selectedProduct.packaging_treatment_id,
+      }));
+    }
   };
 
   return (
@@ -510,7 +539,7 @@ const PackagingSolutions: React.FC = () => {
                   <input
                     type="number"
                     id="sequence"
-                    value={formPackagingSolutions?.sequence || 0}
+                    value={formPackagingSolutions?.sequence}
                     onChange={(e) =>
                       setFormPackagingSolutions((prev) => ({
                         ...prev!,
@@ -560,7 +589,7 @@ const PackagingSolutions: React.FC = () => {
                   <input
                     type="number"
                     id="displayShelfLife"
-                    value={formPackagingSolutions?.display_shelf_life_days || 0}
+                    value={formPackagingSolutions?.display_shelf_life_days}
                     onChange={(e) =>
                       setFormPackagingSolutions((prev) => ({
                         ...prev!,
@@ -586,10 +615,7 @@ const PackagingSolutions: React.FC = () => {
                     id="product"
                     value={formPackagingSolutions?.product_id || ""}
                     onChange={(e) =>
-                      setFormPackagingSolutions((prev) => ({
-                        ...prev!,
-                        product_id: parseInt(e.target.value, 10),
-                      }))
+                      handleProductChange(parseInt(e.target.value, 10))
                     }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     required
@@ -820,7 +846,7 @@ const PackagingSolutions: React.FC = () => {
                   <input
                     type="number"
                     id="minOrderQuantity"
-                    value={formPackagingSolutions?.min_order_quantity || 0}
+                    value={formPackagingSolutions?.min_order_quantity}
                     onChange={(e) =>
                       setFormPackagingSolutions((prev) => ({
                         ...prev!,
