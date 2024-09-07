@@ -8,6 +8,7 @@ import { HiOutlineSquares2X2 } from "react-icons/hi2";
 import { IconType } from "react-icons";
 import { RiFileExcel2Line, RiSettings4Line } from "react-icons/ri";
 import { FiHeadphones } from "react-icons/fi";
+import { useUser } from "../context/userContext";
 
 interface MenuItem {
   name: string;
@@ -194,52 +195,67 @@ const menuItems: MenuItem[] = [
     icon: RiSettings4Line,
   },
 ];
+
 const SidebarComponent: FC = function () {
   const [currentPage, setCurrentPage] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
+  const userContext = useUser();
+  const user = userContext?.user;
 
   useEffect(() => {
     setCurrentPage(location.pathname);
   }, [location.pathname]);
 
-  const renderMenuItem = (item: MenuItem) => (
-    <div key={item.path}>
-      {item.submenu ? (
-        <Sidebar.Collapse
-          icon={item.icon}
-          label={item.name}
-          open={currentPage.startsWith(item.path)}
-        >
-          <div className="p-0">{item.submenu.map(renderMenuItem)}</div>
-        </Sidebar.Collapse>
-      ) : (
-        <Sidebar.Item
-          onClick={() => navigate(item.path)}
-          icon={({ className }: { className: string }) => (
-            <item.icon
-              className={`${className} ${
-                item.path === currentPage ? "text-black" : ""
-              }`}
-            />
-          )}
-          className={`${
-            item.name !== "Dashboard" ? "!pl-2 !text-sm" : "font-medium"
-          } ${
-            item.path === currentPage ? "bg-lime-500 hover:bg-lime-500" : ""
-          } cursor-pointer`}
-        >
-          <span className="whitespace-normal">{item.name}</span>
-        </Sidebar.Item>
-      )}
-    </div>
-  );
+  const hasPermission = (name: string) => {
+    return user?.permissions?.some(
+      (permission) => permission.page_name === name
+    );
+  };
+
+  const renderMenuItem = (item: MenuItem) => {
+    return (
+      <div key={item.path}>
+        {item.submenu ? (
+          <Sidebar.Collapse
+            icon={item.icon}
+            label={item.name}
+            open={currentPage.startsWith(item.path)}
+          >
+            <div className="p-0">{item.submenu.map(renderMenuItem)}</div>
+          </Sidebar.Collapse>
+        ) : (
+          <Sidebar.Item
+            onClick={() => navigate(item.path)}
+            icon={({ className }: { className: string }) => (
+              <item.icon
+                className={`${className} ${
+                  item.path === currentPage ? "text-black" : ""
+                }`}
+              />
+            )}
+            className={`${
+              item.name !== "Dashboard" ? "!pl-2 !text-sm" : "font-medium"
+            } ${
+              item.path === currentPage ? "bg-lime-500 hover:bg-lime-500" : ""
+            } cursor-pointer`}
+          >
+            <span className="whitespace-normal">{item.name}</span>
+          </Sidebar.Item>
+        )}
+      </div>
+    );
+  };
 
   return (
     <Sidebar className="lg:w-[24%] flex-grow h-[100vh] pt-16">
       <div className="flex flex-col justify-between">
         <Sidebar.Items>
-          <Sidebar.ItemGroup>{menuItems.map(renderMenuItem)}</Sidebar.ItemGroup>
+          <Sidebar.ItemGroup>
+            {menuItems
+              .filter((item) => hasPermission(item.name))
+              .map(renderMenuItem)}
+          </Sidebar.ItemGroup>
         </Sidebar.Items>
       </div>
     </Sidebar>

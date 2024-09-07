@@ -29,7 +29,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             id: response.data.data.id,
             name: response.data.data.name,
             email: response.data.data.email,
-            access: response.data.data.access,
+            permissions: response.data.data.permissions,
+            status: response.data.data.status,
           });
           setIsUserDataFetched(true);
         } catch (error) {
