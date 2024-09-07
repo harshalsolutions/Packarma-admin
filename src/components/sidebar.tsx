@@ -110,42 +110,42 @@ const menuItems: MenuItem[] = [
   },
   {
     name: "Customer Section",
-    path: "/customer",
+    path: "/customer-section",
     icon: HiUsers,
     submenu: [
       {
         name: "User List",
-        path: "/customer/user-list",
+        path: "/customer-section/user-list",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "User Address List",
-        path: "/customer/user-address-list",
+        path: "/customer-section/user-address-list",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Refer",
-        path: "/customer/refer",
+        path: "/customer-section/refer",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "User Subscription",
-        path: "/customer/user-subscription",
+        path: "/customer-section/user-subscription",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Download Subscription",
-        path: "/customer/download-subscription",
+        path: "/customer-section/download-subscription",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Credit Purchase",
-        path: "/customer/credit-purchase",
+        path: "/customer-section/credit-purchase",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Customer Enquiry",
-        path: "/customer/enquiry",
+        path: "/customer-section/enquiry",
         icon: VscDebugBreakpointDataUnverified,
       },
     ],

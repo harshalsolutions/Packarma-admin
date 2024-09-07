@@ -52,15 +52,21 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }, [token, userContext, isUserDataFetched, navigate]);
 
   const hasPermission = (permissionName: string) => {
-    return userContext?.user.permissions?.some(
-      (permission) => permission.page_name === permissionName
+    const permissionNameLower = permissionName.toLowerCase();
+    const result = userContext?.user.permissions?.some((permission) =>
+      permissionNameLower.includes(
+        permission.page_name.toLowerCase().replace(" ", "-")
+      )
     );
+    return result;
   };
 
   const hasAccess = hasPermission(pathname.pathname);
 
   useEffect(() => {
-    if (!hasAccess && !isLoading) {
+    if (!isLoading && pathname.pathname === "/") {
+      navigate("/");
+    } else if (!hasAccess && !isLoading) {
       navigate("/no-access");
     }
   }, [

@@ -202,7 +202,7 @@ const AppRoutes = () => (
     {/* Customer Section */}
 
     <Route
-      path="/customer/refer"
+      path="/customer-section/refer"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -212,7 +212,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/customer/user-list"
+      path="/customer-section/user-list"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -222,7 +222,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/customer/user-address-list"
+      path="/customer-section/user-address-list"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -233,7 +233,7 @@ const AppRoutes = () => (
     />
 
     <Route
-      path="/customer/user-subscription"
+      path="/customer-section/user-subscription"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -243,7 +243,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/customer/download-subscription"
+      path="/customer-section/download-subscription"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -253,7 +253,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/customer/credit-purchase"
+      path="/customer-section/credit-purchase"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -263,7 +263,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/customer/enquiry"
+      path="/customer-section/enquiry"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
