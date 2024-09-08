@@ -70,7 +70,7 @@ const MetaSettings: React.FC = () => {
       ) : error ? (
         <ErrorComp error={error} onRetry={fetchMetaDetails} />
       ) : (
-        <form onSubmit={handleFormSubmit} className="w-[60%] gap-5 mx-auto">
+        <form onSubmit={handleFormSubmit} className="w-[80%] gap-5 mx-auto">
           <div className="mb-4">
             <label
               htmlFor="meta_title"

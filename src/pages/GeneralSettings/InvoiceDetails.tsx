@@ -11,8 +11,8 @@ interface InvoiceDetails {
   address: string;
   bank_name: string;
   account_number: string;
-  ifsc: string;
-  beneficiary_number: string;
+  ifsc_code: string;
+  benificiary_number: string;
 }
 
 const InvoiceDetails: React.FC = () => {
@@ -23,8 +23,8 @@ const InvoiceDetails: React.FC = () => {
     address: "",
     bank_name: "",
     account_number: "",
-    ifsc: "",
-    beneficiary_number: "",
+    ifsc_code: "",
+    benificiary_number: "",
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,13 +58,14 @@ const InvoiceDetails: React.FC = () => {
         address: invoiceDetails.address,
         bank_name: invoiceDetails.bank_name,
         account_number: invoiceDetails.account_number,
-        ifsc: invoiceDetails.ifsc,
-        beneficiary_number: invoiceDetails.beneficiary_number,
+        ifsc_code: invoiceDetails.ifsc_code,
+        benificiary_number: invoiceDetails.benificiary_number,
       };
-      await api.put(
+      const resp = await api.put(
         `${BACKEND_API_KEY}/general-settings/invoice-details`,
         formData
       );
+      console.log(resp);
       fetchInvoiceDetails();
       toast.dismiss();
       toast.success("Invoice details updated successfully");
@@ -197,12 +198,12 @@ const InvoiceDetails: React.FC = () => {
             </label>
             <input
               type="text"
-              id="ifsc"
-              value={invoiceDetails.ifsc}
+              id="ifsc_code"
+              value={invoiceDetails.ifsc_code}
               onChange={(e) =>
                 setInvoiceDetails({
                   ...invoiceDetails,
-                  ifsc: e.target.value,
+                  ifsc_code: e.target.value,
                 })
               }
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -211,26 +212,26 @@ const InvoiceDetails: React.FC = () => {
           </div>
           <div className="mb-4">
             <label
-              htmlFor="beneficiary_number"
+              htmlFor="benificiary_number"
               className="block text-sm font-medium text-gray-700"
             >
               Beneficiary Number
             </label>
             <input
               type="text"
-              id="beneficiary_number"
-              value={invoiceDetails.beneficiary_number}
+              id="benificiary_number"
+              value={invoiceDetails.benificiary_number}
               onChange={(e) =>
                 setInvoiceDetails({
                   ...invoiceDetails,
-                  beneficiary_number: e.target.value,
+                  benificiary_number: e.target.value,
                 })
               }
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               required
             />
           </div>
-          <div className="flex justify-center items-center mt-4 col-span-2">
+          <div className="flex justify-center items-center mt-4 mb-10 col-span-2">
             <button
               type="submit"
               className="px-4 py-2 text-sm font-medium text-black bg-lime-500 rounded-md hover:bg-lime-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"

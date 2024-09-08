@@ -1,22 +1,66 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { BACKEND_API_KEY } from "../../../utils/ApiKey";
+import api from "../../../utils/axiosInstance";
+import toast from "react-hot-toast";
 
 const AboutUs = () => {
   const [text, setText] = useState("");
+
+  useEffect(() => {
+    fetchAboutUsData();
+  }, []);
+
+  const fetchAboutUsData = async () => {
+    try {
+      const response = await api.get(
+        `${BACKEND_API_KEY}/general-settings/about-us`
+      );
+      setText(response.data.data);
+    } catch (err: any) {
+      toast.error(err.response.data.message || "Something Went Wrong!");
+    }
+  };
 
   const handleChange = (value: string) => {
     setText(value);
   };
 
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.loading("Updating About Us...");
+    try {
+      await api.put(`${BACKEND_API_KEY}/general-settings/about-us`, {
+        text,
+      });
+      toast.dismiss();
+      toast.success("About Us updated successfully");
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Failed to save data");
+    }
+  };
+
   return (
     <div>
-      <ReactQuill
-        theme="snow"
-        value={text}
-        onChange={handleChange}
-        style={{ height: "300px" }}
-      />
+      <div className="w-full min-h-[300px] mx-auto">
+        <ReactQuill
+          theme="snow"
+          value={text}
+          onChange={handleChange}
+          style={{ height: "300px" }}
+        />
+      </div>
+      <div className="flex justify-center items-center mt-16 col-span-2">
+        <button
+          type="submit"
+          onClick={handleFormSubmit}
+          className="px-4 py-2 text-sm font-medium text-black bg-lime-500 rounded-md hover:bg-lime-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+        >
+          Update Data
+        </button>
+      </div>
     </div>
   );
 };

@@ -73,7 +73,7 @@ const AppDetails: React.FC = () => {
       ) : error ? (
         <ErrorComp error={error} onRetry={fetchAppDetails} />
       ) : (
-        <form onSubmit={handleFormSubmit} className="w-[60%] gap-5 mx-auto">
+        <form onSubmit={handleFormSubmit} className="w-[80%] gap-5 mx-auto">
           <div className="mb-4">
             <label
               htmlFor="app_link_android"
@@ -121,7 +121,7 @@ const AppDetails: React.FC = () => {
               htmlFor="app_version_android"
               className="block text-sm font-medium text-gray-700"
             >
-              App Version Android
+              App Version Android {'(Format-> ["V1","V2","V3"])'}
             </label>
             <input
               type="text"
@@ -142,7 +142,7 @@ const AppDetails: React.FC = () => {
               htmlFor="app_version_ios"
               className="block text-sm font-medium text-gray-700"
             >
-              App Version iOS
+              App Version iOS {'(Format-> ["V1","V2","V3"])'}
             </label>
             <input
               type="text"
