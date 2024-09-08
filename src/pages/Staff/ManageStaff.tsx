@@ -348,10 +348,13 @@ const ManageStaff: React.FC = () => {
       )}
       {isFormOpen && (
         <div className="mw-[60%] flex justify-center items-center flex-col mx-auto my-10">
-          <h3 className="text-xl font-semibold leading-6 text-gray-900 mb-4">
+          <h3 className="text-xl font-semibold leading-6 text-gray-900 mb-8">
             {editStaff ? "Edit Staff" : "Add New Staff"}
           </h3>
-          <form onSubmit={handleFormSubmit} className="w-[60%]">
+          <form
+            onSubmit={handleFormSubmit}
+            className="w-[60%] grid grid-cols-2 gap-4"
+          >
             <div className="mb-4">
               <label
                 htmlFor="name"
@@ -394,7 +397,7 @@ const ManageStaff: React.FC = () => {
                 Password
               </label>
               <input
-                type="password"
+                type="text"
                 id="password"
                 name="password"
                 value={formData.password}
@@ -454,7 +457,7 @@ const ManageStaff: React.FC = () => {
                 required
               />
             </div>
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end mt-4 col-span-2">
               <button
                 type="button"
                 onClick={() => {

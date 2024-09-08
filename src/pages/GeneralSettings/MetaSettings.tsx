@@ -4,32 +4,34 @@ import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import { ErrorComp } from "../../components/ErrorComp";
 import toast from "react-hot-toast";
 
-interface SystemDetails {
+interface MetaDetails {
   id: number;
-  system_email: string;
-  system_phone_number: string;
+  meta_title: string;
+  meta_keywords: string;
+  meta_description: string;
 }
 
-const SystemDetails: React.FC = () => {
-  const [systemDetails, setSystemDetails] = useState<SystemDetails>({
+const MetaSettings: React.FC = () => {
+  const [metaDetails, setMetaDetails] = useState<MetaDetails>({
     id: 0,
-    system_email: "",
-    system_phone_number: "",
+    meta_title: "",
+    meta_keywords: "",
+    meta_description: "",
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchSystemDetails();
+    fetchMetaDetails();
   }, []);
 
-  const fetchSystemDetails = async () => {
+  const fetchMetaDetails = async () => {
     try {
       setLoading(true);
       const response = await api.get(
-        `${BACKEND_API_KEY}/contact-us/system-details`
+        `${BACKEND_API_KEY}/general-settings/meta-details`
       );
-      setSystemDetails(response.data.data);
+      setMetaDetails(response.data.data);
       setLoading(false);
       setError(null);
     } catch (err: any) {
@@ -40,16 +42,20 @@ const SystemDetails: React.FC = () => {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.loading("Updating system details...");
+    toast.loading("Updating meta details...");
     try {
       const formData = {
-        system_email: systemDetails.system_email,
-        system_phone_number: systemDetails.system_phone_number,
+        meta_title: metaDetails.meta_title,
+        meta_keywords: metaDetails.meta_keywords,
+        meta_description: metaDetails.meta_description,
       };
-      await api.put(`${BACKEND_API_KEY}/contact-us/system-details`, formData);
-      fetchSystemDetails();
+      await api.put(
+        `${BACKEND_API_KEY}/general-settings/meta-details`,
+        formData
+      );
+      fetchMetaDetails();
       toast.dismiss();
-      toast.success("System details updated successfully");
+      toast.success("Meta details updated successfully");
     } catch (err) {
       toast.dismiss();
       toast.error("Failed to save data");
@@ -58,34 +64,28 @@ const SystemDetails: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto mt-8 px-4">
-      <h1 className="text-2xl font-bold mb-4 border-l-8 text-black border-lime-500 pl-2">
-        Manage System Details
-      </h1>
+    <div>
       {loading ? (
         <div>Loading...</div>
       ) : error ? (
-        <ErrorComp error={error} onRetry={fetchSystemDetails} />
+        <ErrorComp error={error} onRetry={fetchMetaDetails} />
       ) : (
-        <form
-          onSubmit={handleFormSubmit}
-          className="w-[40%] mt-10 gap-5 mx-auto"
-        >
+        <form onSubmit={handleFormSubmit} className="w-[60%] gap-5 mx-auto">
           <div className="mb-4">
             <label
-              htmlFor="system_email"
+              htmlFor="meta_title"
               className="block text-sm font-medium text-gray-700"
             >
-              System Email
+              Meta Title
             </label>
             <input
-              type="email"
-              id="system_email"
-              value={systemDetails.system_email}
+              type="text"
+              id="meta_title"
+              value={metaDetails.meta_title}
               onChange={(e) =>
-                setSystemDetails({
-                  ...systemDetails,
-                  system_email: e.target.value,
+                setMetaDetails({
+                  ...metaDetails,
+                  meta_title: e.target.value,
                 })
               }
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -94,19 +94,40 @@ const SystemDetails: React.FC = () => {
           </div>
           <div className="mb-4">
             <label
-              htmlFor="system_phone_number"
+              htmlFor="meta_keywords"
               className="block text-sm font-medium text-gray-700"
             >
-              System Phone Number
+              Meta Keywords
             </label>
             <input
-              type="tel"
-              id="system_phone_number"
-              value={systemDetails.system_phone_number}
+              type="text"
+              id="meta_keywords"
+              value={metaDetails.meta_keywords}
               onChange={(e) =>
-                setSystemDetails({
-                  ...systemDetails,
-                  system_phone_number: e.target.value,
+                setMetaDetails({
+                  ...metaDetails,
+                  meta_keywords: e.target.value,
+                })
+              }
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="meta_description"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Meta Description
+            </label>
+            <input
+              type="text"
+              id="meta_description"
+              value={metaDetails.meta_description}
+              onChange={(e) =>
+                setMetaDetails({
+                  ...metaDetails,
+                  meta_description: e.target.value,
                 })
               }
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -127,4 +148,4 @@ const SystemDetails: React.FC = () => {
   );
 };
 
-export default SystemDetails;
+export default MetaSettings;

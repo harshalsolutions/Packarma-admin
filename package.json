@@ -33,6 +33,7 @@
     "react-apexcharts": "^1.4.0",
     "react-hot-toast": "^2.4.1",
     "react-icons": "^4.7.1",
+    "react-quill": "^2.0.0",
     "tailwind-scrollbar": "^3.1.0"
   },
   "devDependencies": {
