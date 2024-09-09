@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
-import {
-  MdOutlineRemoveRedEye,
-  MdOutlineLock,
-  MdDeleteOutline,
-} from "react-icons/md";
+import { MdOutlineRemoveRedEye, MdDeleteOutline } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -14,7 +10,7 @@ import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import { TbEdit } from "react-icons/tb";
-
+import PermissionDialog from "../../components/PermissionDialog";
 interface StaffData {
   emailid: string;
   id: number;
@@ -41,6 +37,7 @@ const ManageStaff: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [showPermission, setShowPermission] = useState(false);
   const [pagination, setPagination] = useState<Pagination>({
     currentPage: 1,
     totalPages: 1,
@@ -475,6 +472,8 @@ const ManageStaff: React.FC = () => {
               </button>
             </div>
           </form>
+          <hr className="w-full my-8" />
+          <PermissionDialog id={editStaff?.id || 0} />
         </div>
       )}
     </div>

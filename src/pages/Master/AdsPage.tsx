@@ -169,7 +169,7 @@ const BannerPage: React.FC = () => {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const loadingToast = toast.loading("Saving banner...");
+    const loadingToast = toast.loading("Saving Avertisement...");
     try {
       const formData = new FormData();
       formData.append("title", title);
@@ -187,7 +187,7 @@ const BannerPage: React.FC = () => {
       formData.append("status", status);
       formData.append("type", "advertisement");
       if (advertisementImage) {
-        formData.append("image", advertisementImage);
+        formData.append("advertisement_image", advertisementImage);
       }
 
       if (editingAdvertisement) {
@@ -219,7 +219,7 @@ const BannerPage: React.FC = () => {
     } catch (err) {
       console.log(err);
       toast.dismiss();
-      toast.error("Failed to save banner");
+      toast.error("Failed to save Advertisement");
     } finally {
       toast.dismiss(loadingToast);
     }

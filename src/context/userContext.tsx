@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 export interface Permission {
-  permission_id: number;
+  id: number;
   page_id: number;
   page_name: string;
   can_create: number;

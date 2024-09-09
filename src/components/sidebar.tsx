@@ -154,18 +154,6 @@ const menuItems: MenuItem[] = [
     name: "Staff",
     path: "/staff",
     icon: HiUsers,
-    submenu: [
-      {
-        name: "Manage Roles",
-        path: "/staff/roles",
-        icon: VscDebugBreakpointDataUnverified,
-      },
-      {
-        name: "Manage Staff",
-        path: "/staff/manage",
-        icon: VscDebugBreakpointDataUnverified,
-      },
-    ],
   },
   {
     name: "Contact Us",

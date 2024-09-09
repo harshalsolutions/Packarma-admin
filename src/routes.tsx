@@ -294,17 +294,7 @@ const AppRoutes = () => (
     />
     {/* Staff Section */}
     <Route
-      path="/staff/roles"
-      element={
-        <ProtectedRoute>
-          <NavbarSidebarLayout>
-            <ManageRoles />
-          </NavbarSidebarLayout>
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/staff/manage"
+      path="/staff"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
