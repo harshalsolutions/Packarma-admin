@@ -71,7 +71,7 @@ const Product: React.FC = () => {
 
   useEffect(() => {
     fetchProducts();
-    fetchAllData;
+    fetchAllData();
   }, [currentPage, entriesPerPage]);
 
   const fetchProducts = async () => {
