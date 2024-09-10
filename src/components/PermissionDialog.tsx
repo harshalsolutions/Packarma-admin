@@ -6,12 +6,7 @@ import ToggleSwitch from "./ToggleSwitch";
 import { AiOutlineDelete } from "react-icons/ai";
 import CustomPopup from "./CustomPopup";
 
-type PermissionType =
-  | "can_create"
-  | "can_read"
-  | "can_update"
-  | "can_delete"
-  | "can_export";
+type PermissionType = "can_create" | "can_update" | "can_delete" | "can_export";
 
 type Page = {
   id: number;
@@ -32,7 +27,6 @@ const PermissionsPopup: React.FC<{ id: number }> = ({ id }) => {
       `${BACKEND_API_KEY}/staff/permissions/${id}`
     );
     setPermissions(response.data.data);
-    console.log(response.data.data);
   };
 
   const fetchPages = async () => {
@@ -125,7 +119,6 @@ const PermissionsPopup: React.FC<{ id: number }> = ({ id }) => {
           page_id: page.id,
           page_name: page.page_name,
           can_create: 0,
-          can_read: 0,
           can_update: 0,
           can_delete: 0,
           can_export: 0,
@@ -157,7 +150,6 @@ const PermissionsPopup: React.FC<{ id: number }> = ({ id }) => {
             <tr>
               <th className="px-4 py-2">Page Name</th>
               <th className="px-4 py-2 text-center">Create</th>
-              <th className="px-4 py-2 text-center">Read</th>
               <th className="px-4 py-2 text-center">Update</th>
               <th className="px-4 py-2 text-center">Delete</th>
               <th className="px-4 py-2 text-center">Export</th>
@@ -165,59 +157,52 @@ const PermissionsPopup: React.FC<{ id: number }> = ({ id }) => {
             </tr>
           </thead>
           <tbody>
-            {permissions.map((permission) => (
-              <tr key={permission.page_name} className="border-b">
-                <td className="px-4 py-3">{permission.page_name}</td>
-                <td className="px-4 py-3">
-                  <ToggleSwitch
-                    checked={permission.can_create === 1}
-                    onChange={() =>
-                      handleToggle(permission.page_name, "can_create")
-                    }
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <ToggleSwitch
-                    checked={permission.can_read === 1}
-                    onChange={() =>
-                      handleToggle(permission.page_name, "can_read")
-                    }
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <ToggleSwitch
-                    checked={permission.can_update === 1}
-                    onChange={() =>
-                      handleToggle(permission.page_name, "can_update")
-                    }
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <ToggleSwitch
-                    checked={permission.can_delete === 1}
-                    onChange={() =>
-                      handleToggle(permission.page_name, "can_delete")
-                    }
-                  />
-                </td>
-                <td className="px-4 py-3">
-                  <ToggleSwitch
-                    checked={permission.can_export === 1}
-                    onChange={() =>
-                      handleToggle(permission.page_name, "can_export")
-                    }
-                  />
-                </td>
-                <td className="px-4 py-3 flex justify-center items-center">
-                  <button
-                    onClick={() => deletePermission(permission.id)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <AiOutlineDelete size={20} />
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {permissions &&
+              permissions.map((permission) => (
+                <tr key={permission.page_name} className="border-b">
+                  <td className="px-4 py-3">{permission.page_name}</td>
+                  <td className="px-4 py-3">
+                    <ToggleSwitch
+                      checked={permission.can_create === 1}
+                      onChange={() =>
+                        handleToggle(permission.page_name, "can_create")
+                      }
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <ToggleSwitch
+                      checked={permission.can_update === 1}
+                      onChange={() =>
+                        handleToggle(permission.page_name, "can_update")
+                      }
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <ToggleSwitch
+                      checked={permission.can_delete === 1}
+                      onChange={() =>
+                        handleToggle(permission.page_name, "can_delete")
+                      }
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <ToggleSwitch
+                      checked={permission.can_export === 1}
+                      onChange={() =>
+                        handleToggle(permission.page_name, "can_export")
+                      }
+                    />
+                  </td>
+                  <td className="px-4 py-3 flex justify-center items-center">
+                    <button
+                      onClick={() => deletePermission(permission.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <AiOutlineDelete size={20} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

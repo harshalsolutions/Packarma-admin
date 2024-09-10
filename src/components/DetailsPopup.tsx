@@ -35,7 +35,9 @@ const renderBadge = (label: string, value: string | JSX.Element) => {
   ) {
     return <Badge color="failure">Not Completed</Badge>;
   }
-  if (label === "GST Document Link" && value !== null) {
+  console.log(value);
+  if (label === "GST Document Link" && !value) {
+    console.log("here");
     return (
       <a
         href={`${BACKEND_MEDIA_LINK}${value}`}
@@ -68,7 +70,7 @@ const renderBadge = (label: string, value: string | JSX.Element) => {
       <Badge color="failure">Not Completed</Badge>
     );
   }
-  return value;
+  return value !== "null" ? value : "Not provided";
 };
 
 const DetailsPopup: React.FC<PopupProps> = ({ title, fields, onClose }) => (

@@ -4,6 +4,7 @@ import { useUser } from "../context/userContext";
 import { BACKEND_API_KEY } from "../../utils/ApiKey";
 import api from "../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
+import toast from "react-hot-toast";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -24,15 +25,20 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           const response = await api.get(`${BACKEND_API_KEY}/auth/get-admin`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          userContext?.setUser({
-            id: response.data.data.id,
-            name: response.data.data.name,
-            email: response.data.data.email,
-            status: response.data.data.status,
-            permissions: response.data.data.permissions,
-          });
-
-          setIsUserDataFetched(true);
+          if (response.data.data.status === "inactive") {
+            toast.error("Your account is inactive. Please contact admin.");
+            localStorage.removeItem("token");
+            navigate("/login");
+          } else {
+            userContext?.setUser({
+              id: response.data.data.id,
+              name: response.data.data.name,
+              email: response.data.data.emailid,
+              status: response.data.data.status,
+              permissions: response.data.data.permissions,
+            });
+            setIsUserDataFetched(true);
+          }
         } catch (error) {
           navigate("/login");
           console.error("Error fetching user data:", error);

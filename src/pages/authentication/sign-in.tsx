@@ -1,30 +1,40 @@
-import { Button, Card, Label } from "flowbite-react";
+import { Button, Card, Label, Spinner } from "flowbite-react";
 import type { FC } from "react";
 import { useState } from "react";
 import api from "../../../utils/axiosInstance";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 
 const SignInPage: FC = function () {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const loadingToast = toast.loading("Signing in...");
+    setLoading(true);
+    setError("");
     try {
       const response = await api.post(`${BACKEND_API_KEY}/auth/login`, {
         emailid: email,
         password,
       });
-      localStorage.setItem("token", response.data.data.token);
-      toast.success("Login successful!", { id: loadingToast });
-      navigate("/");
-    } catch (error) {
-      console.error("Login failed", error);
-      toast.error("Login failed. Please try again.", { id: loadingToast });
+      if (response.data.data.status === "inactive") {
+        setError("Your account is inactive. Please contact admin.");
+        setLoading(false);
+        return;
+      } else {
+        localStorage.setItem("token", response.data.data.token);
+        navigate("/");
+      }
+    } catch (error: any) {
+      console.log(error);
+      console.error(error?.response?.data?.message || "Something went wrong");
+      setError(error?.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,6 +49,7 @@ const SignInPage: FC = function () {
         </div>
         <Card className="w-full">
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {error && <div className="text-red-500">{error}</div>}
             <div className="mb-4 flex flex-col gap-y-3">
               <Label htmlFor="email">Email</Label>
               <input
@@ -69,12 +80,20 @@ const SignInPage: FC = function () {
               <Button
                 type="submit"
                 className="w-full lg:w-auto bg-lime-500 disabled:bg-lime-500 hover:bg-lime-500 text-black font-semibold"
+                disabled={loading}
               >
-                Login to your account
+                {loading ? (
+                  <Spinner size="sm" light={true} />
+                ) : (
+                  "Login to your account"
+                )}
               </Button>
             </div>
           </form>
         </Card>
+        <div className="mt-4">
+          <Link to="/forgot-password">Forgot Password?</Link>
+        </div>
       </div>
     </div>
   );

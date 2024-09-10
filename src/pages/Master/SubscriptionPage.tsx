@@ -11,6 +11,8 @@ import { ErrorComp } from "../../components/ErrorComp";
 import DetailsPopup from "../../components/DetailsPopup";
 import CustomPopup from "../../components/CustomPopup";
 import toast from "react-hot-toast";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import { useUser } from "../../context/userContext";
 interface Subscription {
   id: number;
   type: string;
@@ -57,6 +59,26 @@ const SubscriptionPage: React.FC = () => {
   const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<
     number | null
   >(null);
+
+  const userContext = useUser();
+
+  const createPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Master",
+    "can_create"
+  );
+
+  const updatePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Master",
+    "can_update"
+  );
+
+  const deletePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Master",
+    "can_delete"
+  );
 
   useEffect(() => {
     fetchSubscriptions();
@@ -211,12 +233,14 @@ const SubscriptionPage: React.FC = () => {
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
           />
-          <button
-            onClick={openAddForm}
-            className="bg-lime-500 text-black px-4 py-2 rounded mb-4 block ml-auto mr-4"
-          >
-            Add New Subscription
-          </button>
+          {createPermission && (
+            <button
+              onClick={openAddForm}
+              className="bg-lime-500 text-black px-4 py-2 rounded mb-4 block ml-auto mr-4"
+            >
+              Add New Subscription
+            </button>
+          )}
         </div>
       )}
       {!isFormOpen && (
@@ -302,20 +326,26 @@ const SubscriptionPage: React.FC = () => {
                           >
                             <MdOutlineRemoveRedEye />
                           </button>
-                          <button
-                            onClick={() => openEditForm(subscription)}
-                            className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
-                            aria-label="Edit"
-                          >
-                            <TbEdit />
-                          </button>
-                          <button
-                            onClick={() => deleteSubscription(subscription.id)}
-                            className="text-2xl text-red-600 dark:text-red-500 hover:underline"
-                            aria-label="Delete"
-                          >
-                            <MdDeleteOutline />
-                          </button>
+                          {updatePermission && (
+                            <button
+                              onClick={() => openEditForm(subscription)}
+                              className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
+                              aria-label="Edit"
+                            >
+                              <TbEdit />
+                            </button>
+                          )}
+                          {deletePermission && (
+                            <button
+                              onClick={() =>
+                                deleteSubscription(subscription.id)
+                              }
+                              className="text-2xl text-red-600 dark:text-red-500 hover:underline"
+                              aria-label="Delete"
+                            >
+                              <MdDeleteOutline />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))

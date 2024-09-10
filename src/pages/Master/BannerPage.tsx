@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Card, Spinner } from "flowbite-react";
+import { Badge, Card, Spinner } from "flowbite-react";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -12,6 +12,8 @@ import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { TbEdit } from "react-icons/tb";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import { AiOutlineClose } from "react-icons/ai";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import { useUser } from "../../context/userContext";
 interface Banner {
   id: number;
   title: string;
@@ -63,6 +65,26 @@ const BannerPage: React.FC = () => {
   const [bannerIdToDelete, setBannerIdToDelete] = useState<number | null>(null);
   const [activityLog, setActivityLog] = useState<any>(null);
   const [showDetails, setShowDetails] = useState(false);
+
+  const userContext = useUser();
+
+  const createPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Master",
+    "can_create"
+  );
+
+  const updatePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Master",
+    "can_update"
+  );
+
+  const deletePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Master",
+    "can_delete"
+  );
 
   useEffect(() => {
     fetchBanners();
@@ -391,12 +413,14 @@ const BannerPage: React.FC = () => {
                 entriesPerPage={entriesPerPage}
                 setEntriesPerPage={setEntriesPerPage}
               />
-              <button
-                onClick={openAddForm}
-                className="bg-lime-500 text-black px-4 py-2 rounded mb-4 block ml-auto mr-4"
-              >
-                Add New Banner
-              </button>
+              {createPermission && (
+                <button
+                  onClick={openAddForm}
+                  className="bg-lime-500 text-black px-4 py-2 rounded mb-4 block ml-auto mr-4"
+                >
+                  Add New Banner
+                </button>
+              )}
             </div>
           )}
           {!isFormOpen && (
@@ -486,14 +510,31 @@ const BannerPage: React.FC = () => {
                                 onClick={() => setSelectedBanner(banner)}
                               />
                             </td>
-                            <td className="px-6 py-4 text-gray-900">
-                              <ToggleSwitch
-                                checked={banner.status === "active"}
-                                onChange={() =>
-                                  toggleStatus(banner.id, banner.status)
-                                }
-                              />
-                            </td>
+                            {updatePermission && (
+                              <td className="px-6 py-4 text-gray-900">
+                                <ToggleSwitch
+                                  checked={banner.status === "active"}
+                                  onChange={() =>
+                                    toggleStatus(banner.id, banner.status)
+                                  }
+                                />
+                              </td>
+                            )}
+                            {!updatePermission && (
+                              <td className="px-6 py-4 text-gray-900">
+                                <Badge
+                                  className="!inline-block"
+                                  color={
+                                    banner.status === "active"
+                                      ? "success"
+                                      : "danger"
+                                  }
+                                >
+                                  {banner.status.charAt(0).toUpperCase() +
+                                    banner.status.slice(1)}
+                                </Badge>
+                              </td>
+                            )}
                             <td className="px-6 py-4 text-gray-900 text-right">
                               <button
                                 onClick={() => setSelectedBanner(banner)}
@@ -502,22 +543,26 @@ const BannerPage: React.FC = () => {
                               >
                                 <MdOutlineRemoveRedEye />
                               </button>
-                              <button
-                                onClick={() => openEditForm(banner)}
-                                className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
-                                aria-label="Edit"
-                              >
-                                <TbEdit />
-                              </button>
-                              <button
-                                onClick={() =>
-                                  deleteBanner(banner.id.toString())
-                                }
-                                className="text-2xl text-red-600 dark:text-red-500 hover:underline"
-                                aria-label="Delete"
-                              >
-                                <MdDeleteOutline />
-                              </button>
+                              {updatePermission && (
+                                <button
+                                  onClick={() => openEditForm(banner)}
+                                  className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
+                                  aria-label="Edit"
+                                >
+                                  <TbEdit />
+                                </button>
+                              )}
+                              {deletePermission && (
+                                <button
+                                  onClick={() =>
+                                    deleteBanner(banner.id.toString())
+                                  }
+                                  className="text-2xl text-red-600 dark:text-red-500 hover:underline"
+                                  aria-label="Delete"
+                                >
+                                  <MdDeleteOutline />
+                                </button>
+                              )}
                             </td>
                           </tr>
                         ))

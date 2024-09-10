@@ -11,6 +11,9 @@ import CustomPopup from "../../components/CustomPopup";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import { TbEdit } from "react-icons/tb";
 import PermissionDialog from "../../components/PermissionDialog";
+import { useUser } from "../../context/userContext";
+import toast from "react-hot-toast";
+
 interface StaffData {
   emailid: string;
   id: number;
@@ -30,14 +33,16 @@ interface Pagination {
   itemsPerPage: number;
 }
 
+const ADMIN_EMAIL = import.meta.env["VITE_ADMIN_EMAIL"];
+
 const ManageStaff: React.FC = () => {
+  const userContext = useUser();
   const [currentPage, setCurrentPage] = useState(1);
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [staffForm, setStaffForm] = useState<StaffData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [showPermission, setShowPermission] = useState(false);
   const [pagination, setPagination] = useState<Pagination>({
     currentPage: 1,
     totalPages: 1,
@@ -117,6 +122,10 @@ const ManageStaff: React.FC = () => {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.emailid !== ADMIN_EMAIL) {
+      toast.error("Only the admin can add or update staff details.");
+      return;
+    }
     let dataToSend = { ...formData };
     delete dataToSend.permissions;
     try {
@@ -155,6 +164,10 @@ const ManageStaff: React.FC = () => {
   };
 
   const handleAddNewAdmin = () => {
+    if (formData.emailid !== ADMIN_EMAIL) {
+      setError("Only the admin can add new staff.");
+      return;
+    }
     setEditStaff(null);
     setFormData({
       emailid: "",
@@ -170,6 +183,9 @@ const ManageStaff: React.FC = () => {
     setIsFormOpen(true);
   };
 
+  // console.log(userContext?.user);
+
+  // console.log(ADMIN_EMAIL);
   return (
     <div className="max-w-7xl mx-auto mt-8 px-4">
       <h1 className="text-2xl font-bold mb-4 border-l-8 text-black border-lime-500 pl-2">
@@ -181,12 +197,14 @@ const ManageStaff: React.FC = () => {
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
           />
-          <button
-            onClick={handleAddNewAdmin}
-            className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
-          >
-            Add New Staff
-          </button>
+          {userContext?.user?.email == ADMIN_EMAIL && (
+            <button
+              onClick={handleAddNewAdmin}
+              className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+            >
+              Add New Staff
+            </button>
+          )}
         </div>
       )}
       {!isFormOpen && (

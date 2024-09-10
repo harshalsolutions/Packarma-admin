@@ -3,6 +3,8 @@ import api from "../../../utils/axiosInstance";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import { ErrorComp } from "../../components/ErrorComp";
 import toast from "react-hot-toast";
+import { useUser } from "../../context/userContext";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 
 interface InvoiceDetails {
   id: number;
@@ -29,6 +31,20 @@ const InvoiceDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const userContext = useUser();
+
+  const updatePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "General Settings",
+    "can_update"
+  );
+
+  const createPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "General Settings",
+    "can_create"
+  );
+
   useEffect(() => {
     fetchInvoiceDetails();
   }, []);
@@ -50,6 +66,11 @@ const InvoiceDetails: React.FC = () => {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!updatePermission && !createPermission) {
+      toast.dismiss();
+      toast.error("You are not authorized!");
+      return;
+    }
     toast.loading("Updating invoice details...");
     try {
       const formData = {

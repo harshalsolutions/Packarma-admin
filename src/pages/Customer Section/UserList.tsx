@@ -25,6 +25,7 @@ interface CustomerForm {
   credits: number;
   createdAt: string;
   updatedAt: string;
+  code: string;
 }
 
 interface Pagination {
@@ -133,6 +134,9 @@ const Customer: React.FC = () => {
                     Phone Number
                   </th> */}
                   <th scope="col" className="px-6 py-3">
+                    Referal Code
+                  </th>
+                  <th scope="col" className="px-6 py-3">
                     GST Number
                   </th>
                   <th scope="col" className="px-6 py-3">
@@ -165,6 +169,9 @@ const Customer: React.FC = () => {
                       {/* <td className="px-6 py-4 text-gray-900">
                         {customerForm.country_code} {customerForm.phone_number}
                       </td> */}
+                      <td className="px-6 py-4 text-gray-900">
+                        {customerForm.code}
+                      </td>
                       <td className="px-6 py-4 text-gray-900">
                         {customerForm.gst_number}
                       </td>
@@ -253,6 +260,12 @@ const Customer: React.FC = () => {
                 ? selectedCustomer.country_code +
                   " " +
                   selectedCustomer.phone_number
+                : "Not provided",
+            },
+            {
+              label: "Referal Code",
+              value: selectedCustomer.code
+                ? selectedCustomer.code
                 : "Not provided",
             },
             {

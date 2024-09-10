@@ -3,6 +3,8 @@ import api from "../../../utils/axiosInstance";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import { ErrorComp } from "../../components/ErrorComp";
 import toast from "react-hot-toast";
+import { useUser } from "../../context/userContext";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 
 interface CreditMaster {
   id: number;
@@ -18,6 +20,26 @@ const CreditMaster: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const userContext = useUser();
+
+  const createPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Master",
+    "can_create"
+  );
+
+  const updatePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Master",
+    "can_update"
+  );
+
+  const deletePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Master",
+    "can_delete"
+  );
 
   useEffect(() => {
     fetchCreditMaster();
@@ -81,6 +103,7 @@ const CreditMaster: React.FC = () => {
               type="number"
               id="credit_percentage"
               value={creditMaster.credit_percentage}
+              disabled={!updatePermission}
               onChange={(e) =>
                 setCreditMaster({
                   ...creditMaster,
@@ -102,6 +125,7 @@ const CreditMaster: React.FC = () => {
               type="number"
               id="credit_price"
               value={creditMaster.credit_price}
+              disabled={!updatePermission}
               onChange={(e) =>
                 setCreditMaster({
                   ...creditMaster,
@@ -112,14 +136,16 @@ const CreditMaster: React.FC = () => {
               required
             />
           </div>
-          <div className="flex justify-center items-center mt-4 col-span-2">
-            <button
-              type="submit"
-              className="px-4 py-2 text-sm font-medium text-black bg-lime-500 rounded-md hover:bg-lime-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-            >
-              Update Credit
-            </button>
-          </div>
+          {updatePermission && createPermission && (
+            <div className="flex justify-center items-center mt-4 col-span-2">
+              <button
+                type="submit"
+                className="px-4 py-2 text-sm font-medium text-black bg-lime-500 rounded-md hover:bg-lime-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+              >
+                Update Credit
+              </button>
+            </div>
+          )}
         </form>
       )}
     </div>

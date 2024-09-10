@@ -223,7 +223,12 @@ const SidebarComponent: FC = function () {
               />
             )}
             className={`${
-              item.name !== "Dashboard" ? "!pl-2 !text-sm" : "font-medium"
+              item.name !== "Dashboard" &&
+              item.name !== "Report" &&
+              item.name !== "General Settings" &&
+              item.name !== "Staff"
+                ? "!pl-2 !text-sm"
+                : "font-medium"
             } ${
               item.path === currentPage ? "bg-lime-500 hover:bg-lime-500" : ""
             } cursor-pointer`}

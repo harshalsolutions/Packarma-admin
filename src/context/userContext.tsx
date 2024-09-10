@@ -5,7 +5,6 @@ export interface Permission {
   page_id: number;
   page_name: string;
   can_create: number;
-  can_read: number;
   can_update: number;
   can_delete: number;
   can_export?: number;
@@ -30,8 +29,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     name: "",
     email: "",
     status: "",
+    permissions: [],
   });
-
   return (
     <UserContext.Provider value={{ user, setUser }}>
       {children}

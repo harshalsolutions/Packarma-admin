@@ -3,6 +3,8 @@ import api from "../../../utils/axiosInstance";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import { ErrorComp } from "../../components/ErrorComp";
 import toast from "react-hot-toast";
+import { useUser } from "../../context/userContext";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 
 interface SystemDetails {
   id: number;
@@ -18,6 +20,8 @@ const SystemDetails: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const userContext = useUser();
 
   useEffect(() => {
     fetchSystemDetails();
@@ -40,6 +44,14 @@ const SystemDetails: React.FC = () => {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (
+      !hasUpdateAndCreatePermissions(userContext, "Contact Us", "can_update") &&
+      !hasUpdateAndCreatePermissions(userContext, "Contact Us", "can_create")
+    ) {
+      toast.dismiss();
+      toast.error("You are not authorized!");
+      return;
+    }
     toast.loading("Updating system details...");
     try {
       const formData = {

@@ -4,6 +4,8 @@ import "react-quill/dist/quill.snow.css";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import api from "../../../utils/axiosInstance";
 import toast from "react-hot-toast";
+import { useUser } from "../../context/userContext";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 
 const TermsAndConditions = () => {
   const [text, setText] = useState("");
@@ -11,6 +13,20 @@ const TermsAndConditions = () => {
   useEffect(() => {
     fetchTermsAndConditionsData();
   }, []);
+
+  const userContext = useUser();
+
+  const updatePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "General Settings",
+    "can_update"
+  );
+
+  const createPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "General Settings",
+    "can_create"
+  );
 
   const fetchTermsAndConditionsData = async () => {
     try {
@@ -29,6 +45,11 @@ const TermsAndConditions = () => {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!updatePermission && !createPermission) {
+      toast.dismiss();
+      toast.error("You are not authorized!");
+      return;
+    }
     toast.loading("Updating Terms and Conditions...");
     try {
       await api.put(

@@ -4,10 +4,24 @@ import "react-quill/dist/quill.snow.css";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import api from "../../../utils/axiosInstance";
 import toast from "react-hot-toast";
+import { useUser } from "../../context/userContext";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 
 const PrivacyPolicy = () => {
   const [text, setText] = useState("");
+  const userContext = useUser();
 
+  const updatePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "General Settings",
+    "can_update"
+  );
+
+  const createPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "General Settings",
+    "can_create"
+  );
   useEffect(() => {
     fetchPrivacyPolicyData();
   }, []);
@@ -29,6 +43,11 @@ const PrivacyPolicy = () => {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!updatePermission && !createPermission) {
+      toast.dismiss();
+      toast.error("You are not authorized!");
+      return;
+    }
     toast.loading("Updating Privacy Policy...");
     try {
       await api.put(`${BACKEND_API_KEY}/general-settings/privacy-policy`, {
