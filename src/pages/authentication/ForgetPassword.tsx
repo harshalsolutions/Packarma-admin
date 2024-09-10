@@ -22,6 +22,7 @@ const ForgotPasswordPage: FC = function () {
       });
       setLoading(false);
       toast.success("Email sent successfully");
+      navigate("/update-password");
     } catch (error: any) {
       console.log(error);
       console.error(error?.response?.data?.message || "Something went wrong");

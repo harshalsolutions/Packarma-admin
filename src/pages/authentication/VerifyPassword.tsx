@@ -2,13 +2,15 @@ import { Button, Card, Label, Spinner } from "flowbite-react";
 import type { FC } from "react";
 import { useState } from "react";
 import api from "../../../utils/axiosInstance";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import toast from "react-hot-toast";
 
 const VerifyOtpPage: FC = function () {
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
+  const [searchParams] = useSearchParams();
+  console.log(searchParams.get("email"));
+  const [email, setEmail] = useState(searchParams.get("email") || "");
+  const [otp, setOtp] = useState(searchParams.get("otp") || "");
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
