@@ -35,12 +35,6 @@ const CreditMaster: React.FC = () => {
     "can_update"
   );
 
-  const deletePermission = hasUpdateAndCreatePermissions(
-    userContext,
-    "Master",
-    "can_delete"
-  );
-
   useEffect(() => {
     fetchCreditMaster();
   }, []);

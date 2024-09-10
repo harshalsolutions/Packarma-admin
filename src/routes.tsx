@@ -25,7 +25,6 @@ import UserList from "./pages/Customer Section/UserList";
 import UserAddresses from "./pages/Customer Section/UserAddresses";
 import UserSubscription from "./pages/Customer Section/UserSubscription";
 import DownloadSubscription from "./pages/Customer Section/DownloadSubscription";
-import ManageRoles from "./pages/Staff/ManageRoles";
 import ManageStaff from "./pages/Staff/ManageStaff";
 import Settings from "./pages/GeneralSettings/settings";
 import Customer from "./pages/Contact Us/Customer";
@@ -33,10 +32,14 @@ import SystemDetails from "./pages/Contact Us/SystemDetails";
 import Report from "./pages/Report/Report";
 import NoAccess from "./NoAccess";
 import NotFoundPage from "./404Page";
+import VerifyOtpPage from "./pages/Authentication/VerifyPassword";
+import ForgotPassword from "./pages/Authentication/ForgetPassword";
 
 const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<SignInPage />} />
+    <Route path="/forgot-password" element={<ForgotPassword />} />
+    <Route path="/update-password" element={<VerifyOtpPage />} />
     <Route
       path="/"
       element={

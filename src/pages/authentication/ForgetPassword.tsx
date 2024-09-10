@@ -4,10 +4,10 @@ import { useState } from "react";
 import api from "../../../utils/axiosInstance";
 import { Link, useNavigate } from "react-router-dom";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
+import toast from "react-hot-toast";
 
-const SignInPage: FC = function () {
+const ForgotPasswordPage: FC = function () {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -17,24 +17,13 @@ const SignInPage: FC = function () {
     setLoading(true);
     setError("");
     try {
-      const response = await api.post(`${BACKEND_API_KEY}/auth/login`, {
-        emailid: email,
-        password,
+      await api.post(`${BACKEND_API_KEY}/auth/forgot-password`, {
+        email,
       });
-      if (response.data.statusCode === 401) {
-        setError("Invalid email or password");
-        return;
-      } else if (response.data.data.status === "inactive") {
-        setError("Your account is inactive. Please contact admin.");
-        setLoading(false);
-        return;
-      } else {
-        localStorage.setItem("token", response.data.data.token);
-        navigate("/");
-      }
       setLoading(false);
+      toast.success("Email sent successfully");
     } catch (error: any) {
-      setLoading(false);
+      console.log(error);
       console.error(error?.response?.data?.message || "Something went wrong");
       setError(error?.response?.data?.message || "Something went wrong");
     } finally {
@@ -54,29 +43,16 @@ const SignInPage: FC = function () {
         <Card className="w-full">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && <div className="text-red-500">{error}</div>}
-            <div className="mb-4 flex flex-col gap-y-3">
-              <Label htmlFor="email">Email</Label>
+            <div className="mb-6 flex flex-col gap-y-3">
+              <Label htmlFor="email">Forget Password Email</Label>
               <input
                 className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-lime-500 focus:ring-lime-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-lime-500 dark:focus:ring-lime-500 rounded-lg p-2.5 text-sm"
                 id="email"
                 name="email"
-                placeholder="name@xyz.com"
+                placeholder="Enter Email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="mb-6 flex flex-col gap-y-3">
-              <Label htmlFor="password">Password</Label>
-              <input
-                className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-lime-500 focus:ring-lime-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-lime-500 dark:focus:ring-lime-500 rounded-lg p-2.5 text-sm"
-                id="password"
-                name="password"
-                placeholder="••••••••"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
@@ -86,21 +62,17 @@ const SignInPage: FC = function () {
                 className="w-full lg:w-auto bg-lime-500 disabled:bg-lime-500 hover:bg-lime-500 text-black font-semibold"
                 disabled={loading}
               >
-                {loading ? (
-                  <Spinner size="sm" light={true} />
-                ) : (
-                  "Login to your account"
-                )}
+                {loading ? <Spinner size="sm" light={true} /> : "Send Email"}
               </Button>
             </div>
           </form>
         </Card>
         <div className="mt-4">
-          <Link to="/forgot-password">Forgot Password?</Link>
+          <Link to="/login">Back to Login?</Link>
         </div>
       </div>
     </div>
   );
 };
 
-export default SignInPage;
+export default ForgotPasswordPage;

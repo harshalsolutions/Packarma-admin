@@ -4,39 +4,31 @@ import { useState } from "react";
 import api from "../../../utils/axiosInstance";
 import { Link, useNavigate } from "react-router-dom";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
+import toast from "react-hot-toast";
 
-const SignInPage: FC = function () {
+const VerifyOtpPage: FC = function () {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
     try {
-      const response = await api.post(`${BACKEND_API_KEY}/auth/login`, {
-        emailid: email,
-        password,
+      await api.post(`${BACKEND_API_KEY}/auth/update-password`, {
+        email,
+        otp,
+        newPassword,
       });
-      if (response.data.statusCode === 401) {
-        setError("Invalid email or password");
-        return;
-      } else if (response.data.data.status === "inactive") {
-        setError("Your account is inactive. Please contact admin.");
-        setLoading(false);
-        return;
-      } else {
-        localStorage.setItem("token", response.data.data.token);
-        navigate("/");
-      }
+      toast.success("Password updated successfully");
+      navigate("/login");
       setLoading(false);
     } catch (error: any) {
-      setLoading(false);
+      console.log(error);
       console.error(error?.response?.data?.message || "Something went wrong");
-      setError(error?.response?.data?.message || "Something went wrong");
+      toast.error(error?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -53,14 +45,13 @@ const SignInPage: FC = function () {
         </div>
         <Card className="w-full">
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && <div className="text-red-500">{error}</div>}
-            <div className="mb-4 flex flex-col gap-y-3">
+            <div className="mb-6 flex flex-col gap-y-3">
               <Label htmlFor="email">Email</Label>
               <input
                 className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-lime-500 focus:ring-lime-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-lime-500 dark:focus:ring-lime-500 rounded-lg p-2.5 text-sm"
                 id="email"
                 name="email"
-                placeholder="name@xyz.com"
+                placeholder="Enter Email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -68,15 +59,28 @@ const SignInPage: FC = function () {
               />
             </div>
             <div className="mb-6 flex flex-col gap-y-3">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="otp">OTP</Label>
               <input
                 className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-lime-500 focus:ring-lime-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-lime-500 dark:focus:ring-lime-500 rounded-lg p-2.5 text-sm"
-                id="password"
-                name="password"
-                placeholder="••••••••"
+                id="otp"
+                name="otp"
+                placeholder="Enter OTP"
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                required
+              />
+            </div>
+            <div className="mb-6 flex flex-col gap-y-3">
+              <Label htmlFor="newPassword">New Password</Label>
+              <input
+                className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-lime-500 focus:ring-lime-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-lime-500 dark:focus:ring-lime-500 rounded-lg p-2.5 text-sm"
+                id="newPassword"
+                name="newPassword"
+                placeholder="Enter New Password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
                 required
               />
             </div>
@@ -89,18 +93,18 @@ const SignInPage: FC = function () {
                 {loading ? (
                   <Spinner size="sm" light={true} />
                 ) : (
-                  "Login to your account"
+                  "Update Password"
                 )}
               </Button>
             </div>
           </form>
         </Card>
         <div className="mt-4">
-          <Link to="/forgot-password">Forgot Password?</Link>
+          <Link to="/forgot-password">Resend OTP?</Link>
         </div>
       </div>
     </div>
   );
 };
 
-export default SignInPage;
+export default VerifyOtpPage;
