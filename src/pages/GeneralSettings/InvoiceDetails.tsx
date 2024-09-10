@@ -74,13 +74,13 @@ const InvoiceDetails: React.FC = () => {
     toast.loading("Updating invoice details...");
     try {
       const formData = {
-        name: invoiceDetails.name,
-        gst_number: invoiceDetails.gst_number,
-        address: invoiceDetails.address,
-        bank_name: invoiceDetails.bank_name,
-        account_number: invoiceDetails.account_number,
-        ifsc_code: invoiceDetails.ifsc_code,
-        benificiary_number: invoiceDetails.benificiary_number,
+        name: invoiceDetails?.name,
+        gst_number: invoiceDetails?.gst_number,
+        address: invoiceDetails?.address,
+        bank_name: invoiceDetails?.bank_name,
+        account_number: invoiceDetails?.account_number,
+        ifsc_code: invoiceDetails?.ifsc_code,
+        benificiary_number: invoiceDetails?.benificiary_number,
       };
       const resp = await api.put(
         `${BACKEND_API_KEY}/general-settings/invoice-details`,
@@ -115,7 +115,7 @@ const InvoiceDetails: React.FC = () => {
             <input
               type="text"
               id="name"
-              value={invoiceDetails.name}
+              value={invoiceDetails?.name}
               onChange={(e) =>
                 setInvoiceDetails({
                   ...invoiceDetails,
@@ -136,7 +136,7 @@ const InvoiceDetails: React.FC = () => {
             <input
               type="text"
               id="gst_number"
-              value={invoiceDetails.gst_number}
+              value={invoiceDetails?.gst_number}
               onChange={(e) =>
                 setInvoiceDetails({
                   ...invoiceDetails,
@@ -157,7 +157,7 @@ const InvoiceDetails: React.FC = () => {
             <input
               type="text"
               id="address"
-              value={invoiceDetails.address}
+              value={invoiceDetails?.address}
               onChange={(e) =>
                 setInvoiceDetails({
                   ...invoiceDetails,
@@ -178,7 +178,7 @@ const InvoiceDetails: React.FC = () => {
             <input
               type="text"
               id="bank_name"
-              value={invoiceDetails.bank_name}
+              value={invoiceDetails?.bank_name}
               onChange={(e) =>
                 setInvoiceDetails({
                   ...invoiceDetails,
@@ -199,7 +199,7 @@ const InvoiceDetails: React.FC = () => {
             <input
               type="text"
               id="account_number"
-              value={invoiceDetails.account_number}
+              value={invoiceDetails?.account_number}
               onChange={(e) =>
                 setInvoiceDetails({
                   ...invoiceDetails,
@@ -220,7 +220,7 @@ const InvoiceDetails: React.FC = () => {
             <input
               type="text"
               id="ifsc_code"
-              value={invoiceDetails.ifsc_code}
+              value={invoiceDetails?.ifsc_code}
               onChange={(e) =>
                 setInvoiceDetails({
                   ...invoiceDetails,
@@ -241,7 +241,7 @@ const InvoiceDetails: React.FC = () => {
             <input
               type="text"
               id="benificiary_number"
-              value={invoiceDetails.benificiary_number}
+              value={invoiceDetails?.benificiary_number}
               onChange={(e) =>
                 setInvoiceDetails({
                   ...invoiceDetails,
