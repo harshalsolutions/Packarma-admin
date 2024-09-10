@@ -42,16 +42,21 @@ const SystemDetails: React.FC = () => {
     }
   };
 
+  const updatePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Contact Us",
+    "can_update"
+  );
+
+  const createPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Contact Us",
+    "can_create"
+  );
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      !hasUpdateAndCreatePermissions(userContext, "Contact Us", "can_update") &&
-      !hasUpdateAndCreatePermissions(userContext, "Contact Us", "can_create")
-    ) {
-      toast.dismiss();
-      toast.error("You are not authorized!");
-      return;
-    }
+
     toast.loading("Updating system details...");
     try {
       const formData = {
@@ -80,7 +85,9 @@ const SystemDetails: React.FC = () => {
         <ErrorComp error={error} onRetry={fetchSystemDetails} />
       ) : (
         <form
-          onSubmit={handleFormSubmit}
+          onSubmit={
+            updatePermission && createPermission ? handleFormSubmit : undefined
+          }
           className="w-[40%] mt-10 gap-5 mx-auto"
         >
           <div className="mb-4">
@@ -94,6 +101,7 @@ const SystemDetails: React.FC = () => {
               type="email"
               id="system_email"
               value={systemDetails.system_email}
+              disabled={!updatePermission || !createPermission}
               onChange={(e) =>
                 setSystemDetails({
                   ...systemDetails,
@@ -115,6 +123,7 @@ const SystemDetails: React.FC = () => {
               type="tel"
               id="system_phone_number"
               value={systemDetails.system_phone_number}
+              disabled={!updatePermission || !createPermission}
               onChange={(e) =>
                 setSystemDetails({
                   ...systemDetails,
@@ -126,12 +135,14 @@ const SystemDetails: React.FC = () => {
             />
           </div>
           <div className="flex justify-center items-center mt-4 col-span-2">
-            <button
-              type="submit"
-              className="px-4 py-2 text-sm font-medium text-black bg-lime-500 rounded-md hover:bg-lime-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-            >
-              Update Details
-            </button>
+            {updatePermission && createPermission && (
+              <button
+                type="submit"
+                className="px-4 py-2 text-sm font-medium text-black bg-lime-500 rounded-md hover:bg-lime-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+              >
+                Update Details
+              </button>
+            )}
           </div>
         </form>
       )}

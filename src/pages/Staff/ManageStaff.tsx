@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Spinner } from "flowbite-react";
+import { Badge, Spinner } from "flowbite-react";
 import { MdOutlineRemoveRedEye, MdDeleteOutline } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
@@ -13,6 +13,7 @@ import { TbEdit } from "react-icons/tb";
 import PermissionDialog from "../../components/PermissionDialog";
 import { useUser } from "../../context/userContext";
 import toast from "react-hot-toast";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 
 interface StaffData {
   emailid: string;
@@ -64,6 +65,24 @@ const ManageStaff: React.FC = () => {
     address: "",
     permissions: [],
   });
+
+  const createPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Master",
+    "can_create"
+  );
+
+  const updatePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Master",
+    "can_update"
+  );
+
+  const deletePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Master",
+    "can_delete"
+  );
 
   useEffect(() => {
     fetchStaffForm();
@@ -183,9 +202,6 @@ const ManageStaff: React.FC = () => {
     setIsFormOpen(true);
   };
 
-  // console.log(userContext?.user);
-
-  // console.log(ADMIN_EMAIL);
   return (
     <div className="max-w-7xl mx-auto mt-8 px-4">
       <h1 className="text-2xl font-bold mb-4 border-l-8 text-black border-lime-500 pl-2">
@@ -197,7 +213,7 @@ const ManageStaff: React.FC = () => {
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
           />
-          {userContext?.user?.email == ADMIN_EMAIL && (
+          {userContext?.user?.email === ADMIN_EMAIL && createPermission && (
             <button
               onClick={handleAddNewAdmin}
               className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
@@ -252,12 +268,25 @@ const ManageStaff: React.FC = () => {
                           {staff.emailid}
                         </td>
                         <td className="px-6 py-4 text-gray-900">
-                          <ToggleSwitch
-                            checked={staff.status === "active"}
-                            onChange={() =>
-                              handleToggleStatus(staff.id, staff.status)
-                            }
-                          />
+                          {updatePermission && (
+                            <ToggleSwitch
+                              checked={staff.status === "active"}
+                              onChange={() =>
+                                handleToggleStatus(staff.id, staff.status)
+                              }
+                            />
+                          )}
+                          {!updatePermission && (
+                            <Badge
+                              className="!inline-block"
+                              color={
+                                staff.status === "active" ? "success" : "danger"
+                              }
+                            >
+                              {staff.status.charAt(0).toUpperCase() +
+                                staff.status.slice(1)}
+                            </Badge>
+                          )}
                         </td>
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
@@ -267,20 +296,24 @@ const ManageStaff: React.FC = () => {
                           >
                             <MdOutlineRemoveRedEye />
                           </button>
-                          <button
-                            onClick={() => handleEditStaff(staff)}
-                            className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
-                            aria-label="Edit"
-                          >
-                            <TbEdit />
-                          </button>
-                          <button
-                            onClick={() => setDeletePopupOpen(true)}
-                            className="text-2xl text-red-600 dark:text-red-500 hover:underline"
-                            aria-label="Delete"
-                          >
-                            <MdDeleteOutline />
-                          </button>
+                          {updatePermission && (
+                            <button
+                              onClick={() => handleEditStaff(staff)}
+                              className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
+                              aria-label="Edit"
+                            >
+                              <TbEdit />
+                            </button>
+                          )}
+                          {deletePermission && (
+                            <button
+                              onClick={() => setDeletePopupOpen(true)}
+                              className="text-2xl text-red-600 dark:text-red-500 hover:underline"
+                              aria-label="Delete"
+                            >
+                              <MdDeleteOutline />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))
