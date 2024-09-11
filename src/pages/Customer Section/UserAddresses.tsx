@@ -19,6 +19,7 @@ interface CustomerForm {
   firstname: string;
   lastname: string;
   email: string;
+  phone_number: string;
 }
 
 interface Pagination {
@@ -135,6 +136,9 @@ const CustomerAddresses: React.FC = () => {
                     Area
                   </th>
                   <th scope="col" className="px-6 py-3">
+                    Phone Number
+                  </th>
+                  <th scope="col" className="px-6 py-3">
                     Created At
                   </th>
                   <th scope="col" className="px-6 py-3">
@@ -163,6 +167,9 @@ const CustomerAddresses: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 text-gray-900">
                         {customerForm.area}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {customerForm.phone_number}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
                         {new Date(customerForm.created_at).toLocaleString()}

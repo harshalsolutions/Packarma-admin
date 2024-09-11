@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Spinner } from "flowbite-react";
+import { Card, Spinner } from "flowbite-react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaAddressBook,
+  FaPlusCircle,
+} from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
-import CustomPopup from "../../components/CustomPopup";
+import { AiOutlineClose } from "react-icons/ai";
+import AddCreditPopup from "../../components/AddCreditPopup";
 
 interface CustomerForm {
   user_id: number;
@@ -50,10 +56,18 @@ const Customer: React.FC = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerForm | null>(
     null
   );
-  const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
-  const [customerIdToDelete, setCustomerIdToDelete] = useState<number | null>(
-    null
-  );
+
+  const [addressList, setAddressList] = useState<string[]>([]);
+  const [showDetails, setShowDetails] = useState(false);
+  const [onAddressDetails, setOnAddressDetails] = useState({
+    name: "",
+    email: "",
+    phone_number: "",
+    credits: 0,
+  });
+
+  const [isAddCreditPopupOpen, setIsAddCreditPopupOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchCustomerForm();
@@ -80,169 +94,270 @@ const Customer: React.FC = () => {
     }
   };
 
-  const handleConfirmDelete = async () => {
-    if (customerIdToDelete !== null) {
-      try {
-        await api.delete(
-          `${BACKEND_API_KEY}/product/customers/${customerIdToDelete}`
-        );
-        fetchCustomerForm();
-      } catch (err) {
-        setError("Failed to delete customer");
-      }
-      setDeletePopupOpen(false);
-      setCustomerIdToDelete(null);
+  const fetchAddresses = async (userId: number) => {
+    try {
+      const response = await api.get(
+        `${BACKEND_API_KEY}/customer/users/addresses/${userId}`
+      );
+      setAddressList(response.data.data.addresses || []);
+      setShowDetails(true);
+      setOnAddressDetails({
+        name:
+          customerForm.find((user) => user.user_id === userId)?.firstname +
+            " " +
+            customerForm.find((user) => user.user_id === userId)?.lastname ||
+          "",
+        email:
+          customerForm.find((user) => user.user_id === userId)?.email || "",
+        phone_number:
+          customerForm.find((user) => user.user_id === userId)?.phone_number ||
+          "",
+        credits:
+          customerForm.find((user) => user.user_id === userId)?.credits || 0,
+      });
+    } catch (err) {
+      setError("Failed to fetch addresses");
     }
   };
 
-  const handleCancelDelete = () => {
-    setDeletePopupOpen(false);
-    setCustomerIdToDelete(null);
+  const handleAddCredits = (userId: number) => {
+    setSelectedUserId(userId);
+    setIsAddCreditPopupOpen(true);
+  };
+
+  const handleAddCreditsSubmit = async (userId: number, credits: number) => {
+    try {
+      await api.post(`${BACKEND_API_KEY}/customer/users/add-credit/${userId}`, {
+        credits,
+      });
+      console.log(`Added ${credits} credits for user ID: ${userId}`);
+      fetchCustomerForm();
+      setIsAddCreditPopupOpen(false);
+    } catch (err) {
+      setError("Failed to add credits");
+      setIsAddCreditPopupOpen(false);
+    }
   };
 
   return (
     <div className="max-w-7xl mx-auto mt-8 px-4">
-      <h1 className="text-2xl font-bold mb-4 border-l-8 text-black border-lime-500 pl-2">
-        Manage Customer
-      </h1>
-      <>
-        <EntriesPerPage
-          entriesPerPage={entriesPerPage}
-          setEntriesPerPage={setEntriesPerPage}
-        />
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <Spinner size="xl" />
-          </div>
-        ) : error ? (
-          <ErrorComp error={error} onRetry={fetchCustomerForm} />
-        ) : (
-          <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-6">
+      {showDetails ? (
+        <>
+          <div className="relative">
+            <h1 className="text-2xl font-bold mb-4 border-l-8 text-black border-lime-500 pl-2">
+              Address Details
+            </h1>
+            <Card className="relative m-6">
+              <button
+                onClick={() => {
+                  setShowDetails(false);
+                }}
+                className="absolute top-5 right-5"
+              >
+                <AiOutlineClose className="text-2xl" />
+              </button>
+              <div className="flex flex-col w-[60%]">
+                <div className="pb-1">
+                  <strong>Name:</strong> {onAddressDetails?.name}
+                </div>
+                <div className="pb-1">
+                  <strong>Email:</strong> {onAddressDetails?.email}
+                </div>
+                <div className="pb-1">
+                  <strong>Phone Number:</strong>{" "}
+                  {onAddressDetails?.phone_number}
+                </div>
+                <div className="pb-1">
+                  <strong>Credits:</strong> {onAddressDetails?.credits}
+                </div>
+              </div>
+            </Card>
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                   <th scope="col" className="px-6 py-3">
-                    Id
+                    Address Name
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    Name
+                    Building
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    Email Address
-                  </th>
-                  {/* <th scope="col" className="px-6 py-3">
-                    Phone Number
-                  </th> */}
-                  <th scope="col" className="px-6 py-3">
-                    Referal Code
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    GST Number
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Credits
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Created At
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    <span className="sr-only">Actions</span>
+                    Area
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {customerForm.length > 0 ? (
-                  customerForm.map((customerForm) => (
-                    <tr
-                      key={customerForm.user_id}
-                      className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                    >
-                      <td className="px-6 py-4 text-gray-900">
-                        {customerForm.user_id}
-                      </td>
-                      <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {customerForm.firstname} {customerForm.lastname}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        {customerForm.email}
-                      </td>
-                      {/* <td className="px-6 py-4 text-gray-900">
-                        {customerForm.country_code} {customerForm.phone_number}
-                      </td> */}
-                      <td className="px-6 py-4 text-gray-900">
-                        {customerForm.code}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        {customerForm.gst_number}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        {customerForm.credits}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
-                        {new Date(customerForm.createdAt).toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900 text-right">
-                        <button
-                          onClick={() => setSelectedCustomer(customerForm)}
-                          className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
-                          aria-label="Info"
-                        >
-                          <MdOutlineRemoveRedEye />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-4 text-center">
-                      No customer found
+                {addressList.map((address: any, index: any) => (
+                  <tr
+                    key={index}
+                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                  >
+                    <td className="px-6 py-4 text-gray-900">
+                      {address.address_name}
                     </td>
+                    <td className="px-6 py-4 text-gray-900">
+                      {address.building}
+                    </td>
+                    <td className="px-6 py-4 text-gray-900">{address.area}</td>
                   </tr>
-                )}
+                ))}
               </tbody>
             </table>
           </div>
-        )}
-        {!error && (
-          <p className="my-4 text-sm">
-            Showing {customerForm.length} out of {pagination.totalItems}{" "}
-            Customer
-          </p>
-        )}
-        {pagination.totalItems >= 10 && (
-          <div className="mt-4 flex justify-center items-center mb-8">
-            <button
-              className="px-2 py-1 rounded mr-2 disabled:opacity-50"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              aria-label="Previous page"
-            >
-              <FaChevronLeft />
-            </button>
-            {[...Array(pagination.totalPages)].map((_, index) => (
+        </>
+      ) : (
+        <>
+          <h1 className="text-2xl font-bold mb-4 border-l-8 text-black border-lime-500 pl-2">
+            Manage Customer
+          </h1>
+          <EntriesPerPage
+            entriesPerPage={entriesPerPage}
+            setEntriesPerPage={setEntriesPerPage}
+          />
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <Spinner size="xl" />
+            </div>
+          ) : error ? (
+            <ErrorComp error={error} onRetry={fetchCustomerForm} />
+          ) : (
+            <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-6">
+              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                  <tr>
+                    <th scope="col" className="px-6 py-3">
+                      Id
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Name
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Email Address
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Referal Code
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      GST Number
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Credits
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Created At
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      <span className="sr-only">Actions</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {customerForm.length > 0 ? (
+                    customerForm.map((customerForm) => (
+                      <tr
+                        key={customerForm.user_id}
+                        className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                      >
+                        <td className="px-6 py-4 text-gray-900">
+                          {customerForm.user_id}
+                        </td>
+                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                          {customerForm.firstname} {customerForm.lastname}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {customerForm.email}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {customerForm.code}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {customerForm.gst_number}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {customerForm.credits}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {new Date(customerForm.createdAt).toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900 text-right flex justify-end">
+                          <button
+                            onClick={() => setSelectedCustomer(customerForm)}
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                            aria-label="Info"
+                          >
+                            <MdOutlineRemoveRedEye />
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleAddCredits(customerForm.user_id)
+                            }
+                            className="text-xl text-green-600 dark:text-green-500 hover:underline mr-4"
+                            aria-label="Add Credits"
+                          >
+                            <FaPlusCircle />
+                          </button>
+                          <button
+                            onClick={() => fetchAddresses(customerForm.user_id)}
+                            className="text-xl text-purple-600 dark:text-purple-500 hover:underline"
+                            aria-label="Show Addresses"
+                          >
+                            <FaAddressBook />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-4 text-center">
+                        No customer found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {!error && (
+            <p className="my-4 text-sm">
+              Showing {customerForm.length} out of {pagination.totalItems}{" "}
+              Customer
+            </p>
+          )}
+          {pagination.totalItems >= 10 && (
+            <div className="mt-4 flex justify-center items-center mb-8">
               <button
-                key={index + 1}
-                className={`px-2 py-1 rounded border mr-2 ${
-                  index + 1 === pagination.currentPage
-                    ? "bg-lime-500 text-white"
-                    : ""
-                }`}
-                onClick={() => setCurrentPage(index + 1)}
+                className="px-2 py-1 rounded mr-2 disabled:opacity-50"
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                aria-label="Previous page"
               >
-                {index + 1}
+                <FaChevronLeft />
               </button>
-            ))}
-            <button
-              className="px-2 py-1 rounded disabled:opacity-50"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === pagination.totalPages}
-              aria-label="Next page"
-            >
-              <FaChevronRight />
-            </button>
-          </div>
-        )}
-      </>
+              {[...Array(pagination.totalPages)].map((_, index) => (
+                <button
+                  key={index + 1}
+                  className={`px-2 py-1 rounded border mr-2 ${
+                    index + 1 === pagination.currentPage
+                      ? "bg-lime-500 text-white"
+                      : ""
+                  }`}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </button>
+              ))}
+              <button
+                className="px-2 py-1 rounded disabled:opacity-50"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === pagination.totalPages}
+                aria-label="Next page"
+              >
+                <FaChevronRight />
+              </button>
+            </div>
+          )}
+        </>
+      )}
       {selectedCustomer && (
         <DetailsPopup
           title="Customer Details"
@@ -303,14 +418,12 @@ const Customer: React.FC = () => {
           onClose={() => setSelectedCustomer(null)}
         />
       )}
-      {isDeletePopupOpen && (
-        <CustomPopup
-          title="Confirm Deletion"
-          description="Are you sure you want to delete this customer?"
-          onConfirm={handleConfirmDelete}
-          onCancel={handleCancelDelete}
-        />
-      )}
+      <AddCreditPopup
+        isOpen={isAddCreditPopupOpen}
+        onClose={() => setIsAddCreditPopupOpen(false)}
+        onAddCredits={handleAddCreditsSubmit}
+        userId={selectedUserId!}
+      />
     </div>
   );
 };

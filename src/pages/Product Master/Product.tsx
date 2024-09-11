@@ -70,12 +70,7 @@ const Product: React.FC = () => {
     useState("");
 
   const [filteredSubCategories, setFilteredSubCategories] = useState<any[]>([]);
-  const [filteredProductForms, setFilteredProductForms] = useState<any[]>([]);
-  const [filteredPackagingTreatments, setFilteredPackagingTreatments] =
-    useState<any[]>([]);
-  const [filteredMeasurementUnits, setFilteredMeasurementUnits] = useState<
-    any[]
-  >([]);
+  useState<any[]>([]);
 
   useEffect(() => {
     fetchProducts();
