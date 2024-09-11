@@ -69,10 +69,35 @@ const Product: React.FC = () => {
   const [selectedMeasurementUnitId, setSelectedMeasurementUnitId] =
     useState("");
 
+  const [filteredSubCategories, setFilteredSubCategories] = useState<any[]>([]);
+  const [filteredProductForms, setFilteredProductForms] = useState<any[]>([]);
+  const [filteredPackagingTreatments, setFilteredPackagingTreatments] =
+    useState<any[]>([]);
+  const [filteredMeasurementUnits, setFilteredMeasurementUnits] = useState<
+    any[]
+  >([]);
+
   useEffect(() => {
     fetchProducts();
     fetchAllData();
   }, [currentPage, entriesPerPage]);
+
+  useEffect(() => {
+    filterFieldsByCategory();
+  }, [selectedCategoryId]);
+
+  const filterFieldsByCategory = () => {
+    if (selectedCategoryId) {
+      setFilteredSubCategories(
+        subCategories.filter(
+          (subCategory) =>
+            subCategory.category_id === Number(selectedCategoryId)
+        )
+      );
+    } else {
+      setFilteredSubCategories([]);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -531,7 +556,7 @@ const Product: React.FC = () => {
                 <option value="" disabled>
                   Select a sub-category
                 </option>
-                {subCategories.map((subCategory) => (
+                {filteredSubCategories.map((subCategory) => (
                   <option key={subCategory.id} value={subCategory.id}>
                     {subCategory.name}
                   </option>

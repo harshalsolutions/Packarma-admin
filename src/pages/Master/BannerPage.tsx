@@ -157,8 +157,10 @@ const BannerPage: React.FC = () => {
     setEditingBanner(banner);
     setTitle(banner.title);
     setDescription(banner.description);
-    setStartDateTime(banner.start_date_time);
-    setEndDateTime(banner.end_date_time);
+    setStartDateTime(
+      new Date(banner.start_date_time).toISOString().slice(0, 16)
+    );
+    setEndDateTime(new Date(banner.end_date_time).toISOString().slice(0, 16));
     setLink(banner.link);
     setAppPage(banner.app_page);
     setBannerImage(null);

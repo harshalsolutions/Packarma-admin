@@ -494,6 +494,10 @@ const PackagingTreatmentPage: React.FC = () => {
             { label: "ID", value: selectedPackagingTreatment.id.toString() },
             { label: "Name", value: selectedPackagingTreatment.name },
             {
+              label: "Short Description",
+              value: selectedPackagingTreatment.short_description,
+            },
+            {
               label: "Image",
               value: (
                 <img

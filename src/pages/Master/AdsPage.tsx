@@ -37,7 +37,7 @@ interface PaginationData {
   itemsPerPage: number;
 }
 
-const BannerPage: React.FC = () => {
+const AdsPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [entriesPerPage, setEntriesPerPage] = useState(10);
   const [advertisements, setAdvertisements] = useState<Advertisement[]>([]);
@@ -166,8 +166,12 @@ const BannerPage: React.FC = () => {
     setEditingAdvertisement(advertisement);
     setTitle(advertisement.title);
     setDescription(advertisement.description);
-    setStartDateTime(advertisement.start_date_time);
-    setEndDateTime(advertisement.end_date_time);
+    setStartDateTime(
+      new Date(advertisement.start_date_time).toISOString().slice(0, 16)
+    );
+    setEndDateTime(
+      new Date(advertisement.end_date_time).toISOString().slice(0, 16)
+    );
     setLink(advertisement.link);
     setAppPage(advertisement.app_page);
     setAdvertisementImage(null);
@@ -438,7 +442,7 @@ const BannerPage: React.FC = () => {
                   onClick={openAddForm}
                   className="bg-lime-500 text-black px-4 py-2 rounded mb-4 block ml-auto mr-4"
                 >
-                  Add New Banner
+                  Add New Advertisement
                 </button>
               )}
             </div>
@@ -758,7 +762,7 @@ const BannerPage: React.FC = () => {
                     htmlFor="image"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Banner Image
+                    Advertisement Image
                   </label>
                   <input
                     type="file"
@@ -807,7 +811,7 @@ const BannerPage: React.FC = () => {
           )}
           {selectedAdvertisement && (
             <DetailsPopup
-              title="Banner Details"
+              title="Advertisement Details"
               fields={[
                 { label: "ID", value: selectedAdvertisement.id.toString() },
                 { label: "Title", value: selectedAdvertisement.title },
@@ -834,7 +838,7 @@ const BannerPage: React.FC = () => {
                 { label: "Link", value: selectedAdvertisement.link },
                 { label: "App Page", value: selectedAdvertisement.app_page },
                 {
-                  label: "Banner Image",
+                  label: "Advertisement Image",
                   value: (
                     <img
                       src={BACKEND_MEDIA_LINK + selectedAdvertisement.image}
@@ -880,4 +884,4 @@ const BannerPage: React.FC = () => {
   );
 };
 
-export default BannerPage;
+export default AdsPage;

@@ -214,7 +214,13 @@ const SidebarComponent: FC = function () {
           </Sidebar.Collapse>
         ) : (
           <Sidebar.Item
-            onClick={() => navigate(item.path)}
+            onClick={() => {
+              if (item.path === currentPage) {
+                window.location.reload();
+              } else {
+                navigate(item.path);
+              }
+            }}
             icon={({ className }: { className: string }) => (
               <item.icon
                 className={`${className} ${
