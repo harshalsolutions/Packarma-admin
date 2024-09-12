@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Spinner } from "flowbite-react";
+import { Badge, Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
@@ -10,6 +10,8 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import { useUser } from "../../context/userContext";
 
 interface MeasurementUnit {
   id: number;
@@ -54,6 +56,26 @@ const MeasurementUnit: React.FC = () => {
   >(null);
 
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+
+  const userContext = useUser();
+
+  const updatePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_update"
+  );
+
+  const createPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_create"
+  );
+
+  const deletePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_delete"
+  );
 
   useEffect(() => {
     fetchMeasurementUnits();
@@ -181,12 +203,14 @@ const MeasurementUnit: React.FC = () => {
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
           />
-          <button
-            onClick={openAddForm}
-            className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
-          >
-            Add New Measurement Unit
-          </button>
+          {createPermission && (
+            <button
+              onClick={openAddForm}
+              className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+            >
+              Add New Measurement Unit
+            </button>
+          )}
         </div>
       )}
       {!isFormOpen && (
@@ -235,17 +259,34 @@ const MeasurementUnit: React.FC = () => {
                         <td className="px-6 py-4 text-gray-900">
                           {measurementUnit.symbol}
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
-                          <ToggleSwitch
-                            checked={measurementUnit.status === "active"}
-                            onChange={() =>
-                              toggleStatus(
-                                measurementUnit.id,
-                                measurementUnit.status
-                              )
-                            }
-                          />
-                        </td>
+                        {updatePermission && (
+                          <td className="px-6 py-4 text-gray-900">
+                            <ToggleSwitch
+                              checked={measurementUnit.status === "active"}
+                              onChange={() =>
+                                toggleStatus(
+                                  measurementUnit.id,
+                                  measurementUnit.status
+                                )
+                              }
+                            />
+                          </td>
+                        )}
+                        {!updatePermission && (
+                          <td className="px-6 py-4 text-gray-900">
+                            <Badge
+                              className="!inline-block"
+                              color={
+                                measurementUnit.status === "active"
+                                  ? "success"
+                                  : "failure"
+                              }
+                            >
+                              {measurementUnit.status.charAt(0).toUpperCase() +
+                                measurementUnit.status.slice(1)}
+                            </Badge>
+                          </td>
+                        )}
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
                             onClick={() =>
@@ -256,22 +297,26 @@ const MeasurementUnit: React.FC = () => {
                           >
                             <MdOutlineRemoveRedEye />
                           </button>
-                          <button
-                            onClick={() => openEditForm(measurementUnit)}
-                            className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
-                            aria-label="Edit"
-                          >
-                            <TbEdit />
-                          </button>
-                          <button
-                            onClick={() =>
-                              deleteMeasurementUnit(measurementUnit.id)
-                            }
-                            className="text-2xl text-red-600 dark:text-red-500 hover:underline"
-                            aria-label="Delete"
-                          >
-                            <MdDeleteOutline />
-                          </button>
+                          {updatePermission && (
+                            <button
+                              onClick={() => openEditForm(measurementUnit)}
+                              className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
+                              aria-label="Edit"
+                            >
+                              <TbEdit />
+                            </button>
+                          )}
+                          {deletePermission && (
+                            <button
+                              onClick={() =>
+                                deleteMeasurementUnit(measurementUnit.id)
+                              }
+                              className="text-2xl text-red-600 dark:text-red-500 hover:underline"
+                              aria-label="Delete"
+                            >
+                              <MdDeleteOutline />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Spinner } from "flowbite-react";
+import { Badge, Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
@@ -11,6 +11,8 @@ import DetailsPopup from "../../components/DetailsPopup";
 import { toast } from "react-hot-toast";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
+import { useUser } from "../../context/userContext";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 
 interface SubCategory {
   id: number;
@@ -59,6 +61,26 @@ const SubCategoryPage: React.FC = () => {
   const [subCategoryIdToDelete, setSubCategoryIdToDelete] = useState<
     number | null
   >(null);
+
+  const userContext = useUser();
+
+  const updatePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_update"
+  );
+
+  const createPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_create"
+  );
+
+  const deletePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_delete"
+  );
 
   useEffect(() => {
     fetchSubCategories();
@@ -223,12 +245,14 @@ const SubCategoryPage: React.FC = () => {
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
           />
-          <button
-            onClick={openAddForm}
-            className="bg-lime-500 text-black px-4 py-2 rounded mb-4 block ml-auto mr-4"
-          >
-            Add New Subcategory
-          </button>
+          {createPermission && (
+            <button
+              onClick={openAddForm}
+              className="bg-lime-500 text-black px-4 py-2 rounded mb-4 block ml-auto mr-4"
+            >
+              Add New Subcategory
+            </button>
+          )}
         </div>
       )}
       {!isFormOpen && (
@@ -287,14 +311,31 @@ const SubCategoryPage: React.FC = () => {
                         <td className="px-6 py-4 text-gray-900">
                           {subCategory.category_name}
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
-                          <ToggleSwitch
-                            checked={subCategory.status === "active"}
-                            onChange={() =>
-                              toggleStatus(subCategory.id, subCategory.status)
-                            }
-                          />
-                        </td>
+                        {updatePermission && (
+                          <td className="px-6 py-4 text-gray-900">
+                            <ToggleSwitch
+                              checked={subCategory.status === "active"}
+                              onChange={() =>
+                                toggleStatus(subCategory.id, subCategory.status)
+                              }
+                            />
+                          </td>
+                        )}
+                        {!updatePermission && (
+                          <td className="px-6 py-4 text-gray-900 text-right">
+                            <Badge
+                              className="!inline-block"
+                              color={
+                                subCategory.status === "active"
+                                  ? "success"
+                                  : "failure"
+                              }
+                            >
+                              {subCategory.status.charAt(0).toUpperCase() +
+                                subCategory.status.slice(1)}
+                            </Badge>
+                          </td>
+                        )}
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
                             onClick={() => setSelectedSubcategory(subCategory)}
@@ -303,20 +344,24 @@ const SubCategoryPage: React.FC = () => {
                           >
                             <MdOutlineRemoveRedEye />
                           </button>
-                          <button
-                            onClick={() => openEditForm(subCategory)}
-                            className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
-                            aria-label="Edit"
-                          >
-                            <TbEdit />
-                          </button>
-                          <button
-                            onClick={() => deleteSubCategory(subCategory.id)}
-                            className="text-2xl text-red-600 dark:text-red-500 hover:underline"
-                            aria-label="Delete"
-                          >
-                            <MdDeleteOutline />
-                          </button>
+                          {updatePermission && (
+                            <button
+                              onClick={() => openEditForm(subCategory)}
+                              className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
+                              aria-label="Edit"
+                            >
+                              <TbEdit />
+                            </button>
+                          )}
+                          {deletePermission && (
+                            <button
+                              onClick={() => deleteSubCategory(subCategory.id)}
+                              className="text-2xl text-red-600 dark:text-red-500 hover:underline"
+                              aria-label="Delete"
+                            >
+                              <MdDeleteOutline />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))

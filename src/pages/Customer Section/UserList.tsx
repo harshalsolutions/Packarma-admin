@@ -14,6 +14,8 @@ import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import { AiOutlineClose } from "react-icons/ai";
 import AddCreditPopup from "../../components/AddCreditPopup";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import { useUser } from "../../context/userContext";
 
 interface CustomerForm {
   user_id: number;
@@ -69,9 +71,17 @@ const Customer: React.FC = () => {
   const [isAddCreditPopupOpen, setIsAddCreditPopupOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
+  const userContext = useUser();
+
   useEffect(() => {
     fetchCustomerForm();
   }, [currentPage, entriesPerPage]);
+
+  const updatePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Customer Section",
+    "can_update"
+  );
 
   const fetchCustomerForm = async () => {
     try {
@@ -280,13 +290,15 @@ const Customer: React.FC = () => {
                           {new Date(customerForm.createdAt).toLocaleString()}
                         </td>
                         <td className="px-6 py-4 text-gray-900 text-right flex justify-end">
-                          <button
-                            onClick={() => setSelectedCustomer(customerForm)}
-                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
-                            aria-label="Info"
-                          >
-                            <MdOutlineRemoveRedEye />
-                          </button>
+                          {updatePermission && (
+                            <button
+                              onClick={() => setSelectedCustomer(customerForm)}
+                              className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                              aria-label="Info"
+                            >
+                              <MdOutlineRemoveRedEye />
+                            </button>
+                          )}
                           <button
                             onClick={() =>
                               handleAddCredits(customerForm.user_id)

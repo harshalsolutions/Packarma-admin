@@ -556,7 +556,7 @@ const AdsPage: React.FC = () => {
                                   color={
                                     advertisement.status === "active"
                                       ? "success"
-                                      : "danger"
+                                      : "failure"
                                   }
                                 >
                                   {advertisement.status

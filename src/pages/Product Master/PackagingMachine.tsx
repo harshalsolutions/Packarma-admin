@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Spinner } from "flowbite-react";
+import { Badge, Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
@@ -10,6 +10,8 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import { useUser } from "../../context/userContext";
 
 interface PackagingMachine {
   id: number;
@@ -56,6 +58,26 @@ const PackagingMachine: React.FC = () => {
   const [packagingMachineIdToDelete, setPackagingMachineIdToDelete] = useState<
     number | null
   >(null);
+
+  const userContext = useUser();
+
+  const updatePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_update"
+  );
+
+  const createPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_create"
+  );
+
+  const deletePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_delete"
+  );
 
   useEffect(() => {
     fetchPackagingMachine();
@@ -203,12 +225,14 @@ const PackagingMachine: React.FC = () => {
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
           />
-          <button
-            onClick={openAddForm}
-            className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
-          >
-            Add New Packaging Machine
-          </button>
+          {createPermission && (
+            <button
+              onClick={openAddForm}
+              className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+            >
+              Add New Packaging Machine
+            </button>
+          )}
         </div>
       )}
       {!isFormOpen && (
@@ -267,17 +291,34 @@ const PackagingMachine: React.FC = () => {
                             className="w-20 h-20 object-cover"
                           />
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
-                          <ToggleSwitch
-                            checked={packagingMachine.status === "active"}
-                            onChange={() =>
-                              toggleStatus(
-                                packagingMachine.id,
-                                packagingMachine.status
-                              )
-                            }
-                          />
-                        </td>
+                        {updatePermission && (
+                          <td className="px-6 py-4 text-gray-900">
+                            <ToggleSwitch
+                              checked={packagingMachine.status === "active"}
+                              onChange={() =>
+                                toggleStatus(
+                                  packagingMachine.id,
+                                  packagingMachine.status
+                                )
+                              }
+                            />
+                          </td>
+                        )}
+                        {!updatePermission && (
+                          <td className="px-6 py-4 text-gray-900">
+                            <Badge
+                              className="!inline-block"
+                              color={
+                                packagingMachine.status === "active"
+                                  ? "success"
+                                  : "failure"
+                              }
+                            >
+                              {packagingMachine.status.charAt(0).toUpperCase() +
+                                packagingMachine.status.slice(1)}
+                            </Badge>
+                          </td>
+                        )}
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
                             onClick={() =>
@@ -288,22 +329,26 @@ const PackagingMachine: React.FC = () => {
                           >
                             <MdOutlineRemoveRedEye />
                           </button>
-                          <button
-                            onClick={() => openEditForm(packagingMachine)}
-                            className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
-                            aria-label="Edit"
-                          >
-                            <TbEdit />
-                          </button>
-                          <button
-                            onClick={() =>
-                              deletePackagingMachine(packagingMachine.id)
-                            }
-                            className="text-2xl text-red-600 dark:text-red-500 hover:underline"
-                            aria-label="Delete"
-                          >
-                            <MdDeleteOutline />
-                          </button>
+                          {updatePermission && (
+                            <button
+                              onClick={() => openEditForm(packagingMachine)}
+                              className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
+                              aria-label="Edit"
+                            >
+                              <TbEdit />
+                            </button>
+                          )}
+                          {deletePermission && (
+                            <button
+                              onClick={() =>
+                                deletePackagingMachine(packagingMachine.id)
+                              }
+                              className="text-2xl text-red-600 dark:text-red-500 hover:underline"
+                              aria-label="Delete"
+                            >
+                              <MdDeleteOutline />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Spinner } from "flowbite-react";
+import { Badge, Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
@@ -10,6 +10,8 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
+import { useUser } from "../../context/userContext";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 
 interface ProductForm {
   id: number;
@@ -53,6 +55,26 @@ const ProductForm: React.FC = () => {
   const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
   const [productIdToDelete, setProductIdToDelete] = useState<number | null>(
     null
+  );
+
+  const userContext = useUser();
+
+  const updatePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_update"
+  );
+
+  const createPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_create"
+  );
+
+  const deletePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_delete"
   );
 
   useEffect(() => {
@@ -198,12 +220,14 @@ const ProductForm: React.FC = () => {
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
           />
-          <button
-            onClick={openAddForm}
-            className="bg-lime-500 text-black px-4 py-2 rounded mb-4 block ml-auto mr-4"
-          >
-            Add New Product Form
-          </button>
+          {createPermission && (
+            <button
+              onClick={openAddForm}
+              className="bg-lime-500 text-black px-4 py-2 rounded mb-4 block ml-auto mr-4"
+            >
+              Add New Product Form
+            </button>
+          )}
         </div>
       )}
       {!isFormOpen && (
@@ -262,14 +286,31 @@ const ProductForm: React.FC = () => {
                             className="w-20 h-20 object-cover"
                           />
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
-                          <ToggleSwitch
-                            checked={productForm.status === "active"}
-                            onChange={() =>
-                              toggleStatus(productForm.id, productForm.status)
-                            }
-                          />
-                        </td>
+                        {updatePermission && (
+                          <td className="px-6 py-4 text-gray-900">
+                            <ToggleSwitch
+                              checked={productForm.status === "active"}
+                              onChange={() =>
+                                toggleStatus(productForm.id, productForm.status)
+                              }
+                            />
+                          </td>
+                        )}
+                        {!updatePermission && (
+                          <td className="px-6 py-4 text-gray-900">
+                            <Badge
+                              className="!inline-block"
+                              color={
+                                productForm.status === "active"
+                                  ? "success"
+                                  : "failure"
+                              }
+                            >
+                              {productForm.status.charAt(0).toUpperCase() +
+                                productForm.status.slice(1)}
+                            </Badge>
+                          </td>
+                        )}
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
                             onClick={() => setSelectedProductForm(productForm)}
@@ -278,20 +319,24 @@ const ProductForm: React.FC = () => {
                           >
                             <MdOutlineRemoveRedEye />
                           </button>
-                          <button
-                            onClick={() => openEditForm(productForm)}
-                            className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
-                            aria-label="Edit"
-                          >
-                            <TbEdit />
-                          </button>
-                          <button
-                            onClick={() => deleteProductForm(productForm.id)}
-                            className="text-2xl text-red-600 dark:text-red-500 hover:underline"
-                            aria-label="Delete"
-                          >
-                            <MdDeleteOutline />
-                          </button>
+                          {updatePermission && (
+                            <button
+                              onClick={() => openEditForm(productForm)}
+                              className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
+                              aria-label="Edit"
+                            >
+                              <TbEdit />
+                            </button>
+                          )}
+                          {deletePermission && (
+                            <button
+                              onClick={() => deleteProductForm(productForm.id)}
+                              className="text-2xl text-red-600 dark:text-red-500 hover:underline"
+                              aria-label="Delete"
+                            >
+                              <MdDeleteOutline />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))

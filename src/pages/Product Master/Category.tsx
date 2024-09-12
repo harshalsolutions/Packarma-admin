@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Spinner } from "flowbite-react";
+import { Badge, Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
@@ -11,6 +11,8 @@ import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import toast from "react-hot-toast";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import { useUser } from "../../context/userContext";
 
 interface Category {
   id: number;
@@ -52,6 +54,26 @@ const CategoryPage: React.FC = () => {
   const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
   const [categoryIdToDelete, setCategoryIdToDelete] = useState<number | null>(
     null
+  );
+
+  const userContext = useUser();
+
+  const updatePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_update"
+  );
+
+  const createPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_create"
+  );
+
+  const deletePermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_delete"
   );
 
   useEffect(() => {
@@ -198,12 +220,14 @@ const CategoryPage: React.FC = () => {
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
           />
-          <button
-            onClick={openAddForm}
-            className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
-          >
-            Add New Category
-          </button>
+          {createPermission && (
+            <button
+              onClick={openAddForm}
+              className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+            >
+              Add New Category
+            </button>
+          )}
         </div>
       )}
       {!isFormOpen && (
@@ -256,14 +280,31 @@ const CategoryPage: React.FC = () => {
                             className="w-20 h-20 object-cover"
                           />
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
-                          <ToggleSwitch
-                            checked={category.status === "active"}
-                            onChange={() =>
-                              toggleStatus(category.id, category.status)
-                            }
-                          />
-                        </td>
+                        {updatePermission && (
+                          <td className="px-6 py-4 text-gray-900">
+                            <ToggleSwitch
+                              checked={category.status === "active"}
+                              onChange={() =>
+                                toggleStatus(category.id, category.status)
+                              }
+                            />
+                          </td>
+                        )}
+                        {!updatePermission && (
+                          <td className="px-6 py-4 text-gray-900">
+                            <Badge
+                              className="!inline-block"
+                              color={
+                                category.status === "active"
+                                  ? "success"
+                                  : "failure"
+                              }
+                            >
+                              {category.status.charAt(0).toUpperCase() +
+                                category.status.slice(1)}
+                            </Badge>
+                          </td>
+                        )}
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
                             onClick={() => setSelectedCategory(category)}
@@ -272,22 +313,26 @@ const CategoryPage: React.FC = () => {
                           >
                             <MdOutlineRemoveRedEye />
                           </button>
-                          <button
-                            onClick={() => openEditForm(category)}
-                            className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-4"
-                            aria-label="Edit"
-                          >
-                            <TbEdit />
-                          </button>
-                          <button
-                            onClick={() =>
-                              deleteCategory(category.id.toString())
-                            }
-                            className="text-2xl text-red-600 dark:text-red-500 hover:underline"
-                            aria-label="Delete"
-                          >
-                            <MdDeleteOutline />
-                          </button>
+                          {updatePermission && (
+                            <button
+                              onClick={() => openEditForm(category)}
+                              className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-4"
+                              aria-label="Edit"
+                            >
+                              <TbEdit />
+                            </button>
+                          )}
+                          {deletePermission && (
+                            <button
+                              onClick={() =>
+                                deleteCategory(category.id.toString())
+                              }
+                              className="text-2xl text-red-600 dark:text-red-500 hover:underline"
+                              aria-label="Delete"
+                            >
+                              <MdDeleteOutline />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))

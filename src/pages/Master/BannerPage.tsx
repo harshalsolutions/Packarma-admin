@@ -529,7 +529,7 @@ const BannerPage: React.FC = () => {
                                   color={
                                     banner.status === "active"
                                       ? "success"
-                                      : "danger"
+                                      : "failure"
                                   }
                                 >
                                   {banner.status.charAt(0).toUpperCase() +

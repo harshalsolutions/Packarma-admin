@@ -268,25 +268,34 @@ const ManageStaff: React.FC = () => {
                           {staff.emailid}
                         </td>
                         <td className="px-6 py-4 text-gray-900">
-                          {updatePermission && (
-                            <ToggleSwitch
-                              checked={staff.status === "active"}
-                              onChange={() =>
-                                handleToggleStatus(staff.id, staff.status)
-                              }
-                            />
-                          )}
-                          {!updatePermission && (
-                            <Badge
-                              className="!inline-block"
-                              color={
-                                staff.status === "active" ? "success" : "danger"
-                              }
-                            >
-                              {staff.status.charAt(0).toUpperCase() +
-                                staff.status.slice(1)}
+                          {ADMIN_EMAIL === staff.emailid ? (
+                            <Badge className="!inline-block" color="success">
+                              Active
                             </Badge>
+                          ) : (
+                            updatePermission && (
+                              <ToggleSwitch
+                                checked={staff.status === "active"}
+                                onChange={() =>
+                                  handleToggleStatus(staff.id, staff.status)
+                                }
+                              />
+                            )
                           )}
+                          {!updatePermission &&
+                            ADMIN_EMAIL !== staff.emailid && (
+                              <Badge
+                                className="!inline-block"
+                                color={
+                                  staff.status === "active"
+                                    ? "success"
+                                    : "failure"
+                                }
+                              >
+                                {staff.status.charAt(0).toUpperCase() +
+                                  staff.status.slice(1)}
+                              </Badge>
+                            )}
                         </td>
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
@@ -524,7 +533,9 @@ const ManageStaff: React.FC = () => {
             </div>
           </form>
           <hr className="w-full my-8" />
-          <PermissionDialog id={editStaff?.id || 0} />
+          {ADMIN_EMAIL !== formData.emailid && (
+            <PermissionDialog id={editStaff?.id || 0} />
+          )}
         </div>
       )}
     </div>
