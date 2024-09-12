@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Card, Spinner } from "flowbite-react";
+import { Badge, Card, Spinner, TextInput } from "flowbite-react";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaRegFileExcel } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { toast } from "react-hot-toast";
 import { ErrorComp } from "../../components/ErrorComp";
@@ -65,6 +65,8 @@ const BannerPage: React.FC = () => {
   const [bannerIdToDelete, setBannerIdToDelete] = useState<number | null>(null);
   const [activityLog, setActivityLog] = useState<any>(null);
   const [showDetails, setShowDetails] = useState(false);
+  const [titleFilter, setTitleFilter] = useState("");
+  const [debouncedTitleFilter, setDebouncedTitleFilter] = useState(titleFilter);
 
   const userContext = useUser();
 
@@ -86,9 +88,25 @@ const BannerPage: React.FC = () => {
     "can_delete"
   );
 
+  const exportPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Master",
+    "can_export"
+  );
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedTitleFilter(titleFilter);
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [titleFilter]);
+
   useEffect(() => {
     fetchBanners();
-  }, [currentPage, entriesPerPage]);
+  }, [currentPage, entriesPerPage, debouncedTitleFilter]);
 
   const fetchBanners = async () => {
     try {
@@ -97,17 +115,51 @@ const BannerPage: React.FC = () => {
         params: {
           page: currentPage,
           limit: entriesPerPage,
+          search: debouncedTitleFilter,
         },
       });
-      setBanners(response.data.data.banners || []);
-      if (response.data.data.pagination) {
+      if (response.data.success) {
+        if (response.data.data) {
+          setBanners(response.data.data?.banners || []);
+        } else {
+          setBanners([]);
+        }
+      }
+      if (response.data?.data?.pagination) {
         setPagination(response.data.data.pagination);
       }
       setLoading(false);
       setError(null);
     } catch (err: any) {
+      console.log(err);
       setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
+    }
+  };
+
+  const exportBanner = async (id: number) => {
+    try {
+      const response = await api.get(
+        `${BACKEND_API_KEY}/master/export-banner/${id}`,
+        {
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      let title =
+        "banner_" +
+        id +
+        "_exported(" +
+        new Date().toISOString().slice(0, 16).replace("T", " ") +
+        ").xlsx";
+      link.setAttribute("download", title);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      toast.error("Failed to export banner");
     }
   };
 
@@ -415,10 +467,17 @@ const BannerPage: React.FC = () => {
                 entriesPerPage={entriesPerPage}
                 setEntriesPerPage={setEntriesPerPage}
               />
+              <TextInput
+                type="text"
+                className="w-[25%] ml-auto mr-4"
+                placeholder="Search by title"
+                value={titleFilter}
+                onChange={(e) => setTitleFilter(e.target.value)}
+              />
               {createPermission && (
                 <button
                   onClick={openAddForm}
-                  className="bg-lime-500 text-black px-4 py-2 rounded mb-4 block ml-auto mr-4"
+                  className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
                 >
                   Add New Banner
                 </button>
@@ -435,35 +494,35 @@ const BannerPage: React.FC = () => {
                 <ErrorComp error={error} onRetry={fetchBanners} />
               ) : (
                 <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-                  <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                      <tr>
-                        <th scope="col" className="px-6 py-3">
-                          Id
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Title
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Views
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Clicks
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Image
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Status
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          <span className="sr-only">Actions</span>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {banners.length > 0 ? (
-                        banners.map((banner) => (
+                  {banners.length > 0 ? (
+                    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                          <th scope="col" className="px-6 py-3">
+                            Id
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Title
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Views
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Clicks
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Image
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Status
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            <span className="sr-only">Actions</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {banners.map((banner) => (
                           <tr
                             key={banner.id}
                             className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
@@ -538,6 +597,15 @@ const BannerPage: React.FC = () => {
                               </td>
                             )}
                             <td className="px-6 py-4 text-gray-900 text-right">
+                              {exportPermission && (
+                                <button
+                                  onClick={() => exportBanner(banner.id)}
+                                  className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
+                                  aria-label="Export"
+                                >
+                                  <FaRegFileExcel />
+                                </button>
+                              )}
                               <button
                                 onClick={() => setSelectedBanner(banner)}
                                 className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
@@ -567,16 +635,14 @@ const BannerPage: React.FC = () => {
                               )}
                             </td>
                           </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan={5} className="px-6 py-4 text-center">
-                            No banners found
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="px-6 py-4 text-center text-gray-500">
+                      No banners found
+                    </div>
+                  )}
                 </div>
               )}
               {!error && (
@@ -789,9 +855,16 @@ const BannerPage: React.FC = () => {
                 },
                 {
                   label: "Start Date Time",
-                  value: selectedBanner.start_date_time,
+                  value: new Date(
+                    selectedBanner.start_date_time
+                  ).toLocaleString(),
                 },
-                { label: "End Date Time", value: selectedBanner.end_date_time },
+                {
+                  label: "End Date Time",
+                  value: new Date(
+                    selectedBanner.end_date_time
+                  ).toLocaleString(),
+                },
                 { label: "Link", value: selectedBanner.link },
                 { label: "App Page", value: selectedBanner.app_page },
                 {

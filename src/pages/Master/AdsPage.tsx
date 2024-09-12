@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Card, Spinner } from "flowbite-react";
+import { Badge, Card, Spinner, TextInput } from "flowbite-react";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaRegFileExcel } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { toast } from "react-hot-toast";
 import { ErrorComp } from "../../components/ErrorComp";
@@ -71,6 +71,8 @@ const AdsPage: React.FC = () => {
   >(null);
   const [activityLog, setActivityLog] = useState<any>(null);
   const [showDetails, setShowDetails] = useState(false);
+  const [titleFilter, setTitleFilter] = useState("");
+  const [debouncedTitleFilter, setDebouncedTitleFilter] = useState(titleFilter);
 
   const userContext = useUser();
 
@@ -92,9 +94,25 @@ const AdsPage: React.FC = () => {
     "can_delete"
   );
 
+  const exportPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Master",
+    "can_export"
+  );
+
   useEffect(() => {
     fetchAdvertisements();
   }, [currentPage, entriesPerPage]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedTitleFilter(titleFilter);
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [titleFilter]);
 
   const fetchAdvertisements = async () => {
     try {
@@ -105,16 +123,24 @@ const AdsPage: React.FC = () => {
           params: {
             page: currentPage,
             limit: entriesPerPage,
+            search: debouncedTitleFilter,
           },
         }
       );
-      setAdvertisements(response.data.data.advertisements || []);
-      if (response.data.data.pagination) {
+      if (response.data.success) {
+        if (response.data.data) {
+          setAdvertisements(response.data.data?.advertisements || []);
+        } else {
+          setAdvertisements([]);
+        }
+      }
+      if (response.data?.data?.pagination) {
         setPagination(response.data.data.pagination);
       }
       setLoading(false);
       setError(null);
     } catch (err: any) {
+      console.log(err);
       setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
     }
@@ -123,6 +149,32 @@ const AdsPage: React.FC = () => {
   const deleteAdvertisement = (id: string) => {
     setAdvertisementIdToDelete(Number(id));
     setDeletePopupOpen(true);
+  };
+
+  const exportAdvertisement = async (id: number) => {
+    try {
+      const response = await api.get(
+        `${BACKEND_API_KEY}/master/export-advertisement/${id}`,
+        {
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      let title =
+        "advertisement_" +
+        id +
+        "_exported(" +
+        new Date().toISOString().slice(0, 16).replace("T", " ") +
+        ").xlsx";
+      link.setAttribute("download", title);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      toast.error("Failed to export advertisement");
+    }
   };
 
   const handleConfirmDelete = async () => {
@@ -437,6 +489,13 @@ const AdsPage: React.FC = () => {
                 entriesPerPage={entriesPerPage}
                 setEntriesPerPage={setEntriesPerPage}
               />
+              <TextInput
+                type="text"
+                className="w-[25%] ml-auto mr-4"
+                placeholder="Search by title"
+                value={titleFilter}
+                onChange={(e) => setTitleFilter(e.target.value)}
+              />
               {createPermission && (
                 <button
                   onClick={openAddForm}
@@ -567,6 +626,17 @@ const AdsPage: React.FC = () => {
                               </td>
                             )}
                             <td className="px-6 py-4 text-gray-900 text-right">
+                              {exportPermission && (
+                                <button
+                                  onClick={() =>
+                                    exportAdvertisement(advertisement.id)
+                                  }
+                                  className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
+                                  aria-label="Export"
+                                >
+                                  <FaRegFileExcel />
+                                </button>
+                              )}
                               <button
                                 onClick={() =>
                                   setSelectedAdvertisement(advertisement)
