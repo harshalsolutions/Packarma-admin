@@ -70,7 +70,7 @@ const SubCategoryPage: React.FC = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedTitleFilter(titleFilter);
-    }, 500);
+    }, 350);
 
     return () => {
       clearTimeout(handler);
@@ -270,7 +270,11 @@ const SubCategoryPage: React.FC = () => {
           <div className="flex">
             <button
               className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
-              onClick={() => setFilterOpen(!filterOpen)}
+              onClick={() => {
+                setFilterOpen(!filterOpen);
+                setTitleFilter("");
+                setSelectedFilterCategory("");
+              }}
             >
               {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
             </button>

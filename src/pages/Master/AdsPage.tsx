@@ -9,7 +9,7 @@ import { toast } from "react-hot-toast";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
-import { TbEdit } from "react-icons/tb";
+import { TbEdit, TbFilter, TbFilterOff } from "react-icons/tb";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import { AiOutlineClose } from "react-icons/ai";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
@@ -73,7 +73,7 @@ const AdsPage: React.FC = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [titleFilter, setTitleFilter] = useState("");
   const [debouncedTitleFilter, setDebouncedTitleFilter] = useState(titleFilter);
-
+  const [filterOpen, setFilterOpen] = useState(false);
   const userContext = useUser();
 
   const createPermission = hasUpdateAndCreatePermissions(
@@ -107,7 +107,7 @@ const AdsPage: React.FC = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedTitleFilter(titleFilter);
-    }, 500);
+    }, 350);
 
     return () => {
       clearTimeout(handler);
@@ -489,22 +489,39 @@ const AdsPage: React.FC = () => {
                 entriesPerPage={entriesPerPage}
                 setEntriesPerPage={setEntriesPerPage}
               />
-              <TextInput
-                type="text"
-                className="w-[25%] ml-auto mr-4"
-                placeholder="Search here.."
-                value={titleFilter}
-                onChange={(e) => setTitleFilter(e.target.value)}
-              />
-              {createPermission && (
+              <div className="flex">
                 <button
-                  onClick={openAddForm}
-                  className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+                  className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+                  onClick={() => {
+                    setFilterOpen(!filterOpen);
+                    setTitleFilter("");
+                  }}
                 >
-                  Add New Advertisement
+                  {filterOpen ? (
+                    <TbFilterOff size={22} />
+                  ) : (
+                    <TbFilter size={22} />
+                  )}
                 </button>
-              )}
+                {createPermission && (
+                  <button
+                    onClick={openAddForm}
+                    className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+                  >
+                    Add New Advertisement
+                  </button>
+                )}
+              </div>
             </div>
+          )}
+          {filterOpen && (
+            <TextInput
+              type="text"
+              className="w-[25%] mb-4"
+              placeholder="Search here.."
+              value={titleFilter}
+              onChange={(e) => setTitleFilter(e.target.value)}
+            />
           )}
           {!isFormOpen && (
             <>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
 import { Badge, Spinner, TextInput } from "flowbite-react";
-import { TbEdit } from "react-icons/tb";
+import { TbEdit, TbFilter, TbFilterOff } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import ToggleSwitch from "../../components/ToggleSwitch";
@@ -55,6 +55,7 @@ const CategoryPage: React.FC = () => {
   const [categoryIdToDelete, setCategoryIdToDelete] = useState<number | null>(
     null
   );
+  const [filterOpen, setFilterOpen] = useState(false);
 
   const userContext = useUser();
 
@@ -82,7 +83,7 @@ const CategoryPage: React.FC = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedTitleFilter(titleFilter);
-    }, 500);
+    }, 350);
 
     return () => {
       clearTimeout(handler);
@@ -234,22 +235,35 @@ const CategoryPage: React.FC = () => {
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
           />
-          <TextInput
-            type="text"
-            className="w-[25%] ml-auto mr-4"
-            placeholder="Search here.."
-            value={titleFilter}
-            onChange={(e) => setTitleFilter(e.target.value)}
-          />
-          {createPermission && (
+          <div className="flex">
             <button
-              onClick={openAddForm}
-              className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+              className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+              onClick={() => {
+                setFilterOpen(!filterOpen);
+                setTitleFilter("");
+              }}
             >
-              Add New Category
+              {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
             </button>
-          )}
+            {createPermission && (
+              <button
+                onClick={openAddForm}
+                className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+              >
+                Add New Category
+              </button>
+            )}
+          </div>
         </div>
+      )}
+      {filterOpen && (
+        <TextInput
+          type="text"
+          className="w-[25%] mb-4"
+          placeholder="Search here.."
+          value={titleFilter}
+          onChange={(e) => setTitleFilter(e.target.value)}
+        />
       )}
       {!isFormOpen && (
         <>
