@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Spinner } from "flowbite-react";
-import { TbEdit } from "react-icons/tb";
+import { Badge, Select, Spinner, TextInput } from "flowbite-react";
+import { TbEdit, TbFileText, TbFilter, TbFilterOff } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import ToggleSwitch from "../../components/ToggleSwitch";
@@ -13,6 +13,7 @@ import CustomPopup from "../../components/CustomPopup";
 import toast from "react-hot-toast";
 import { useUser } from "../../context/userContext";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import { AiOutlineSearch } from "react-icons/ai";
 
 interface Product {
   id: number;
@@ -73,6 +74,21 @@ const Product: React.FC = () => {
 
   const [filteredSubCategories, setFilteredSubCategories] = useState<any[]>([]);
   useState<any[]>([]);
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  const [filter, setFilter] = useState<{
+    categoryId: string;
+    subCategoryId: string;
+    productName: string;
+    productFormId: string;
+    packagingTreatmentId: string;
+  }>({
+    categoryId: "",
+    subCategoryId: "",
+    productName: "",
+    productFormId: "",
+    packagingTreatmentId: "",
+  });
 
   const userContext = useUser();
 
@@ -116,18 +132,29 @@ const Product: React.FC = () => {
     }
   };
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (type?: string) => {
     try {
       setLoading(true);
-      const response = await api.get(
-        `${BACKEND_API_KEY}/product/get-products`,
-        {
+      let response;
+      if (type === "filter") {
+        response = await api.get(`${BACKEND_API_KEY}/product/get-products`, {
+          params: {
+            page: currentPage,
+            limit: entriesPerPage,
+            category_id: filter.categoryId,
+            sub_category_id: filter.subCategoryId,
+            product_form_id: filter.productFormId,
+            packaging_treatment_id: filter.packagingTreatmentId,
+            productName: filter.productName,
+          },
+        });
+      } else
+        response = await api.get(`${BACKEND_API_KEY}/product/get-products`, {
           params: {
             page: currentPage,
             limit: entriesPerPage,
           },
-        }
-      );
+        });
       setProducts(response.data.data.products || []);
       if (response.data.data.pagination) {
         setPagination(response.data.data.pagination);
@@ -302,14 +329,120 @@ const Product: React.FC = () => {
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
           />
-          {createPermission && (
+          <div className="flex">
             <button
-              onClick={openAddForm}
-              className="bg-lime-500 text-black px-4 py-2 rounded mb-4 block ml-auto mr-4"
+              className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+              onClick={() => {
+                setFilterOpen(!filterOpen);
+                setFilter({
+                  ...filter,
+                  categoryId: "",
+                  subCategoryId: "",
+                  packagingTreatmentId: "",
+                  productFormId: "",
+                  productName: "",
+                });
+                fetchProducts("nofilter");
+              }}
             >
-              Add New Product
+              {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
             </button>
-          )}
+            {createPermission && (
+              <button
+                onClick={() => {
+                  openAddForm();
+                  setFilterOpen(false);
+                }}
+                className="bg-lime-500 text-black px-4 py-2 rounded block ml-auto mr-4"
+              >
+                Add New Product
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+      {filterOpen && (
+        <div className="grid grid-cols-4 gap-4 flex-wrap mb-6">
+          <Select
+            id="category"
+            value={filter.categoryId}
+            onChange={(e) =>
+              setFilter({ ...filter, categoryId: e.target.value })
+            }
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          >
+            <option value="">Select Category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </Select>
+          <Select
+            id="subCategoryName"
+            value={filter.subCategoryId}
+            onChange={(e) =>
+              setFilter({ ...filter, subCategoryId: e.target.value })
+            }
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          >
+            <option value="">Select Sub Category</option>
+            {subCategories.map((subCategory) => (
+              <option key={subCategory.id} value={subCategory.id}>
+                {subCategory.name}
+              </option>
+            ))}
+          </Select>
+          <Select
+            id="productFormName"
+            value={filter.productFormId}
+            onChange={(e) =>
+              setFilter({ ...filter, productFormId: e.target.value })
+            }
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          >
+            <option value="">Select Product Form</option>
+            {productForms.map((productForm) => (
+              <option key={productForm.id} value={productForm.id}>
+                {productForm.name}
+              </option>
+            ))}
+          </Select>
+          <Select
+            id="packagingTreatmentName"
+            value={filter.packagingTreatmentId}
+            onChange={(e) =>
+              setFilter({
+                ...filter,
+                packagingTreatmentId: e.target.value,
+              })
+            }
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          >
+            <option value="">Select Packaging Treatment</option>
+            {packagingTreatments.map((packagingTreatment) => (
+              <option key={packagingTreatment.id} value={packagingTreatment.id}>
+                {packagingTreatment.name}
+              </option>
+            ))}
+          </Select>
+          <TextInput
+            type="text"
+            className=""
+            placeholder="Search Product Name.."
+            value={filter.productName}
+            onChange={(e) =>
+              setFilter({ ...filter, productName: e.target.value })
+            }
+          />
+          <div className="flex">
+            <button
+              className="bg-lime-500 text-black px-4 py-2 rounded"
+              onClick={() => fetchProducts("filter")}
+            >
+              <AiOutlineSearch size={22} />
+            </button>
+          </div>
         </div>
       )}
       {!isFormOpen && (
