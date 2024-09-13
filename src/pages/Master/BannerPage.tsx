@@ -97,7 +97,7 @@ const BannerPage: React.FC = () => {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedTitleFilter(titleFilter);
-    }, 300);
+    }, 500);
 
     return () => {
       clearTimeout(handler);
@@ -470,7 +470,7 @@ const BannerPage: React.FC = () => {
               <TextInput
                 type="text"
                 className="w-[25%] ml-auto mr-4"
-                placeholder="Search by title"
+                placeholder="Search here.."
                 value={titleFilter}
                 onChange={(e) => setTitleFilter(e.target.value)}
               />

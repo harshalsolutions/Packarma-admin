@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Spinner } from "flowbite-react";
+import { Badge, Spinner, TextInput } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
@@ -76,9 +76,22 @@ const CategoryPage: React.FC = () => {
     "can_delete"
   );
 
+  const [titleFilter, setTitleFilter] = useState("");
+  const [debouncedTitleFilter, setDebouncedTitleFilter] = useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedTitleFilter(titleFilter);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [titleFilter]);
+
   useEffect(() => {
     fetchCategories();
-  }, [currentPage, entriesPerPage]);
+  }, [currentPage, entriesPerPage, debouncedTitleFilter]);
 
   const fetchCategories = async () => {
     try {
@@ -87,6 +100,7 @@ const CategoryPage: React.FC = () => {
         params: {
           page: currentPage,
           limit: entriesPerPage,
+          search: debouncedTitleFilter,
         },
       });
       setCategories(response.data.data.categories || []);
@@ -219,6 +233,13 @@ const CategoryPage: React.FC = () => {
           <EntriesPerPage
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
+          />
+          <TextInput
+            type="text"
+            className="w-[25%] ml-auto mr-4"
+            placeholder="Search here.."
+            value={titleFilter}
+            onChange={(e) => setTitleFilter(e.target.value)}
           />
           {createPermission && (
             <button

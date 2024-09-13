@@ -182,37 +182,44 @@ const Customer: React.FC = () => {
                 </div>
               </div>
             </Card>
-            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-              <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                  <th scope="col" className="px-6 py-3">
-                    Address Name
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Building
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Area
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {addressList.map((address: any, index: any) => (
-                  <tr
-                    key={index}
-                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                  >
-                    <td className="px-6 py-4 text-gray-900">
-                      {address.address_name}
-                    </td>
-                    <td className="px-6 py-4 text-gray-900">
-                      {address.building}
-                    </td>
-                    <td className="px-6 py-4 text-gray-900">{address.area}</td>
+            {!addressList || addressList.length === 0 || !addressList ? (
+              <p className="px-6 py-4 text-center">No addresses found</p>
+            ) : null}
+            {addressList && addressList.length > 0 && (
+              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                  <tr>
+                    <th scope="col" className="px-6 py-3">
+                      Address Name
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Building
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Area
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {addressList.map((address: any, index: any) => (
+                    <tr
+                      key={index}
+                      className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                    >
+                      <td className="px-6 py-4 text-gray-900">
+                        {address.address_name}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {address.building}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {address.area}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </>
       ) : (

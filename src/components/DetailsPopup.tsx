@@ -35,9 +35,9 @@ const renderBadge = (label: string, value: string | JSX.Element) => {
   ) {
     return <Badge color="failure">Not Completed</Badge>;
   }
-  console.log(value);
-  if (label === "GST Document Link" && !value) {
-    console.log("here");
+  if (label === "GST Document Link" && value === "Not Provided") {
+    return <Badge color="failure">Not Provided</Badge>;
+  } else if (label === "GST Document Link" && value) {
     return (
       <a
         href={`${BACKEND_MEDIA_LINK}${value}`}

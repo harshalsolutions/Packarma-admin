@@ -102,12 +102,12 @@ const AdsPage: React.FC = () => {
 
   useEffect(() => {
     fetchAdvertisements();
-  }, [currentPage, entriesPerPage]);
+  }, [currentPage, entriesPerPage, debouncedTitleFilter]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedTitleFilter(titleFilter);
-    }, 300);
+    }, 500);
 
     return () => {
       clearTimeout(handler);
@@ -492,14 +492,14 @@ const AdsPage: React.FC = () => {
               <TextInput
                 type="text"
                 className="w-[25%] ml-auto mr-4"
-                placeholder="Search by title"
+                placeholder="Search here.."
                 value={titleFilter}
                 onChange={(e) => setTitleFilter(e.target.value)}
               />
               {createPermission && (
                 <button
                   onClick={openAddForm}
-                  className="bg-lime-500 text-black px-4 py-2 rounded mb-4 block ml-auto mr-4"
+                  className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
                 >
                   Add New Advertisement
                 </button>

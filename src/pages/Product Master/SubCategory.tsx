@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Spinner } from "flowbite-react";
-import { TbEdit } from "react-icons/tb";
+import { Badge, Spinner, TextInput, Select } from "flowbite-react";
+import { TbEdit, TbFilter, TbFilterOff } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import ToggleSwitch from "../../components/ToggleSwitch";
@@ -61,6 +61,21 @@ const SubCategoryPage: React.FC = () => {
   const [subCategoryIdToDelete, setSubCategoryIdToDelete] = useState<
     number | null
   >(null);
+  const [titleFilter, setTitleFilter] = useState("");
+  const [debouncedTitleFilter, setDebouncedTitleFilter] = useState("");
+  const [selectedFilterCategory, setSelectedFilterCategory] =
+    useState<string>("");
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedTitleFilter(titleFilter);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [titleFilter]);
 
   const userContext = useUser();
 
@@ -85,7 +100,12 @@ const SubCategoryPage: React.FC = () => {
   useEffect(() => {
     fetchSubCategories();
     fetchCategories();
-  }, [currentPage, entriesPerPage]);
+  }, [
+    currentPage,
+    entriesPerPage,
+    debouncedTitleFilter,
+    selectedFilterCategory,
+  ]);
 
   const fetchSubCategories = async () => {
     try {
@@ -96,6 +116,8 @@ const SubCategoryPage: React.FC = () => {
           params: {
             page: currentPage,
             limit: entriesPerPage,
+            search: debouncedTitleFilter,
+            category_id: selectedFilterCategory,
           },
         }
       );
@@ -245,14 +267,45 @@ const SubCategoryPage: React.FC = () => {
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
           />
-          {createPermission && (
+          <div className="flex">
             <button
-              onClick={openAddForm}
-              className="bg-lime-500 text-black px-4 py-2 rounded mb-4 block ml-auto mr-4"
+              className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+              onClick={() => setFilterOpen(!filterOpen)}
             >
-              Add New Subcategory
+              {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
             </button>
-          )}
+            {createPermission && (
+              <button
+                onClick={openAddForm}
+                className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+              >
+                Add New Subcategory
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+      {filterOpen && (
+        <div className="flex justify-start items-center w-full mb-5">
+          <Select
+            id="category_id"
+            value={selectedFilterCategory}
+            onChange={(e) => setSelectedFilterCategory(e.target.value)}
+          >
+            <option value="">All Categories</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </Select>
+          <TextInput
+            type="text"
+            className="w-[25%] ml-4"
+            placeholder="Search here.."
+            value={titleFilter}
+            onChange={(e) => setTitleFilter(e.target.value)}
+          />
         </div>
       )}
       {!isFormOpen && (
