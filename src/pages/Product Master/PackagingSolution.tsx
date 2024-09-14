@@ -3,7 +3,7 @@ import api from "../../../utils/axiosInstance";
 import { Badge, Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
-import { BACKEND_API_KEY } from "../../../utils/ApiKey";
+import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -43,6 +43,7 @@ interface PackagingSolutionsInterface {
   packaging_material_name: string;
   min_order_quantity_unit_name: string;
   status: string;
+  image: string;
 }
 
 interface Pagination {
@@ -85,7 +86,8 @@ const PackagingSolutions: React.FC = () => {
   const [measurementUnits, setMeasurementUnits] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<string>("engine");
   const [type, setType] = useState("edit");
-
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState("");
   const userContext = useUser();
 
   const updatePermission = hasUpdateAndCreatePermissions(
@@ -180,6 +182,7 @@ const PackagingSolutions: React.FC = () => {
   const openAddForm = () => {
     setFormPackagingSolutions(null);
     setIsFormOpen(true);
+    setImage(null);
     setType("add");
   };
 
@@ -195,10 +198,13 @@ const PackagingSolutions: React.FC = () => {
     });
     setIsFormOpen(true);
     setType("edit");
+    setImage(null);
+    setImagePreview(product.image);
   };
 
   const closeForm = () => {
     setIsFormOpen(false);
+    setImage(null);
     setFormPackagingSolutions(null);
   };
 
@@ -207,39 +213,104 @@ const PackagingSolutions: React.FC = () => {
     const selectedProduct = products.find(
       (p) => p.id === formPackagingSolutions?.product_id
     );
-    let data = {
-      name: formPackagingSolutions?.name,
-      structure_type: formPackagingSolutions?.structure_type,
-      sequence: formPackagingSolutions?.sequence,
-      storage_condition_id: formPackagingSolutions?.storage_condition_id,
-      display_shelf_life_days: formPackagingSolutions?.display_shelf_life_days,
-      product_id: formPackagingSolutions?.product_id,
-      product_category_id:
+
+    const formData = new FormData();
+
+    formData.append("name", formPackagingSolutions?.name || "");
+    formData.append(
+      "structure_type",
+      formPackagingSolutions?.structure_type || ""
+    );
+    formData.append(
+      "sequence",
+      formPackagingSolutions?.sequence?.toString() || ""
+    );
+    formData.append(
+      "storage_condition_id",
+      formPackagingSolutions?.storage_condition_id?.toString() || ""
+    );
+    formData.append(
+      "display_shelf_life_days",
+      formPackagingSolutions?.display_shelf_life_days?.toString() || ""
+    );
+    formData.append(
+      "product_id",
+      formPackagingSolutions?.product_id?.toString() || ""
+    );
+    formData.append(
+      "product_category_id",
+      (
         selectedProduct?.category_id ||
-        formPackagingSolutions?.product_category_id,
-      product_form_id:
-        selectedProduct?.form_id || formPackagingSolutions?.product_form_id,
-      packaging_treatment_id:
+        formPackagingSolutions?.product_category_id
+      )?.toString() || ""
+    );
+    formData.append(
+      "product_form_id",
+      (
+        selectedProduct?.form_id || formPackagingSolutions?.product_form_id
+      )?.toString() || ""
+    );
+    formData.append(
+      "packaging_treatment_id",
+      (
         selectedProduct?.treatment_id ||
-        formPackagingSolutions?.packaging_treatment_id,
-      packing_type_id: formPackagingSolutions?.packing_type_id,
-      packaging_machine_id: formPackagingSolutions?.packaging_machine_id,
-      packaging_material_id: formPackagingSolutions?.packaging_material_id,
-      product_min_weight: formPackagingSolutions?.product_min_weight,
-      product_max_weight: formPackagingSolutions?.product_max_weight,
-      min_order_quantity: formPackagingSolutions?.min_order_quantity,
-      min_order_quantity_unit_id:
-        formPackagingSolutions?.min_order_quantity_unit_id,
-      status: formPackagingSolutions?.status,
-    };
+        formPackagingSolutions?.packaging_treatment_id
+      )?.toString() || ""
+    );
+    formData.append(
+      "packing_type_id",
+      formPackagingSolutions?.packing_type_id?.toString() || ""
+    );
+    formData.append(
+      "packaging_machine_id",
+      formPackagingSolutions?.packaging_machine_id?.toString() || ""
+    );
+    formData.append(
+      "packaging_material_id",
+      formPackagingSolutions?.packaging_material_id?.toString() || ""
+    );
+    formData.append(
+      "product_min_weight",
+      formPackagingSolutions?.product_min_weight?.toString() || ""
+    );
+    formData.append(
+      "product_max_weight",
+      formPackagingSolutions?.product_max_weight?.toString() || ""
+    );
+    formData.append(
+      "min_order_quantity",
+      formPackagingSolutions?.min_order_quantity?.toString() || ""
+    );
+    formData.append(
+      "min_order_quantity_unit_id",
+      formPackagingSolutions?.min_order_quantity_unit_id?.toString() || ""
+    );
+    formData.append("status", formPackagingSolutions?.status?.toString() || "");
+    formData.append("type", "packagingsolution");
+    if (image) {
+      formData.append("image", image);
+    }
     try {
       if (type === "edit") {
         await api.put(
           `${BACKEND_API_KEY}/product/packaging-solutions/${formPackagingSolutions?.id}`,
-          data
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
         );
       } else {
-        await api.post(`${BACKEND_API_KEY}/product/packaging-solutions`, data);
+        await api.post(
+          `${BACKEND_API_KEY}/product/packaging-solutions`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
       }
 
       closeForm();
@@ -249,6 +320,7 @@ const PackagingSolutions: React.FC = () => {
       setActiveTab("engine");
     } catch (err) {
       setError("Failed to save packaging solution");
+      console.error(err);
     }
   };
 
@@ -343,6 +415,9 @@ const PackagingSolutions: React.FC = () => {
                       Packaging Solution
                     </th>
                     <th scope="col" className="px-6 py-3">
+                      Image
+                    </th>
+                    <th scope="col" className="px-6 py-3">
                       Structure Type
                     </th>
                     <th scope="col" className="px-6 py-3">
@@ -368,6 +443,13 @@ const PackagingSolutions: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                           {packagingSolutions.name}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          <img
+                            src={BACKEND_MEDIA_LINK + packagingSolutions.image}
+                            alt={packagingSolutions.name}
+                            className="w-20 h-20 object-cover"
+                          />
                         </td>
                         <td className="px-6 py-4 text-gray-900">
                           {packagingSolutions.structure_type}
@@ -879,6 +961,36 @@ const PackagingSolutions: React.FC = () => {
                     required
                   />
                 </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="image"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Image URL
+                  </label>
+                  <input
+                    type="file"
+                    id="image"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        const file = e.target.files[0];
+                        setImage(file as File | null);
+                      } else {
+                        setImage(null);
+                      }
+                    }}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  />
+                </div>
+                {imagePreview && (
+                  <div className="mb-4">
+                    <img
+                      src={BACKEND_MEDIA_LINK + imagePreview}
+                      alt="Packaging Solution Preview"
+                      className="w-16 h-16 object-cover mb-2"
+                    />
+                  </div>
+                )}
               </div>
             )}
             {activeTab === "moq" && (

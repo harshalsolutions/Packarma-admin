@@ -17,12 +17,17 @@ interface Subscription {
   id: number;
   type: string;
   credit_amount: number;
-  amount: number;
+  prices: Price[];
   duration: number;
   status: string;
-  benefits: string;
+  benefits: string[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Price {
+  price: number;
+  currency: string;
 }
 
 interface PaginationData {
@@ -49,7 +54,6 @@ const SubscriptionPage: React.FC = () => {
     useState<Subscription | null>(null);
   const [type, setType] = useState("");
   const [credit_amount, setCredit_amount] = useState("");
-  const [amount, setAmount] = useState("");
   const [duration, setDuration] = useState("");
   const [benefits, setBenefits] = useState<string[]>([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -60,6 +64,8 @@ const SubscriptionPage: React.FC = () => {
     number | null
   >(null);
 
+  const [pricePopup, setPricePopup] = useState(false);
+  const [pricePopopId, setPricePopupId] = useState<number>(0);
   const userContext = useUser();
 
   const createPermission = hasUpdateAndCreatePermissions(
@@ -113,7 +119,6 @@ const SubscriptionPage: React.FC = () => {
     setEditingSubscription(null);
     setType("");
     setCredit_amount("");
-    setAmount("");
     setDuration("");
     setBenefits([]);
     setIsFormOpen(true);
@@ -123,11 +128,8 @@ const SubscriptionPage: React.FC = () => {
     setEditingSubscription(subscription);
     setType(subscription.type);
     setCredit_amount(subscription.credit_amount.toString());
-    setAmount(subscription.amount.toString());
     setDuration(subscription.duration.toString());
-    setBenefits(
-      subscription.benefits.split("#").filter((b) => b.trim() !== "")
-    );
+    setBenefits(subscription.benefits.filter((b) => b.trim() !== ""));
     setIsFormOpen(true);
   };
 
@@ -136,7 +138,6 @@ const SubscriptionPage: React.FC = () => {
     setEditingSubscription(null);
     setType("");
     setCredit_amount("");
-    setAmount("");
     setDuration("");
     setBenefits([]);
   };
@@ -162,7 +163,6 @@ const SubscriptionPage: React.FC = () => {
       const formData = {
         type,
         credit_amount: Number(credit_amount),
-        amount: Number(amount),
         duration: Number(duration),
         benefits: benefits.join("#"),
       };
@@ -183,9 +183,9 @@ const SubscriptionPage: React.FC = () => {
     }
   };
 
-  const openBenefitsPopup = (benefits: string) => {
-    setBenefits(benefits.split("#"));
+  const openBenefitsPopup = (benefits: string[]) => {
     setIsPopupOpen(true);
+    setBenefits(benefits);
   };
 
   const closeBenefitsPopup = () => {
@@ -263,13 +263,13 @@ const SubscriptionPage: React.FC = () => {
                       Name
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Price
-                    </th>
-                    <th scope="col" className="px-6 py-3">
                       Credit Amount
                     </th>
                     <th scope="col" className="px-6 py-3">
                       Duration
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Prices
                     </th>
                     <th scope="col" className="px-6 py-3">
                       Benefits
@@ -293,13 +293,26 @@ const SubscriptionPage: React.FC = () => {
                           {subscription.type}
                         </td>
                         <td className="px-6 py-4 text-gray-900">
-                          ₹{subscription.amount}
-                        </td>
-                        <td className="px-6 py-4 text-gray-900">
                           {subscription.credit_amount}
                         </td>
                         <td className="px-6 py-4 text-gray-900">
                           {subscription.duration} days
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {subscription.prices ? (
+                            <button
+                              onClick={() => {
+                                setPricePopup(true);
+                                setPricePopupId(subscription.id);
+                              }}
+                              className="text-xl text-blue-600 dark:text-blue-500 hover:underline"
+                              aria-label="View Prices"
+                            >
+                              <FaInfoCircle />
+                            </button>
+                          ) : (
+                            "No Data!"
+                          )}
                         </td>
                         <td className="px-6 py-4 text-gray-900">
                           {subscription.benefits ? (
@@ -442,22 +455,6 @@ const SubscriptionPage: React.FC = () => {
             </div>
             <div className="mb-4">
               <label
-                htmlFor="price"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Price
-              </label>
-              <input
-                type="number"
-                id="price"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label
                 htmlFor="duration"
                 className="block text-sm font-medium text-gray-700"
               >
@@ -528,7 +525,6 @@ const SubscriptionPage: React.FC = () => {
           fields={[
             { label: "ID", value: selectedSubscription.id.toString() },
             { label: "Name", value: selectedSubscription.type },
-            { label: "Price", value: selectedSubscription.amount.toString() },
             {
               label: "Credit Amount",
               value: selectedSubscription.credit_amount.toString(),
@@ -541,13 +537,11 @@ const SubscriptionPage: React.FC = () => {
               label: "Benefits",
               value: (
                 <ul>
-                  {selectedSubscription.benefits
-                    .split("#")
-                    .map((benefit, index) => (
-                      <li key={index}>
-                        {index + 1}. {benefit}
-                      </li>
-                    ))}
+                  {selectedSubscription.benefits.map((benefit, index) => (
+                    <li key={index}>
+                      {index + 1}. {benefit}
+                    </li>
+                  ))}
                 </ul>
               ),
             },
@@ -586,6 +580,48 @@ const SubscriptionPage: React.FC = () => {
             <button
               onClick={closeBenefitsPopup}
               className="mt-4 px-4 py-2 bg-lime-500 text-black rounded hover:bg-lime-600"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {pricePopup && (
+        <div className="fixed inset-0 bg-black z-40 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full">
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr>
+                    <th className="border-b-2 border-gray-200 bg-gray-100 px-4 py-2 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider">
+                      Currency
+                    </th>
+                    <th className="border-b-2 border-gray-200 bg-gray-100 px-4 py-2 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider">
+                      Price
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {subscriptions[pricePopopId]?.prices?.map((price, index) => (
+                    <tr
+                      key={index}
+                      className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                    >
+                      <td className="px-4 py-2 border-b border-gray-200">
+                        {price.currency}
+                      </td>
+                      <td className="px-4 py-2 border-b border-gray-200">
+                        {price.price}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <button
+              onClick={() => setPricePopup(false)}
+              className="mt-4 px-4 py-2 bg-lime-500 text-black rounded hover:bg-lime-600 transition duration-300 ease-in-out"
             >
               Close
             </button>
