@@ -20,11 +20,11 @@ interface PackagingMaterial {
   material_description?: string;
   createdAt: string;
   updatedAt: string;
-  wvtr: number;
-  otr: number;
-  cof: number;
-  sit: number;
-  gsm: number;
+  wvtr: string;
+  otr: string;
+  cof: string;
+  sit: string;
+  gsm: string;
   special_feature?: string;
 }
 
@@ -60,11 +60,11 @@ const PackagingMaterial: React.FC = () => {
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [selectedPackagingMaterialId, setSelectedPackagingMaterialId] =
     useState<number | null>(null);
-  const [wvtr, setWvtr] = useState(0);
-  const [otr, setOtr] = useState(0);
-  const [cof, setCof] = useState(0);
-  const [sit, setSit] = useState(0);
-  const [gsm, setGsm] = useState(0);
+  const [wvtr, setWvtr] = useState("");
+  const [otr, setOtr] = useState("");
+  const [cof, setCof] = useState("");
+  const [sit, setSit] = useState("");
+  const [gsm, setGsm] = useState("");
   const [specialFeature, setSpecialFeature] = useState("");
 
   const userContext = useUser();
@@ -142,11 +142,11 @@ const PackagingMaterial: React.FC = () => {
     setMaterialName("");
     setStatus("");
     setMaterialDescription("");
-    setWvtr(0);
-    setOtr(0);
-    setCof(0);
-    setSit(0);
-    setGsm(0);
+    setWvtr("");
+    setOtr("");
+    setCof("");
+    setSit("");
+    setGsm("");
     setSpecialFeature("");
   };
 
@@ -261,7 +261,6 @@ const PackagingMaterial: React.FC = () => {
                     <th scope="col" className="px-6 py-3">
                       Description
                     </th>
-
                     <th scope="col" className="px-6 py-3">
                       Status
                     </th>
@@ -450,10 +449,10 @@ const PackagingMaterial: React.FC = () => {
                 WVTR
               </label>
               <input
-                type="number"
+                type="text"
                 id="wvtr"
                 value={wvtr}
-                onChange={(e) => setWvtr(Number(e.target.value))}
+                onChange={(e) => setWvtr(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 required
               />
@@ -466,10 +465,10 @@ const PackagingMaterial: React.FC = () => {
                 OTR
               </label>
               <input
-                type="number"
+                type="text"
                 id="otr"
                 value={otr}
-                onChange={(e) => setOtr(Number(e.target.value))}
+                onChange={(e) => setOtr(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 required
               />
@@ -482,10 +481,10 @@ const PackagingMaterial: React.FC = () => {
                 COF
               </label>
               <input
-                type="number"
+                type="text"
                 id="cof"
                 value={cof}
-                onChange={(e) => setCof(Number(e.target.value))}
+                onChange={(e) => setCof(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 required
               />
@@ -498,10 +497,10 @@ const PackagingMaterial: React.FC = () => {
                 SIT
               </label>
               <input
-                type="number"
+                type="text"
                 id="sit"
                 value={sit}
-                onChange={(e) => setSit(Number(e.target.value))}
+                onChange={(e) => setSit(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 required
               />
@@ -514,10 +513,10 @@ const PackagingMaterial: React.FC = () => {
                 GSM
               </label>
               <input
-                type="number"
+                type="text"
                 id="gsm"
                 value={gsm}
-                onChange={(e) => setGsm(Number(e.target.value))}
+                onChange={(e) => setGsm(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 required
               />
@@ -535,7 +534,6 @@ const PackagingMaterial: React.FC = () => {
                 value={specialFeature}
                 onChange={(e) => setSpecialFeature(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                required
               />
             </div>
             <div className="flex justify-end mt-4">

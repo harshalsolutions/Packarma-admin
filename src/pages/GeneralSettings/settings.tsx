@@ -33,7 +33,7 @@ const settings = () => {
         General Settings
       </h1>
       <section className="flex justify-center items-start ml-2 mt-6">
-        <div className="w-56 bg-gray-50">
+        <div className="w-[20%] bg-gray-50">
           <ul className="list-none p-0">
             {settingsList.map((setting, index) => (
               <li
@@ -53,7 +53,7 @@ const settings = () => {
             ))}
           </ul>
         </div>
-        <div className=" px-10 flex-grow">
+        <div className=" px-10 w-[80%]">
           {selectedSetting === "Meta Details" && <MetaSettings />}
           {selectedSetting === "Privacy Policy" && <PrivacyPolicy />}
           {selectedSetting === "Terms and Conditions" && <TermsAndConditions />}

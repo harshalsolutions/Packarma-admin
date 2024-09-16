@@ -13,6 +13,8 @@ import CustomPopup from "../../components/CustomPopup";
 import toast from "react-hot-toast";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import { useUser } from "../../context/userContext";
+import { AiOutlineArrowUp, AiOutlineArrowDown } from "react-icons/ai";
+
 interface Subscription {
   id: number;
   type: string;
@@ -65,7 +67,7 @@ const SubscriptionPage: React.FC = () => {
   >(null);
 
   const [pricePopup, setPricePopup] = useState(false);
-  const [pricePopopId, setPricePopupId] = useState<number>(0);
+  const [pricePopupData, setPricePopupData] = useState<Price[]>([]);
   const userContext = useUser();
 
   const createPermission = hasUpdateAndCreatePermissions(
@@ -222,6 +224,25 @@ const SubscriptionPage: React.FC = () => {
     setSelectedSubscription(null);
   };
 
+  const moveSubscription = async (index: number, direction: "up" | "down") => {
+    const newSubscriptions = [...subscriptions];
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+
+    if (targetIndex >= 0 && targetIndex < newSubscriptions.length) {
+      const [movedSubscription] = newSubscriptions.splice(index, 1);
+      newSubscriptions.splice(targetIndex, 0, movedSubscription!);
+      setSubscriptions(newSubscriptions);
+      try {
+        await api.put(
+          `${BACKEND_API_KEY}/master/subscription/${movedSubscription?.id}`,
+          { sequence: targetIndex }
+        );
+      } catch (err) {
+        setError("Failed to update subscription sequence");
+      }
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto mt-8 px-4">
       <h1 className="text-2xl font-bold mb-4 border-l-8 text-black border-lime-500 pl-2">
@@ -281,7 +302,7 @@ const SubscriptionPage: React.FC = () => {
                 </thead>
                 <tbody>
                   {subscriptions.length > 0 ? (
-                    subscriptions.map((subscription) => (
+                    subscriptions.map((subscription, index) => (
                       <tr
                         key={subscription.id}
                         className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
@@ -303,7 +324,7 @@ const SubscriptionPage: React.FC = () => {
                             <button
                               onClick={() => {
                                 setPricePopup(true);
-                                setPricePopupId(subscription.id);
+                                setPricePopupData(subscription.prices);
                               }}
                               className="text-xl text-blue-600 dark:text-blue-500 hover:underline"
                               aria-label="View Prices"
@@ -359,6 +380,22 @@ const SubscriptionPage: React.FC = () => {
                               <MdDeleteOutline />
                             </button>
                           )}
+                          <button
+                            onClick={() => moveSubscription(index, "up")}
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-2"
+                            aria-label="Move Up"
+                            disabled={index === 0}
+                          >
+                            <AiOutlineArrowUp />
+                          </button>
+                          <button
+                            onClick={() => moveSubscription(index, "down")}
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline"
+                            aria-label="Move Down"
+                            disabled={index === subscriptions.length - 1}
+                          >
+                            <AiOutlineArrowDown />
+                          </button>
                         </td>
                       </tr>
                     ))
@@ -603,7 +640,7 @@ const SubscriptionPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {subscriptions[pricePopopId]?.prices?.map((price, index) => (
+                  {pricePopupData.map((price, index) => (
                     <tr
                       key={index}
                       className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
