@@ -469,20 +469,28 @@ const CreditMaster: React.FC = () => {
               onChange={(e) => setCurrency(e.target.value)}
               value={currency}
             >
-              {currencies
-                .filter(
-                  (currency) =>
-                    !creditPrices
-                      .map((price) => price.currency)
-                      .includes(currency.code)
-                )
-                .map((currency) => {
-                  return (
-                    <option value={currency.code}>
-                      {currency.name} : {currency.code} : {currency.symbol}
-                    </option>
-                  );
-                })}
+              {!editingCreditPrice
+                ? currencies
+                    .filter(
+                      (currency) =>
+                        !creditPrices
+                          .map((price) => price.currency)
+                          .includes(currency.code)
+                    )
+                    .map((currency) => {
+                      return (
+                        <option value={currency.code}>
+                          {currency.name} : {currency.code} : {currency.symbol}
+                        </option>
+                      );
+                    })
+                : currencies.map((currency) => {
+                    return (
+                      <option value={currency.code}>
+                        {currency.name} : {currency.code} : {currency.symbol}
+                      </option>
+                    );
+                  })}
             </Select>
           </div>
           <div className="flex justify-between items-center">

@@ -9,6 +9,7 @@ import { IconType } from "react-icons";
 import { RiFileExcel2Line, RiSettings4Line } from "react-icons/ri";
 import { FiHeadphones } from "react-icons/fi";
 import { useUser } from "../context/userContext";
+import { MdDeveloperMode } from "react-icons/md";
 
 interface MenuItem {
   name: string;
@@ -181,6 +182,23 @@ const menuItems: MenuItem[] = [
     name: "General Settings",
     path: "/general-settings",
     icon: RiSettings4Line,
+  },
+  {
+    name: "Developer Settings",
+    path: "/devloper-settings",
+    icon: MdDeveloperMode,
+    submenu: [
+      {
+        name: "Terms and Condition",
+        path: "/developer-settings/terms-and-condition",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+      {
+        name: "Privacy Policy",
+        path: "/developer-settings/privacy-policy",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+    ],
   },
 ];
 

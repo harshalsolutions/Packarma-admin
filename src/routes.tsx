@@ -34,6 +34,8 @@ import NoAccess from "./NoAccess";
 import NotFoundPage from "./404Page";
 import VerifyOtpPage from "./pages/Authentication/VerifyPassword";
 import ForgotPassword from "./pages/Authentication/ForgetPassword";
+import TermsandCondition from "./pages/Developer Settings/TermsandCondition";
+import PrivacyPolicy from "./pages/Developer Settings/PrivacyPolicy";
 
 const AppRoutes = () => (
   <Routes>
@@ -324,6 +326,27 @@ const AppRoutes = () => (
         <ProtectedRoute>
           <NavbarSidebarLayout>
             <Settings />
+          </NavbarSidebarLayout>
+        </ProtectedRoute>
+      }
+    />
+    {/* Developer Settings */}
+    <Route
+      path="/developer-settings/terms-and-condition"
+      element={
+        <ProtectedRoute>
+          <NavbarSidebarLayout>
+            <TermsandCondition />
+          </NavbarSidebarLayout>
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/developer-settings/privacy-policy"
+      element={
+        <ProtectedRoute>
+          <NavbarSidebarLayout>
+            <PrivacyPolicy />
           </NavbarSidebarLayout>
         </ProtectedRoute>
       }
