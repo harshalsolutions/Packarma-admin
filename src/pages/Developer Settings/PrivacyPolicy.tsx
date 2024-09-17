@@ -5,7 +5,6 @@ import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker"
 import toast from "react-hot-toast";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import api from "../../../utils/axiosInstance";
-import axios from "axios";
 
 const PrivacyPolicy = () => {
   const [data, setData] = useState("");

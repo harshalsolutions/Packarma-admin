@@ -232,13 +232,23 @@ const SubscriptionPage: React.FC = () => {
       const [movedSubscription] = newSubscriptions.splice(index, 1);
       newSubscriptions.splice(targetIndex, 0, movedSubscription!);
       setSubscriptions(newSubscriptions);
+
       try {
         await api.put(
           `${BACKEND_API_KEY}/master/subscription/${movedSubscription?.id}`,
-          { sequence: targetIndex }
+          { sequence: targetIndex + 1 }
         );
+
+        const displacedSubscription = newSubscriptions[index];
+        await api.put(
+          `${BACKEND_API_KEY}/master/subscription/${displacedSubscription?.id}`,
+          { sequence: index + 1 }
+        );
+
+        fetchSubscriptions();
       } catch (err) {
         setError("Failed to update subscription sequence");
+        setSubscriptions([...subscriptions]);
       }
     }
   };
@@ -352,6 +362,22 @@ const SubscriptionPage: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 text-gray-900 text-right">
                           <button
+                            onClick={() => moveSubscription(index, "up")}
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                            aria-label="Move Up"
+                            disabled={index === 0}
+                          >
+                            <AiOutlineArrowUp />
+                          </button>
+                          <button
+                            onClick={() => moveSubscription(index, "down")}
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                            aria-label="Move Down"
+                            disabled={index === subscriptions.length - 1}
+                          >
+                            <AiOutlineArrowDown />
+                          </button>
+                          <button
                             onClick={() =>
                               setSelectedSubscription(subscription)
                             }
@@ -380,22 +406,6 @@ const SubscriptionPage: React.FC = () => {
                               <MdDeleteOutline />
                             </button>
                           )}
-                          <button
-                            onClick={() => moveSubscription(index, "up")}
-                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-2"
-                            aria-label="Move Up"
-                            disabled={index === 0}
-                          >
-                            <AiOutlineArrowUp />
-                          </button>
-                          <button
-                            onClick={() => moveSubscription(index, "down")}
-                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline"
-                            aria-label="Move Down"
-                            disabled={index === subscriptions.length - 1}
-                          >
-                            <AiOutlineArrowDown />
-                          </button>
                         </td>
                       </tr>
                     ))

@@ -13,12 +13,12 @@ const CustomCard = function ({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="p-4 bg-[#fff] shadow rounded-xl w-full flex justify-between items-center">
-      <div className="flex justify-between items-start flex-col">
-        <p className="font-normal text-slate-500 text-sm">{title}</p>
-        <p className="font-semibold text-xl my-2">{value}</p>
+    <div className="p-4 bg-[#fff] shadow rounded-xl w-full flex flex-col justify-start">
+      <p className="font-normal text-slate-500 text-sm">{title}</p>
+      <div className="flex justify-between items-end w-full mt-2">
+        <p className="font-semibold text-xl">{value}</p>
+        <div className="mr-2 text-2xl">{icon}</div>
       </div>
-      <div className="mr-2 text-2xl">{icon}</div>
     </div>
   );
 };
@@ -45,14 +45,38 @@ const DashboardPage: FC = function () {
         Welcome to the dashboard 🚀
       </p>
       <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-10 px-10">
-        <CustomCard title="Active Projects" value="25" icon={<FiUser />} />
-        <CustomCard title="Pending Approvals" value="15" icon={<FiUser />} />
-        <CustomCard title="Completed Tasks" value="120" icon={<FiUser />} />
-        <CustomCard title="New Signups" value="30" icon={<FiUser />} />
-        <CustomCard title="Total Revenue" value="5,000" icon={<FiUser />} />
-        <CustomCard title="User Feedback" value="85%" icon={<FiUser />} />
-        <CustomCard title="Support" value="8" icon={<FiUser />} />
-        <CustomCard title="Monthly Visitors" value="1,200" icon={<FiUser />} />
+        <CustomCard title="Total Users" value="25" icon={<FiUser />} />
+        <CustomCard
+          title="Total Free Subscriptions"
+          value="15"
+          icon={<FiUser />}
+        />
+        <CustomCard
+          title="Total Paid Subscriptions"
+          value="15"
+          icon={<FiUser />}
+        />
+        <CustomCard
+          title="Total Active Subscriptions"
+          value="15"
+          icon={<FiUser />}
+        />
+        <CustomCard
+          title="Total Signup from Referral"
+          value="15"
+          icon={<FiUser />}
+        />
+        <CustomCard
+          title="Total No. of Enquiries"
+          value="15"
+          icon={<FiUser />}
+        />
+        <CustomCard title="Total Revenue" value="15" icon={<FiUser />} />
+        <CustomCard
+          title="Total Subscription From Referral Users"
+          value="15"
+          icon={<FiUser />}
+        />
       </section>
 
       <section className="flex justify-between">

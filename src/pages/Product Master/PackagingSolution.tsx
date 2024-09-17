@@ -12,6 +12,7 @@ import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import { useUser } from "../../context/userContext";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import toast from "react-hot-toast";
 
 interface PackagingSolutionsInterface {
   id: number;
@@ -215,6 +216,77 @@ const PackagingSolutions: React.FC = () => {
     );
 
     const formData = new FormData();
+
+    if (type === "add") {
+      if (formPackagingSolutions?.image === undefined) {
+        toast.error("Image Can Not Be Empty!");
+      }
+    }
+
+    if (!formPackagingSolutions?.name) {
+      setActiveTab("engine");
+      return;
+    }
+    if (!formPackagingSolutions?.structure_type) {
+      setActiveTab("engine");
+      return;
+    }
+    if (formPackagingSolutions?.sequence === undefined) {
+      setActiveTab("engine");
+      return;
+    }
+    if (!formPackagingSolutions?.storage_condition_id) {
+      setActiveTab("engine");
+      return;
+    }
+    if (formPackagingSolutions?.display_shelf_life_days === undefined) {
+      setActiveTab("engine");
+      return;
+    }
+    if (!formPackagingSolutions?.product_id) {
+      setActiveTab("product");
+      return;
+    }
+    if (!formPackagingSolutions?.product_category_id) {
+      setActiveTab("product");
+      return;
+    }
+    if (!formPackagingSolutions?.product_form_id) {
+      setActiveTab("product");
+      return;
+    }
+    if (!formPackagingSolutions?.packaging_treatment_id) {
+      setActiveTab("product");
+      return;
+    }
+    if (!formPackagingSolutions?.packing_type_id) {
+      setActiveTab("product");
+      return;
+    }
+    if (!formPackagingSolutions?.packaging_machine_id) {
+      setActiveTab("product");
+      return;
+    }
+    if (!formPackagingSolutions?.packaging_material_id) {
+      setActiveTab("product");
+      return;
+    }
+    if (!formPackagingSolutions?.product_min_weight) {
+      setActiveTab("product");
+      return;
+    }
+    if (!formPackagingSolutions?.product_max_weight) {
+      setActiveTab("product");
+      return;
+    }
+    if (formPackagingSolutions?.min_order_quantity === undefined) {
+      setActiveTab("moq");
+      return;
+    }
+    if (!formPackagingSolutions?.min_order_quantity_unit_id) {
+      setActiveTab("moq");
+      return;
+    }
 
     formData.append("name", formPackagingSolutions?.name || "");
     formData.append(

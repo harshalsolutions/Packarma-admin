@@ -43,12 +43,9 @@ const TermsAndCondition = () => {
   const updateDataHandler = async () => {
     toast.loading("Updating...");
     try {
-      const resp = await api.post(
-        `${BACKEND_API_KEY}/developer/terms-and-conditons`,
-        {
-          content: data,
-        }
-      );
+      await api.post(`${BACKEND_API_KEY}/developer/terms-and-conditons`, {
+        content: data,
+      });
       toast.dismiss();
       toast.success("Updated Successfully");
     } catch (error) {
