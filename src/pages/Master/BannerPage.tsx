@@ -139,8 +139,9 @@ const BannerPage: React.FC = () => {
 
   const exportBanner = async (id: number) => {
     try {
-      const response = await api.get(
+      const response = await api.post(
         `${BACKEND_API_KEY}/master/export-banner/${id}`,
+        { link: BACKEND_MEDIA_LINK },
         {
           responseType: "blob",
         }

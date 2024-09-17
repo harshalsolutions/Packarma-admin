@@ -153,8 +153,9 @@ const AdsPage: React.FC = () => {
 
   const exportAdvertisement = async (id: number) => {
     try {
-      const response = await api.get(
+      const response = await api.post(
         `${BACKEND_API_KEY}/master/export-advertisement/${id}`,
+        { link: BACKEND_MEDIA_LINK },
         {
           responseType: "blob",
         }
