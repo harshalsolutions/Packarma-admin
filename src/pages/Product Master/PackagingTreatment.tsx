@@ -276,7 +276,7 @@ const PackagingTreatmentPage: React.FC = () => {
                       Status
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      Featur
+                      Featured
                     </th>
                     <th scope="col" className="px-6 py-3">
                       <span className="sr-only">Actions</span>

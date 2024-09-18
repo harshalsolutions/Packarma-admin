@@ -36,6 +36,7 @@ import VerifyOtpPage from "./pages/Authentication/VerifyPassword";
 import ForgotPassword from "./pages/Authentication/ForgetPassword";
 import TermsandCondition from "./pages/Developer Settings/TermsandCondition";
 import PrivacyPolicy from "./pages/Developer Settings/PrivacyPolicy";
+import RedemRefer from "./pages/Customer Section/RedemRefer";
 
 const AppRoutes = () => (
   <Routes>
@@ -212,6 +213,16 @@ const AppRoutes = () => (
         <ProtectedRoute>
           <NavbarSidebarLayout>
             <Refer />
+          </NavbarSidebarLayout>
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/customer-section/redeem-refer"
+      element={
+        <ProtectedRoute>
+          <NavbarSidebarLayout>
+            <RedemRefer />
           </NavbarSidebarLayout>
         </ProtectedRoute>
       }

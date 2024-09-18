@@ -130,6 +130,11 @@ const menuItems: MenuItem[] = [
         icon: VscDebugBreakpointDataUnverified,
       },
       {
+        name: "Redeem Refer",
+        path: "/customer-section/redeem-refer",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+      {
         name: "User Subscription",
         path: "/customer-section/user-subscription",
         icon: VscDebugBreakpointDataUnverified,
@@ -265,7 +270,7 @@ const SidebarComponent: FC = function () {
   };
 
   return (
-    <Sidebar className="lg:w-[24%] flex-grow h-[100vh] pt-16">
+    <Sidebar className="flex-grow h-[100vh] pt-16">
       <div className="flex flex-col justify-between">
         <Sidebar.Items>
           <Sidebar.ItemGroup>
