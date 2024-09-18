@@ -6,7 +6,7 @@ import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaRegFileExcel } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import { useUser } from "../../context/userContext";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import { AiOutlineSearch } from "react-icons/ai";
+import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
 
 interface Product {
   id: number;
@@ -96,6 +97,12 @@ const Product: React.FC = () => {
     userContext,
     "Product Master",
     "can_update"
+  );
+
+  const exportPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_export"
   );
 
   const createPermission = hasUpdateAndCreatePermissions(
@@ -216,6 +223,34 @@ const Product: React.FC = () => {
         setDeletePopupOpen(false);
         setProductIdToDelete(null);
       }
+    }
+  };
+
+  const downloadExcelController = async () => {
+    toast.loading("Exporting...");
+    try {
+      const response = await api.post(
+        `${BACKEND_API_KEY}/product/export-products`,
+        {
+          link: BACKEND_MEDIA_LINK,
+        },
+        {
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      let title = `products_exported_(${formatDateForFilename()}).xlsx`;
+      link.setAttribute("download", title);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.dismiss();
+      toast.success("Exported successfully");
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Something went wrong");
     }
   };
 
@@ -347,6 +382,14 @@ const Product: React.FC = () => {
             >
               {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
             </button>
+            {exportPermission && (
+              <button
+                className="bg-green-500 text-white px-3 py-2 rounded block mr-4"
+                onClick={downloadExcelController}
+              >
+                <FaRegFileExcel size={22} />
+              </button>
+            )}
             {createPermission && (
               <button
                 onClick={() => {

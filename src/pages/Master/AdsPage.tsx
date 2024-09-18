@@ -14,6 +14,7 @@ import ToggleSwitch from "../../components/ToggleSwitch";
 import { AiOutlineClose } from "react-icons/ai";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import { useUser } from "../../context/userContext";
+import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
 interface Advertisement {
   id: number;
   title: string;
@@ -163,12 +164,7 @@ const AdsPage: React.FC = () => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      let title =
-        "advertisement_" +
-        id +
-        "_exported(" +
-        new Date().toISOString().slice(0, 16).replace("T", " ") +
-        ").xlsx";
+      let title = `advertisement_exported_(${formatDateForFilename()}).xlsx`;
       link.setAttribute("download", title);
       document.body.appendChild(link);
       link.click();
@@ -516,13 +512,15 @@ const AdsPage: React.FC = () => {
             </div>
           )}
           {filterOpen && (
-            <TextInput
-              type="text"
-              className="w-[25%] mb-4"
-              placeholder="Search here.."
-              value={titleFilter}
-              onChange={(e) => setTitleFilter(e.target.value)}
-            />
+            <div className="flex justify-end items-center mb-6">
+              <TextInput
+                type="text"
+                className="w-[25%]"
+                placeholder="Search here.."
+                value={titleFilter}
+                onChange={(e) => setTitleFilter(e.target.value)}
+              />
+            </div>
           )}
           {!isFormOpen && (
             <>

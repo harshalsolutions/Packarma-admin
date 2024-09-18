@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Spinner } from "flowbite-react";
-import { TbEdit } from "react-icons/tb";
+import { Badge, Spinner, TextInput } from "flowbite-react";
+import { TbEdit, TbFilter, TbFilterOff } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
-import { BACKEND_API_KEY } from "../../../utils/ApiKey";
+import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaRegFileExcel } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import { useUser } from "../../context/userContext";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import toast from "react-hot-toast";
+import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
 
 interface PackagingMaterial {
   id: number;
@@ -66,6 +68,9 @@ const PackagingMaterial: React.FC = () => {
   const [sit, setSit] = useState("");
   const [gsm, setGsm] = useState("");
   const [specialFeature, setSpecialFeature] = useState("");
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [materialFilter, setMaterialFilter] = useState("");
+  const [materialFilterDebounced, setDebouncedMaterialFilter] = useState("");
 
   const userContext = useUser();
 
@@ -87,9 +92,25 @@ const PackagingMaterial: React.FC = () => {
     "can_delete"
   );
 
+  const exportPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_export"
+  );
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedMaterialFilter(materialFilter);
+    }, 350);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [materialFilter]);
+
   useEffect(() => {
     fetchPackagingMaterials();
-  }, [currentPage, entriesPerPage]);
+  }, [currentPage, entriesPerPage, materialFilterDebounced]);
 
   const fetchPackagingMaterials = async () => {
     try {
@@ -100,6 +121,7 @@ const PackagingMaterial: React.FC = () => {
           params: {
             page: currentPage,
             limit: entriesPerPage,
+            search: materialFilter,
           },
         }
       );
@@ -148,6 +170,32 @@ const PackagingMaterial: React.FC = () => {
     setSit("");
     setGsm("");
     setSpecialFeature("");
+  };
+
+  const downloadExcelController = async () => {
+    toast.loading("Exporting...");
+    try {
+      const response = await api.post(
+        `${BACKEND_API_KEY}/product/packaging-materials/export`,
+        {},
+        {
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      let title = `packaging_materials_exported_(${formatDateForFilename()}).xlsx`;
+      link.setAttribute("download", title);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.dismiss();
+      toast.success("Exported successfully");
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Something went wrong");
+    }
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -229,14 +277,43 @@ const PackagingMaterial: React.FC = () => {
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
           />
-          {createPermission && (
+          <div className="flex">
             <button
-              onClick={openAddForm}
-              className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+              className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+              onClick={() => {
+                setFilterOpen(!filterOpen);
+              }}
             >
-              Add New Packaging Material
+              {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
             </button>
-          )}
+            {exportPermission && (
+              <button
+                className="bg-green-500 text-white px-3 py-2 rounded block mr-4"
+                onClick={downloadExcelController}
+              >
+                <FaRegFileExcel size={22} />
+              </button>
+            )}
+            {createPermission && (
+              <button
+                onClick={openAddForm}
+                className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+              >
+                Add New Packaging Material
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+      {filterOpen && (
+        <div className="flex justify-end items-center mb-6">
+          <TextInput
+            type="text"
+            className="w-[25%]"
+            value={materialFilter}
+            onChange={(e) => setMaterialFilter(e.target.value)}
+            placeholder="Search Material.."
+          />
         </div>
       )}
       {!isFormOpen && (
