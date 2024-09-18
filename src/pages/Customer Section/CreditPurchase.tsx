@@ -129,9 +129,7 @@ const CreditPurchase: React.FC = () => {
                   <th scope="col" className="px-6 py-3">
                     Email
                   </th>
-                  <th scope="col" className="px-6 py-3">
-                    Plan Type
-                  </th>
+
                   <th scope="col" className="px-6 py-3">
                     Credits
                   </th>
@@ -163,13 +161,10 @@ const CreditPurchase: React.FC = () => {
                         {creditPurchase.email}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {creditPurchase.plan_type}
-                      </td>
-                      <td className="px-6 py-4 text-gray-900">
                         {creditPurchase.number_of_credits}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        ₹{creditPurchase.total}
+                        {creditPurchase.total}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
                         {new Date(creditPurchase.invoice_date).toLocaleString()}
@@ -246,10 +241,6 @@ const CreditPurchase: React.FC = () => {
             {
               label: "User ID",
               value: selectedCreditPurchase.user_id?.toString(),
-            },
-            {
-              label: "Plan Type",
-              value: selectedCreditPurchase.plan_type,
             },
             {
               label: "Number of Credits",

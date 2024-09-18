@@ -7,7 +7,6 @@ import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
-import CustomPopup from "../../components/CustomPopup";
 
 interface ReferForm {
   id: number;
@@ -46,10 +45,6 @@ const Refer: React.FC = () => {
     itemsPerPage: 10,
   });
   const [selectedRefer, setSelectedRefer] = useState<ReferForm | null>(null);
-  const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
-  const [customerIdToDelete, setCustomerIdToDelete] = useState<number | null>(
-    null
-  );
 
   useEffect(() => {
     fetchReferForm();
@@ -74,26 +69,6 @@ const Refer: React.FC = () => {
       setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
     }
-  };
-
-  const handleConfirmDelete = async () => {
-    if (customerIdToDelete !== null) {
-      try {
-        await api.delete(
-          `${BACKEND_API_KEY}/product/refer/${customerIdToDelete}`
-        );
-        fetchReferForm();
-      } catch (err) {
-        setError("Failed to delete refer");
-      }
-      setDeletePopupOpen(false);
-      setCustomerIdToDelete(null);
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setDeletePopupOpen(false);
-    setCustomerIdToDelete(null);
   };
 
   return (
@@ -272,14 +247,6 @@ const Refer: React.FC = () => {
             },
           ]}
           onClose={() => setSelectedRefer(null)}
-        />
-      )}
-      {isDeletePopupOpen && (
-        <CustomPopup
-          title="Confirm Deletion"
-          description="Are you sure you want to delete this refer?"
-          onConfirm={handleConfirmDelete}
-          onCancel={handleCancelDelete}
         />
       )}
     </div>
