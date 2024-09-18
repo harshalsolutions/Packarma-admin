@@ -54,12 +54,15 @@ const Customer: React.FC = () => {
   const fetchCustomerEnquiriesForm = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`${BACKEND_API_KEY}/customer/enquiries`, {
-        params: {
-          page: currentPage,
-          limit: entriesPerPage,
-        },
-      });
+      const response = await api.get(
+        `${BACKEND_API_KEY}/contact-us/customer-care`,
+        {
+          params: {
+            page: currentPage,
+            limit: entriesPerPage,
+          },
+        }
+      );
       setCustomerEnquiriesForm(response.data.data.enquiries || []);
       if (response.data.data.pagination) {
         setPagination(response.data.data.pagination);
