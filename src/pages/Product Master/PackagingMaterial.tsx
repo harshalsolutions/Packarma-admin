@@ -3,7 +3,7 @@ import api from "../../../utils/axiosInstance";
 import { Badge, Spinner, TextInput } from "flowbite-react";
 import { TbEdit, TbFilter, TbFilterOff } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
-import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
+import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight, FaRegFileExcel } from "react-icons/fa";

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Spinner } from "flowbite-react";
+import { Badge, Select, Spinner } from "flowbite-react";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
@@ -715,19 +715,24 @@ const PackagingSolutions: React.FC = () => {
                   >
                     Structure Type
                   </label>
-                  <input
-                    type="text"
-                    id="structureType"
-                    value={formPackagingSolutions?.structure_type || ""}
+                  <Select
+                    value={formPackagingSolutions?.structure_type}
                     onChange={(e) =>
                       setFormPackagingSolutions((prev) => ({
                         ...prev!,
                         structure_type: e.target.value,
                       }))
                     }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    required
-                  />
+                  >
+                    <option value="">-- Select Structure Type --</option>
+                    <option value="Economical Solution">
+                      Economical Solution
+                    </option>
+                    <option value="Advance Solution">Advance Solution</option>
+                    <option value="Sustainable Solution">
+                      Sustainable Solution
+                    </option>
+                  </Select>
                 </div>
 
                 <div className="mb-4">
