@@ -30,7 +30,7 @@ const SignInPage: FC = function () {
         return;
       } else {
         localStorage.setItem("token", response.data.data.token);
-        navigate("/");
+        navigate("/admin");
       }
       setLoading(false);
     } catch (error: any) {

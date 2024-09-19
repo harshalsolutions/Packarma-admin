@@ -28,7 +28,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           if (response.data.data.status === "inactive") {
             toast.error("Your account is inactive. Please contact admin.");
             localStorage.removeItem("token");
-            navigate("/login");
+            navigate("/admin/login");
           } else {
             userContext?.setUser({
               id: response.data.data.id,
@@ -40,7 +40,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
             setIsUserDataFetched(true);
           }
         } catch (error) {
-          navigate("/login");
+          navigate("/admin/login");
           console.error("Error fetching user data:", error);
         } finally {
           setIsLoading(false);
@@ -91,7 +91,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
   if (!token) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/admin/login" />;
   }
 
   return <>{children}</>;
