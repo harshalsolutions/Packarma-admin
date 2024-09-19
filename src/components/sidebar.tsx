@@ -19,188 +19,183 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { name: "Dashboard", path: "/", icon: HiChartPie },
+  { name: "Dashboard", path: "/admin", icon: HiChartPie },
   {
     name: "Master",
-    path: "/master",
+    path: "/admin/master",
     icon: HiOutlineSquares2X2,
     submenu: [
       {
         name: "Subscription",
-        path: "/master/subscription",
+        path: "/admin/master/subscription",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Banner",
-        path: "/master/banner",
+        path: "/admin/master/banner",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Ads",
-        path: "/master/ads",
+        path: "/admin/master/ads",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Credit Master",
-        path: "/master/credit-master",
+        path: "/admin/master/credit-master",
         icon: VscDebugBreakpointDataUnverified,
       },
     ],
   },
   {
     name: "Product Master",
-    path: "/product-master",
+    path: "/admin/product-master",
     icon: HiOutlineSquares2X2,
     submenu: [
       {
         name: "Category",
-        path: "/product-master/category",
+        path: "/admin/product-master/category",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Sub Category",
-        path: "/product-master/subcategory",
+        path: "/admin/product-master/subcategory",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Product Form",
-        path: "/product-master/product-form",
+        path: "/admin/product-master/product-form",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Packing Type",
-        path: "/product-master/packing-type",
+        path: "/admin/product-master/packing-type",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Packaging Machine",
-        path: "/product-master/packaging-machine",
+        path: "/admin/product-master/packaging-machine",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Packaging Treatment",
-        path: "/product-master/packaging-treatment",
+        path: "/admin/product-master/packaging-treatment",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Storage Condition",
-        path: "/product-master/storage-condition",
+        path: "/admin/product-master/storage-condition",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Measurement Unit",
-        path: "/product-master/measurement-unit",
+        path: "/admin/product-master/measurement-unit",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Product",
-        path: "/product-master/product",
+        path: "/admin/product-master/product",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Packaging Material",
-        path: "/product-master/packaging-material",
+        path: "/admin/product-master/packaging-material",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Packaging Solutions",
-        path: "/product-master/packaging-solutions",
+        path: "/admin/product-master/packaging-solutions",
         icon: VscDebugBreakpointDataUnverified,
       },
     ],
   },
   {
     name: "Customer Section",
-    path: "/customer-section",
+    path: "/admin/customer-section",
     icon: HiUsers,
     submenu: [
       {
         name: "User List",
-        path: "/customer-section/user-list",
+        path: "/admin/customer-section/user-list",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "User Address List",
-        path: "/customer-section/user-address-list",
+        path: "/admin/customer-section/user-address-list",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Refer",
-        path: "/customer-section/refer",
+        path: "/admin/customer-section/refer",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Redeem Refer",
-        path: "/customer-section/redeem-refer",
+        path: "/admin/customer-section/redeem-refer",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "User Subscription",
-        path: "/customer-section/user-subscription",
-        icon: VscDebugBreakpointDataUnverified,
-      },
-      {
-        name: "Download Subscription",
-        path: "/customer-section/download-subscription",
+        path: "/admin/customer-section/user-subscription",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Credit Purchase",
-        path: "/customer-section/credit-purchase",
+        path: "/admin/customer-section/credit-purchase",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Customer Enquiry",
-        path: "/customer-section/enquiry",
+        path: "/admin/customer-section/enquiry",
         icon: VscDebugBreakpointDataUnverified,
       },
     ],
   },
   {
     name: "Staff",
-    path: "/staff",
+    path: "/admin/staff",
     icon: HiUsers,
   },
   {
     name: "Contact Us",
-    path: "/contact-us",
+    path: "/admin/contact-us",
     icon: FiHeadphones,
     submenu: [
       {
         name: "Customer",
-        path: "/contact-us/customer",
+        path: "/admin/contact-us/customer",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "System Details",
-        path: "/contact-us/system-details",
+        path: "/admin/contact-us/system-details",
         icon: VscDebugBreakpointDataUnverified,
       },
     ],
   },
   {
     name: "Report",
-    path: "/report",
+    path: "/admin/report",
     icon: RiFileExcel2Line,
   },
   {
     name: "General Settings",
-    path: "/general-settings",
+    path: "/admin/general-settings",
     icon: RiSettings4Line,
   },
   {
     name: "Developer Settings",
-    path: "/devloper-settings",
+    path: "/admin/devloper-settings",
     icon: MdDeveloperMode,
     submenu: [
       {
         name: "Terms and Condition",
-        path: "/developer-settings/terms-and-condition",
+        path: "/admin/developer-settings/terms-and-condition",
         icon: VscDebugBreakpointDataUnverified,
       },
       {
         name: "Privacy Policy",
-        path: "/developer-settings/privacy-policy",
+        path: "/admin/developer-settings/privacy-policy",
         icon: VscDebugBreakpointDataUnverified,
       },
     ],

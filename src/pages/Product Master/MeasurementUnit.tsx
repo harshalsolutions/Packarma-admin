@@ -287,7 +287,7 @@ const MeasurementUnit: React.FC = () => {
                             </Badge>
                           </td>
                         )}
-                        <td className="px-6 py-4 text-gray-900 text-right">
+                        <td className="px-6 py-4 text-gray-900 flex">
                           <button
                             onClick={() =>
                               setSelectedMeasurementUnit(measurementUnit)

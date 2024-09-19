@@ -559,7 +559,7 @@ const PackagingSolutions: React.FC = () => {
                             </Badge>
                           </td>
                         )}
-                        <td className="px-6 py-4 text-gray-900 text-right">
+                        <td className="px-6 py-4 text-gray-900 flex">
                           <button
                             onClick={() =>
                               setSelectedPackagingSolutions(packagingSolutions)
@@ -756,7 +756,6 @@ const PackagingSolutions: React.FC = () => {
                     required
                   />
                 </div>
-
                 <div className="mb-4">
                   <label
                     htmlFor="storageCondition"
@@ -764,6 +763,7 @@ const PackagingSolutions: React.FC = () => {
                   >
                     Storage Condition
                   </label>
+
                   <select
                     id="storageCondition"
                     value={formPackagingSolutions?.storage_condition_id || ""}

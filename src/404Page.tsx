@@ -4,7 +4,7 @@ const NotFoundPage = () => {
   const navigate = useNavigate();
 
   const goHome = () => {
-    navigate("/");
+    navigate("/admin");
   };
 
   return (

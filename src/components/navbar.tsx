@@ -30,7 +30,7 @@ const ExampleNavbar: FC = function () {
       <div className="w-full">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <Navbar.Brand href="/">
+            <Navbar.Brand href="/admin">
               <img alt="" src={"/logo.jpg"} className="mr-3 h-10" />
               <span className="self-center whitespace-nowrap text-2xl font-semibold dark:text-white">
                 Packarma

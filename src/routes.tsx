@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NavbarSidebarLayout from "./layouts/navbar-sidebar";
 import DashboardPage from "./pages/Dashboard";
@@ -24,7 +24,6 @@ import Refer from "./pages/Customer Section/Refer";
 import UserList from "./pages/Customer Section/UserList";
 import UserAddresses from "./pages/Customer Section/UserAddresses";
 import UserSubscription from "./pages/Customer Section/UserSubscription";
-import DownloadSubscription from "./pages/Customer Section/DownloadSubscription";
 import ManageStaff from "./pages/Staff/ManageStaff";
 import Settings from "./pages/GeneralSettings/settings";
 import Customer from "./pages/Contact Us/Customer";
@@ -37,14 +36,16 @@ import ForgotPassword from "./pages/Authentication/ForgetPassword";
 import TermsandCondition from "./pages/Developer Settings/TermsandCondition";
 import PrivacyPolicy from "./pages/Developer Settings/PrivacyPolicy";
 import RedemRefer from "./pages/Customer Section/RedemRefer";
+import Redirect from "./Redirect";
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/login" element={<SignInPage />} />
-    <Route path="/forgot-password" element={<ForgotPassword />} />
-    <Route path="/update-password" element={<VerifyOtpPage />} />
+    <Route path="/" element={<Redirect />} />
+    <Route path="/admin/login" element={<SignInPage />} />
+    <Route path="/admin/forgot-password" element={<ForgotPassword />} />
+    <Route path="/admin/update-password" element={<VerifyOtpPage />} />
     <Route
-      path="/"
+      path="/admin"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -55,7 +56,7 @@ const AppRoutes = () => (
     />
     {/* Master routes */}
     <Route
-      path="/master/subscription"
+      path="/admin/master/subscription"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -65,7 +66,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/master/banner"
+      path="/admin/master/banner"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -75,7 +76,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/master/ads"
+      path="/admin/master/ads"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -85,7 +86,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/master/credit-master"
+      path="/admin/master/credit-master"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -96,7 +97,7 @@ const AppRoutes = () => (
     />
     {/* Product Master routes */}
     <Route
-      path="/product-master/category"
+      path="/admin/product-master/category"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -106,7 +107,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/product-master/subcategory"
+      path="/admin/product-master/subcategory"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -116,7 +117,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/product-master/product-form"
+      path="/admin/product-master/product-form"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -126,7 +127,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/product-master/packing-type"
+      path="/admin/product-master/packing-type"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -136,7 +137,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/product-master/packaging-machine"
+      path="/admin/product-master/packaging-machine"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -146,7 +147,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/product-master/packaging-treatment"
+      path="/admin/product-master/packaging-treatment"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -156,7 +157,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/product-master/storage-condition"
+      path="/admin/product-master/storage-condition"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -166,7 +167,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/product-master/measurement-unit"
+      path="/admin/product-master/measurement-unit"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -176,7 +177,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/product-master/product"
+      path="/admin/product-master/product"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -186,7 +187,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/product-master/packaging-material"
+      path="/admin/product-master/packaging-material"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -196,7 +197,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/product-master/packaging-solutions"
+      path="/admin/product-master/packaging-solutions"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -208,7 +209,7 @@ const AppRoutes = () => (
     {/* Customer Section */}
 
     <Route
-      path="/customer-section/refer"
+      path="/admin/customer-section/refer"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -218,7 +219,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/customer-section/redeem-refer"
+      path="/admin/customer-section/redeem-refer"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -228,7 +229,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/customer-section/user-list"
+      path="/admin/customer-section/user-list"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -238,7 +239,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/customer-section/user-address-list"
+      path="/admin/customer-section/user-address-list"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -249,7 +250,7 @@ const AppRoutes = () => (
     />
 
     <Route
-      path="/customer-section/user-subscription"
+      path="/admin/customer-section/user-subscription"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -259,17 +260,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/customer-section/download-subscription"
-      element={
-        <ProtectedRoute>
-          <NavbarSidebarLayout>
-            <DownloadSubscription />
-          </NavbarSidebarLayout>
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/customer-section/credit-purchase"
+      path="/admin/customer-section/credit-purchase"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -279,7 +270,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/customer-section/enquiry"
+      path="/admin/customer-section/enquiry"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -289,7 +280,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/contact-us/customer"
+      path="/admin/contact-us/customer"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -299,7 +290,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/contact-us/system-details"
+      path="/admin/contact-us/system-details"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -310,7 +301,7 @@ const AppRoutes = () => (
     />
     {/* Staff Section */}
     <Route
-      path="/staff"
+      path="/admin/staff"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -321,7 +312,7 @@ const AppRoutes = () => (
     />
     {/* Report */}
     <Route
-      path="/report"
+      path="/admin/report"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -332,7 +323,7 @@ const AppRoutes = () => (
     />
     {/* General Settings */}
     <Route
-      path="/general-settings"
+      path="/admin/general-settings"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -343,7 +334,7 @@ const AppRoutes = () => (
     />
     {/* Developer Settings */}
     <Route
-      path="/developer-settings/terms-and-condition"
+      path="/admin/developer-settings/terms-and-condition"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -353,7 +344,7 @@ const AppRoutes = () => (
       }
     />
     <Route
-      path="/developer-settings/privacy-policy"
+      path="/admin/developer-settings/privacy-policy"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
@@ -363,7 +354,7 @@ const AppRoutes = () => (
       }
     />
     {/* No Access */}
-    <Route path="/no-access" element={<NoAccess />} />
+    <Route path="/admin/no-access" element={<NoAccess />} />
     <Route path="*" element={<NotFoundPage />} />
   </Routes>
 );

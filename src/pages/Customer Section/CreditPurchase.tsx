@@ -13,15 +13,18 @@ import { formatDateTime } from "../../../utils/DateFormatter";
 interface CreditPurchaseForm {
   id: number;
   user_id: number;
-  plan_type: string;
   number_of_credits: number;
-  total: string;
+  total_price: string;
+  invoice_link: string;
   invoice_date: string;
   createdAt: string;
   updatedAt: string;
+  currency: string;
+  indian_price: string;
   firstname: string;
   lastname: string;
   email: string;
+  transaction_id: string;
 }
 
 interface Pagination {
@@ -135,6 +138,9 @@ const CreditPurchase: React.FC = () => {
                     Credits
                   </th>
                   <th scope="col" className="px-6 py-3">
+                    Currency
+                  </th>
+                  <th scope="col" className="px-6 py-3">
                     Total
                   </th>
                   <th scope="col" className="px-6 py-3">
@@ -165,12 +171,15 @@ const CreditPurchase: React.FC = () => {
                         {creditPurchase.number_of_credits}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {creditPurchase.total}
+                        {creditPurchase.currency}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {creditPurchase.total_price}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
                         {formatDateTime(new Date(creditPurchase.invoice_date))}
                       </td>
-                      <td className="px-6 py-4 text-gray-900 text-right">
+                      <td className="px-6 py-4 text-gray-900 flex">
                         <button
                           onClick={() =>
                             setSelectedCreditPurchase(creditPurchase)
@@ -240,6 +249,17 @@ const CreditPurchase: React.FC = () => {
           fields={[
             { label: "ID", value: selectedCreditPurchase.id?.toString() },
             {
+              label: "Name",
+              value:
+                selectedCreditPurchase.firstname +
+                " " +
+                selectedCreditPurchase.lastname,
+            },
+            {
+              label: "Email",
+              value: selectedCreditPurchase.email,
+            },
+            {
               label: "User ID",
               value: selectedCreditPurchase.user_id?.toString(),
             },
@@ -248,8 +268,16 @@ const CreditPurchase: React.FC = () => {
               value: selectedCreditPurchase.number_of_credits.toString(),
             },
             {
+              label: "Currency",
+              value: selectedCreditPurchase.currency,
+            },
+            {
               label: "Total",
-              value: selectedCreditPurchase.total,
+              value: selectedCreditPurchase.total_price,
+            },
+            {
+              label: "Indian Price",
+              value: selectedCreditPurchase.indian_price,
             },
             {
               label: "Invoice Date",
@@ -258,23 +286,16 @@ const CreditPurchase: React.FC = () => {
               ),
             },
             {
+              label: "Transaction ID",
+              value: selectedCreditPurchase.transaction_id,
+            },
+            {
               label: "Created At",
               value: formatDateTime(new Date(selectedCreditPurchase.createdAt)),
             },
             {
               label: "Updated At",
               value: formatDateTime(new Date(selectedCreditPurchase.updatedAt)),
-            },
-            {
-              label: "Referred Name",
-              value:
-                selectedCreditPurchase.firstname +
-                " " +
-                selectedCreditPurchase.lastname,
-            },
-            {
-              label: "Referred Email",
-              value: selectedCreditPurchase.email,
             },
           ]}
           onClose={() => setSelectedCreditPurchase(null)}

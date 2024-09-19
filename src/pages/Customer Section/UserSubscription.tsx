@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
-import { MdOutlineRemoveRedEye } from "react-icons/md";
+import { MdOutlineRemoveRedEye, MdPictureAsPdf } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -16,10 +16,17 @@ interface CustomerForm {
   lastname: string;
   subscription_id: number;
   subscription_name: string;
-  start_date: string;
-  end_date: string;
+  total_price: string;
+  currency: string;
+  indian_price: string;
+  invoice_link: string;
+  invoice_date: string;
   createdAt: string;
   updatedAt: string;
+  email: string;
+  start_date: string;
+  end_date: string;
+  transaction_id: string;
 }
 
 interface Pagination {
@@ -103,10 +110,31 @@ const Customer: React.FC = () => {
         Manage User Subscriptions
       </h1>
       <>
-        <EntriesPerPage
-          entriesPerPage={entriesPerPage}
-          setEntriesPerPage={setEntriesPerPage}
-        />
+        <div className="flex justify-between items-center w-full my-6">
+          <EntriesPerPage
+            entriesPerPage={entriesPerPage}
+            setEntriesPerPage={setEntriesPerPage}
+          />
+          <div className="flex justify-end items-center">
+            {/* <button
+              className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+              onClick={() => {
+                setFilterOpen(!filterOpen);
+                setFilter({
+                  ...filter,
+                  active_subscription: "",
+                  email: "",
+                  phone_number: "",
+                  name: "",
+                  user_type: "",
+                });
+                fetchCustomerForm("nofilter");
+              }}
+            >
+              {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
+            </button> */}
+          </div>
+        </div>
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <Spinner size="xl" />
@@ -126,6 +154,12 @@ const Customer: React.FC = () => {
                   </th>
                   <th scope="col" className="px-6 py-3">
                     Subscription
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Currency
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Price
                   </th>
                   <th scope="col" className="px-6 py-3">
                     Start Date
@@ -155,12 +189,25 @@ const Customer: React.FC = () => {
                         {customerForm.subscription_name}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
+                        {customerForm.currency}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {customerForm.total_price}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
                         {formatDateTime(new Date(customerForm.start_date))}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
                         {formatDateTime(new Date(customerForm.end_date))}{" "}
                       </td>
-                      <td className="px-6 py-4 text-gray-900 text-right">
+                      <td className="px-6 py-4 text-gray-900 flex">
+                        <button
+                          onClick={() => window.open(customerForm.invoice_link)}
+                          className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                          aria-label="Info"
+                        >
+                          <MdPictureAsPdf />
+                        </button>
                         <button
                           onClick={() => setSelectedCustomer(customerForm)}
                           className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
@@ -231,6 +278,7 @@ const Customer: React.FC = () => {
               label: "Name",
               value: `${selectedCustomer.firstname} ${selectedCustomer.lastname}`,
             },
+            { label: "Email", value: selectedCustomer.email },
             {
               label: "Subscription ID",
               value: selectedCustomer.subscription_id?.toString(),
@@ -246,6 +294,26 @@ const Customer: React.FC = () => {
             {
               label: "End Date",
               value: formatDateTime(new Date(selectedCustomer.end_date)),
+            },
+            { label: "Total Price", value: selectedCustomer.total_price },
+            { label: "Currency", value: selectedCustomer.currency },
+            { label: "Indian Price", value: selectedCustomer.indian_price },
+            { label: "Transaction ID", value: selectedCustomer.transaction_id },
+            {
+              label: "Invoice Link",
+              value: (
+                <a
+                  href={selectedCustomer.invoice_link}
+                  target="_blank"
+                  className="underline text-blue-500"
+                >
+                  Open Invoice
+                </a>
+              ),
+            },
+            {
+              label: "Invoice Date",
+              value: formatDateTime(new Date(selectedCustomer.invoice_date)),
             },
             {
               label: "Created At",

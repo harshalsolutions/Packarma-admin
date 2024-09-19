@@ -490,7 +490,7 @@ const BannerPage: React.FC = () => {
             </div>
           )}
           {filterOpen && (
-            <div className="flex justify-end items-center mb-6">
+            <div className="flex justify-start items-center mb-6">
               <TextInput
                 type="text"
                 className="w-[25%]"
@@ -579,7 +579,7 @@ const BannerPage: React.FC = () => {
                                 )}
                               </div>
                             </td>
-                            <td className="px-6 py-4 text-gray-900 text-right">
+                            <td className="px-6 py-4 text-gray-900 flex">
                               <img
                                 src={BACKEND_MEDIA_LINK + banner.banner_image}
                                 alt={banner.title}
@@ -612,7 +612,7 @@ const BannerPage: React.FC = () => {
                                 </Badge>
                               </td>
                             )}
-                            <td className="px-6 py-4 text-gray-900 text-right">
+                            <td className="px-6 py-4 text-gray-900 flex">
                               {exportPermission && (
                                 <button
                                   onClick={() => exportBanner(banner.id)}

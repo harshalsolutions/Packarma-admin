@@ -70,8 +70,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const hasAccess = hasPermission(pathname.pathname);
 
   useEffect(() => {
-    if (!isLoading && pathname.pathname === "/") {
-      navigate("/");
+    if (!isLoading && pathname.pathname === "/admin") {
+      navigate("/admin");
     } else if (!hasAccess && !isLoading) {
       navigate("/no-access");
     }

@@ -350,7 +350,7 @@ const CreditMaster: React.FC = () => {
                             </Badge>
                           </td>
                         )}
-                        <td className="px-6 py-4 text-gray-900 text-right">
+                        <td className="px-6 py-4 text-gray-900 flex">
                           <button
                             onClick={() => setSelectedCreditPrice(creditPrice)}
                             className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"

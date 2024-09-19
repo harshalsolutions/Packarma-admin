@@ -282,6 +282,7 @@ const PackagingMaterial: React.FC = () => {
               className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
               onClick={() => {
                 setFilterOpen(!filterOpen);
+                setMaterialFilter("");
               }}
             >
               {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
@@ -306,7 +307,7 @@ const PackagingMaterial: React.FC = () => {
         </div>
       )}
       {filterOpen && (
-        <div className="flex justify-end items-center mb-6">
+        <div className="flex justify-start items-center mb-6">
           <TextInput
             type="text"
             className="w-[25%]"
@@ -392,7 +393,7 @@ const PackagingMaterial: React.FC = () => {
                             </Badge>
                           </td>
                         )}
-                        <td className="px-6 py-4 text-gray-900 text-right">
+                        <td className="px-6 py-4 text-gray-900 flex">
                           <button
                             onClick={() =>
                               setSelectedPackagingMaterial(packagingMaterial)

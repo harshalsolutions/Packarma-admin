@@ -512,7 +512,7 @@ const AdsPage: React.FC = () => {
             </div>
           )}
           {filterOpen && (
-            <div className="flex justify-end items-center mb-6">
+            <div className="flex justify-start items-center mb-6">
               <TextInput
                 type="text"
                 className="w-[25%]"
@@ -601,7 +601,7 @@ const AdsPage: React.FC = () => {
                                 )}
                               </div>
                             </td>
-                            <td className="px-6 py-4 text-gray-900 text-right">
+                            <td className="px-6 py-4 text-gray-900 flex">
                               <img
                                 src={BACKEND_MEDIA_LINK + advertisement.image}
                                 alt={advertisement.title}
@@ -641,7 +641,7 @@ const AdsPage: React.FC = () => {
                                 </Badge>
                               </td>
                             )}
-                            <td className="px-6 py-4 text-gray-900 text-right">
+                            <td className="px-6 py-4 text-gray-900 flex">
                               {exportPermission && (
                                 <button
                                   onClick={() =>

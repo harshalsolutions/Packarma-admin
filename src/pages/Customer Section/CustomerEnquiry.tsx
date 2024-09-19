@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Select, Spinner, TextInput } from "flowbite-react";
+import { Spinner, TextInput } from "flowbite-react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
@@ -10,6 +10,7 @@ import { ErrorComp } from "../../components/ErrorComp";
 import { TbFilter, TbFilterOff } from "react-icons/tb";
 import { AiOutlineSearch } from "react-icons/ai";
 import { formatDateTime } from "../../../utils/DateFormatter";
+import Select from "react-select";
 
 interface EnquiryForm {
   id: number;
@@ -199,45 +200,66 @@ const CustomerEnquiry: React.FC = () => {
             <Select
               name="category"
               id="category"
-              value={filterParams.category}
-              onChange={handleFilterChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            >
-              <option value="">Select Category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </Select>
+              options={categories.map((category) => ({
+                value: category.id,
+                label: category.name,
+              }))}
+              value={categories.find(
+                (category) => category.id === filterParams.category
+              )}
+              onChange={(selectedOption) =>
+                setFilterParams((prevState) => ({
+                  ...prevState,
+                  category: selectedOption?.value,
+                }))
+              }
+              placeholder="Select Category"
+              isSearchable
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            />
+
             <Select
               name="subCategory"
               id="subcategory"
-              value={filterParams.subCategory}
-              onChange={handleFilterChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            >
-              <option value="">Select Subcategory</option>
-              {subcategories.map((subcategory) => (
-                <option key={subcategory.id} value={subcategory.id}>
-                  {subcategory.name}
-                </option>
-              ))}
-            </Select>
+              options={subcategories.map((subcategory) => ({
+                value: subcategory.id,
+                label: subcategory.name,
+              }))}
+              value={subcategories.find(
+                (subcategory) => subcategory.id === filterParams.subCategory
+              )}
+              onChange={(selectedOption) =>
+                setFilterParams((prevState) => ({
+                  ...prevState,
+                  subCategory: selectedOption?.value,
+                }))
+              }
+              isSearchable
+              placeholder="Select Sub Category"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            />
+
             <Select
               name="productName"
               id="product"
-              value={filterParams.productName}
-              onChange={handleFilterChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            >
-              <option value="">Select Product</option>
-              {products.map((product) => (
-                <option key={product.id} value={product.id}>
-                  {product.product_name}
-                </option>
-              ))}
-            </Select>
+              options={products.map((product) => ({
+                value: product.id,
+                label: product.product_name,
+              }))}
+              value={products.find(
+                (product) => product.id === filterParams.productName
+              )}
+              onChange={(selectedOption) =>
+                setFilterParams((prevState) => ({
+                  ...prevState,
+                  productName: selectedOption?.value,
+                }))
+              }
+              placeholder="Select Product"
+              isSearchable
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            />
+
             <input
               type="date"
               name="fromDate"
@@ -308,7 +330,7 @@ const CustomerEnquiry: React.FC = () => {
                     <td className="px-6 py-4 text-gray-900">
                       {formatDateTime(new Date(enquiry.search_time))}
                     </td>
-                    <td className="px-6 py-4 text-gray-900 text-right">
+                    <td className="px-6 py-4 text-gray-900 flex">
                       <button
                         onClick={() => setselectedEnquiry(enquiry)}
                         className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"

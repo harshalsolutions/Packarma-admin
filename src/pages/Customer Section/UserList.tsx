@@ -298,6 +298,14 @@ const Customer: React.FC = () => {
               setEntriesPerPage={setEntriesPerPage}
             />
             <div className="flex justify-end items-center">
+              {exportPermission && (
+                <button
+                  className="bg-green-500 text-white px-3 py-2 rounded block mr-4"
+                  onClick={downloadExcelController}
+                >
+                  <FaRegFileExcel size={22} />
+                </button>
+              )}
               <button
                 className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
                 onClick={() => {
@@ -319,116 +327,64 @@ const Customer: React.FC = () => {
                   <TbFilter size={22} />
                 )}
               </button>
-              {exportPermission && (
-                <button
-                  className="bg-green-500 text-white px-3 py-2 rounded block mr-4"
-                  onClick={downloadExcelController}
-                >
-                  <FaRegFileExcel size={22} />
-                </button>
-              )}
             </div>
           </div>
           {filterOpen && (
             <div className="grid grid-cols-4 gap-4 flex-wrap mb-6 items-end">
-              <div className="flex justify-center items-start flex-col w-full">
-                <label className="mr-3 text-sm font-medium text-gray-800 mb-1">
-                  Search Name
-                </label>
-                <TextInput
-                  type="text"
-                  className="w-full"
-                  placeholder="Search Name.."
-                  value={filter.name}
-                  onChange={(e) =>
-                    setFilter({ ...filter, name: e.target.value })
-                  }
-                />
-              </div>
-              <div className="flex justify-center items-start flex-col w-full">
-                <label className="mr-3 text-sm font-medium text-gray-800 mb-1">
-                  Search Phone Number
-                </label>
-                <TextInput
-                  type="text"
-                  className="w-full"
-                  placeholder="Search Phone Number.."
-                  value={filter.phone_number}
-                  onChange={(e) =>
-                    setFilter({ ...filter, phone_number: e.target.value })
-                  }
-                />
-              </div>
-              <div className="flex justify-center items-start flex-col w-full">
-                <label className="mr-3 text-sm font-medium text-gray-800 mb-1">
-                  Search Email
-                </label>
-                <TextInput
-                  type="text"
-                  className="w-full"
-                  placeholder="Search Email.."
-                  value={filter.email}
-                  onChange={(e) =>
-                    setFilter({ ...filter, email: e.target.value })
-                  }
-                />
-              </div>
-              <div className="flex justify-center items-start flex-col w-full">
-                <label className="mr-3 text-sm font-medium text-gray-800 mb-1">
-                  Select Subscription
-                </label>
-                <Select
-                  value={filter.active_subscription}
-                  onChange={(e) =>
-                    setFilter({
-                      ...filter,
-                      active_subscription: e.target.value,
-                    })
-                  }
-                >
-                  <option value="">All Users</option>
-                  <option value="active">Active Subsctiption</option>
-                  <option value="inactive">Inactive Subscription</option>
-                </Select>
-              </div>
-              <div className="flex justify-center items-start flex-col w-full">
-                <label className="mr-3 text-sm font-medium text-gray-800 mb-1">
-                  Select User Type
-                </label>
-                <Select
-                  value={filter.user_type}
-                  onChange={(e) =>
-                    setFilter({ ...filter, user_type: e.target.value })
-                  }
-                >
-                  <option value="">--Select User Type--</option>
-                  <option value="normal">Normal</option>
-                  <option value="referred">Referred</option>
-                </Select>
-              </div>
+              <TextInput
+                type="text"
+                className="w-full"
+                placeholder="Search Name.."
+                value={filter.name}
+                onChange={(e) => setFilter({ ...filter, name: e.target.value })}
+              />
+              <TextInput
+                type="text"
+                className="w-full"
+                placeholder="Search Phone Number.."
+                value={filter.phone_number}
+                onChange={(e) =>
+                  setFilter({ ...filter, phone_number: e.target.value })
+                }
+              />
+              <TextInput
+                type="text"
+                className="w-full"
+                placeholder="Search Email.."
+                value={filter.email}
+                onChange={(e) =>
+                  setFilter({ ...filter, email: e.target.value })
+                }
+              />
+              <Select
+                value={filter.active_subscription}
+                onChange={(e) =>
+                  setFilter({
+                    ...filter,
+                    active_subscription: e.target.value,
+                  })
+                }
+              >
+                <option value="">All Users</option>
+                <option value="active">Active Subsctiption</option>
+                <option value="inactive">Inactive Subscription</option>
+              </Select>
+              <Select
+                value={filter.user_type}
+                onChange={(e) =>
+                  setFilter({ ...filter, user_type: e.target.value })
+                }
+              >
+                <option value="">Select User Type</option>
+                <option value="normal">Normal</option>
+                <option value="referred">Referred</option>
+              </Select>
               <div className="flex">
                 <button
                   className="bg-lime-500 text-black px-4 py-2 rounded mr-3"
                   onClick={() => fetchCustomerForm()}
                 >
                   <AiOutlineSearch size={22} />
-                </button>
-                <button
-                  className="bg-red-500 text-black px-4 py-2 rounded"
-                  onClick={() => {
-                    setFilterOpen(!filterOpen);
-                    setFilter({
-                      ...filter,
-                      active_subscription: "",
-                      email: "",
-                      phone_number: "",
-                      name: "",
-                      user_type: "",
-                    });
-                    fetchCustomerForm("nofilter");
-                  }}
-                >
-                  <AiOutlineClose size={22} />
                 </button>
               </div>
             </div>
