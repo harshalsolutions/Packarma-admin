@@ -1,39 +1,49 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Card, Spinner } from "flowbite-react";
+import { Badge, Card, Select, Spinner, TextInput } from "flowbite-react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
-import { BACKEND_API_KEY } from "../../../utils/ApiKey";
+import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
 import {
   FaChevronLeft,
   FaChevronRight,
   FaAddressBook,
   FaPlusCircle,
+  FaRegFileExcel,
 } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
-import { AiOutlineClose } from "react-icons/ai";
+import { AiOutlineClose, AiOutlineSearch } from "react-icons/ai";
 import AddCreditPopup from "../../components/AddCreditPopup";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import { useUser } from "../../context/userContext";
+import toast from "react-hot-toast";
+import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
+import { formatDateTime } from "../../../utils/DateFormatter";
+import { TbFilter, TbFilterOff } from "react-icons/tb";
 
 interface CustomerForm {
-  user_id: number;
-  firstname: string;
-  lastname: string;
-  email: string;
-  email_domain: string;
-  password: string;
-  email_verified: boolean;
-  gst_number: string;
-  gst_document_link: string;
-  email_verified_at: string;
-  phone_number: string;
-  country_code: string;
+  code: string;
+  country_code: string | null;
   credits: number;
   createdAt: string;
+  email: string;
+  email_domain: string | null;
+  email_verified: number;
+  email_verified_at: string | null;
+  end_date: string | null;
+  firstname: string;
+  gst_document_link: string | null;
+  gst_number: string | null;
+  lastname: string;
+  password: string;
+  phone_number: string | null;
+  referral_code_id: number;
+  start_date: string | null;
+  subscription_id: number | null;
+  subscription_name: string | null;
   updatedAt: string;
-  code: string;
+  user_id: number;
 }
 
 interface Pagination {
@@ -58,7 +68,7 @@ const Customer: React.FC = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerForm | null>(
     null
   );
-
+  const [filterOpen, setFilterOpen] = useState(false);
   const [addressList, setAddressList] = useState<string[]>([]);
   const [showDetails, setShowDetails] = useState(false);
   const [onAddressDetails, setOnAddressDetails] = useState({
@@ -70,7 +80,13 @@ const Customer: React.FC = () => {
 
   const [isAddCreditPopupOpen, setIsAddCreditPopupOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-
+  const [filter, setFilter] = useState({
+    name: "",
+    phone_number: "",
+    email: "",
+    active_subscription: "",
+    user_type: "",
+  });
   const userContext = useUser();
 
   useEffect(() => {
@@ -83,18 +99,39 @@ const Customer: React.FC = () => {
     "can_update"
   );
 
-  const fetchCustomerForm = async () => {
+  const exportPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Customer Section",
+    "can_export"
+  );
+
+  const fetchCustomerForm = async (type?: string) => {
     try {
       setLoading(true);
-      const response = await api.get(`${BACKEND_API_KEY}/customer/users`, {
-        params: {
-          page: currentPage,
-          limit: entriesPerPage,
-        },
-      });
-      setCustomerForm(response.data.data.users || []);
-      if (response.data.data.pagination) {
-        setPagination(response.data.data.pagination);
+      let response;
+      if (type === "nofilter") {
+        response = await api.get(`${BACKEND_API_KEY}/customer/users`, {
+          params: {
+            page: currentPage,
+            limit: entriesPerPage,
+          },
+        });
+      } else {
+        response = await api.get(`${BACKEND_API_KEY}/customer/users`, {
+          params: {
+            page: currentPage,
+            limit: entriesPerPage,
+            name: filter.name,
+            phone_number: filter.phone_number,
+            email: filter.email,
+            active_subscription: filter.active_subscription,
+            user_type: filter.user_type,
+          },
+        });
+      }
+      setCustomerForm(response?.data?.data.users || []);
+      if (response?.data?.data.pagination) {
+        setPagination(response?.data?.data.pagination);
       }
       setLoading(false);
       setError(null);
@@ -127,6 +164,34 @@ const Customer: React.FC = () => {
       });
     } catch (err) {
       setError("Failed to fetch addresses");
+    }
+  };
+
+  const downloadExcelController = async () => {
+    toast.loading("Exporting...");
+    try {
+      const response = await api.post(
+        `${BACKEND_API_KEY}/customer/users/export`,
+        {
+          link: BACKEND_MEDIA_LINK,
+        },
+        {
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      let title = `users_data_exported_(${formatDateForFilename()}).xlsx`;
+      link.setAttribute("download", title);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.dismiss();
+      toast.success("Exported successfully");
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Something went wrong");
     }
   };
 
@@ -227,10 +292,147 @@ const Customer: React.FC = () => {
           <h1 className="text-2xl font-bold mb-4 border-l-8 text-black border-lime-500 pl-2">
             Manage Customer
           </h1>
-          <EntriesPerPage
-            entriesPerPage={entriesPerPage}
-            setEntriesPerPage={setEntriesPerPage}
-          />
+          <div className="flex justify-between items-center w-full my-6">
+            <EntriesPerPage
+              entriesPerPage={entriesPerPage}
+              setEntriesPerPage={setEntriesPerPage}
+            />
+            <div className="flex justify-end items-center">
+              <button
+                className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+                onClick={() => {
+                  setFilterOpen(!filterOpen);
+                  setFilter({
+                    ...filter,
+                    active_subscription: "",
+                    email: "",
+                    phone_number: "",
+                    name: "",
+                    user_type: "",
+                  });
+                  fetchCustomerForm("nofilter");
+                }}
+              >
+                {filterOpen ? (
+                  <TbFilterOff size={22} />
+                ) : (
+                  <TbFilter size={22} />
+                )}
+              </button>
+              {exportPermission && (
+                <button
+                  className="bg-green-500 text-white px-3 py-2 rounded block mr-4"
+                  onClick={downloadExcelController}
+                >
+                  <FaRegFileExcel size={22} />
+                </button>
+              )}
+            </div>
+          </div>
+          {filterOpen && (
+            <div className="grid grid-cols-4 gap-4 flex-wrap mb-6 items-end">
+              <div className="flex justify-center items-start flex-col w-full">
+                <label className="mr-3 text-sm font-medium text-gray-800 mb-1">
+                  Search Name
+                </label>
+                <TextInput
+                  type="text"
+                  className="w-full"
+                  placeholder="Search Name.."
+                  value={filter.name}
+                  onChange={(e) =>
+                    setFilter({ ...filter, name: e.target.value })
+                  }
+                />
+              </div>
+              <div className="flex justify-center items-start flex-col w-full">
+                <label className="mr-3 text-sm font-medium text-gray-800 mb-1">
+                  Search Phone Number
+                </label>
+                <TextInput
+                  type="text"
+                  className="w-full"
+                  placeholder="Search Phone Number.."
+                  value={filter.phone_number}
+                  onChange={(e) =>
+                    setFilter({ ...filter, phone_number: e.target.value })
+                  }
+                />
+              </div>
+              <div className="flex justify-center items-start flex-col w-full">
+                <label className="mr-3 text-sm font-medium text-gray-800 mb-1">
+                  Search Email
+                </label>
+                <TextInput
+                  type="text"
+                  className="w-full"
+                  placeholder="Search Email.."
+                  value={filter.email}
+                  onChange={(e) =>
+                    setFilter({ ...filter, email: e.target.value })
+                  }
+                />
+              </div>
+              <div className="flex justify-center items-start flex-col w-full">
+                <label className="mr-3 text-sm font-medium text-gray-800 mb-1">
+                  Select Subscription
+                </label>
+                <Select
+                  value={filter.active_subscription}
+                  onChange={(e) =>
+                    setFilter({
+                      ...filter,
+                      active_subscription: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">All Users</option>
+                  <option value="active">Active Subsctiption</option>
+                  <option value="inactive">Inactive Subscription</option>
+                </Select>
+              </div>
+              <div className="flex justify-center items-start flex-col w-full">
+                <label className="mr-3 text-sm font-medium text-gray-800 mb-1">
+                  Select User Type
+                </label>
+                <Select
+                  value={filter.user_type}
+                  onChange={(e) =>
+                    setFilter({ ...filter, user_type: e.target.value })
+                  }
+                >
+                  <option value="">--Select User Type--</option>
+                  <option value="normal">Normal</option>
+                  <option value="referred">Referred</option>
+                </Select>
+              </div>
+              <div className="flex">
+                <button
+                  className="bg-lime-500 text-black px-4 py-2 rounded mr-3"
+                  onClick={() => fetchCustomerForm()}
+                >
+                  <AiOutlineSearch size={22} />
+                </button>
+                <button
+                  className="bg-red-500 text-black px-4 py-2 rounded"
+                  onClick={() => {
+                    setFilterOpen(!filterOpen);
+                    setFilter({
+                      ...filter,
+                      active_subscription: "",
+                      email: "",
+                      phone_number: "",
+                      name: "",
+                      user_type: "",
+                    });
+                    fetchCustomerForm("nofilter");
+                  }}
+                >
+                  <AiOutlineClose size={22} />
+                </button>
+              </div>
+            </div>
+          )}
           {loading ? (
             <div className="flex justify-center items-center h-64">
               <Spinner size="xl" />
@@ -255,7 +457,7 @@ const Customer: React.FC = () => {
                       Referal Code
                     </th>
                     <th scope="col" className="px-6 py-3">
-                      GST Number
+                      Active Subscription
                     </th>
                     <th scope="col" className="px-6 py-3">
                       Credits
@@ -288,7 +490,18 @@ const Customer: React.FC = () => {
                           {customerForm.code}
                         </td>
                         <td className="px-6 py-4 text-gray-900">
-                          {customerForm.gst_number}
+                          <Badge
+                            className="!inline-block"
+                            color={
+                              customerForm.subscription_id !== null
+                                ? "success"
+                                : "failure"
+                            }
+                          >
+                            {customerForm.subscription_id !== null
+                              ? "Yes"
+                              : "No"}
+                          </Badge>
                         </td>
                         <td className="px-6 py-4 text-gray-900">
                           {customerForm.credits}
@@ -410,13 +623,33 @@ const Customer: React.FC = () => {
             },
             { label: "Credits", value: selectedCustomer.credits?.toString() },
             {
+              label: "Active Subscription",
+              value: selectedCustomer.subscription_id === null ? "No" : "Yes",
+            },
+            {
+              label: "Subscription Name",
+              value: selectedCustomer.subscription_name ?? "No Subscription",
+            },
+            {
+              label: "Subscription Start Date",
+              value: selectedCustomer.start_date
+                ? formatDateTime(new Date(selectedCustomer.start_date))
+                : "No Subscription",
+            },
+            {
+              label: "Subscription End Date",
+              value: selectedCustomer.end_date
+                ? formatDateTime(new Date(selectedCustomer.end_date))
+                : "No Subscription",
+            },
+            {
               label: "Email Verified",
               value: selectedCustomer.email_verified ? "Yes" : "No",
             },
             {
               label: "Email Verified At",
               value: selectedCustomer.email_verified_at
-                ? new Date(selectedCustomer.email_verified_at)?.toLocaleString()
+                ? formatDateTime(new Date(selectedCustomer.email_verified_at))
                 : "Not Verified",
             },
             {
@@ -427,11 +660,11 @@ const Customer: React.FC = () => {
             },
             {
               label: "Created At",
-              value: new Date(selectedCustomer.createdAt)?.toLocaleString(),
+              value: formatDateTime(new Date(selectedCustomer.createdAt)),
             },
             {
               label: "Updated At",
-              value: new Date(selectedCustomer.updatedAt).toLocaleString(),
+              value: formatDateTime(new Date(selectedCustomer.updatedAt)),
             },
           ]}
           onClose={() => setSelectedCustomer(null)}

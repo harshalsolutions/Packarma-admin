@@ -8,6 +8,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
+import { formatDateTime } from "../../../utils/DateFormatter";
 
 interface CustomerForm {
   user_id: number;
@@ -154,10 +155,10 @@ const Customer: React.FC = () => {
                         {customerForm.subscription_name}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {new Date(customerForm.start_date).toLocaleString()}
+                        {formatDateTime(new Date(customerForm.start_date))}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {new Date(customerForm.end_date).toLocaleString()}
+                        {formatDateTime(new Date(customerForm.end_date))}{" "}
                       </td>
                       <td className="px-6 py-4 text-gray-900 text-right">
                         <button
@@ -240,19 +241,19 @@ const Customer: React.FC = () => {
             },
             {
               label: "Start Date",
-              value: new Date(selectedCustomer.start_date)?.toLocaleString(),
+              value: formatDateTime(new Date(selectedCustomer.start_date)),
             },
             {
               label: "End Date",
-              value: new Date(selectedCustomer.end_date)?.toLocaleString(),
+              value: formatDateTime(new Date(selectedCustomer.end_date)),
             },
             {
               label: "Created At",
-              value: new Date(selectedCustomer.createdAt)?.toLocaleString(),
+              value: formatDateTime(new Date(selectedCustomer.createdAt)),
             },
             {
               label: "Updated At",
-              value: new Date(selectedCustomer.updatedAt)?.toLocaleString(),
+              value: formatDateTime(new Date(selectedCustomer.updatedAt)),
             },
           ]}
           onClose={() => setSelectedCustomer(null)}

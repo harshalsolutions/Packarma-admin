@@ -8,6 +8,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
+import { formatDateTime } from "../../../utils/DateFormatter";
 
 interface CreditPurchaseForm {
   id: number;
@@ -167,7 +168,7 @@ const CreditPurchase: React.FC = () => {
                         {creditPurchase.total}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {new Date(creditPurchase.invoice_date).toLocaleString()}
+                        {formatDateTime(new Date(creditPurchase.invoice_date))}
                       </td>
                       <td className="px-6 py-4 text-gray-900 text-right">
                         <button
@@ -252,21 +253,17 @@ const CreditPurchase: React.FC = () => {
             },
             {
               label: "Invoice Date",
-              value: new Date(
-                selectedCreditPurchase.invoice_date
-              ).toLocaleString(),
+              value: formatDateTime(
+                new Date(selectedCreditPurchase.invoice_date)
+              ),
             },
             {
               label: "Created At",
-              value: new Date(
-                selectedCreditPurchase.createdAt
-              )?.toLocaleString(),
+              value: formatDateTime(new Date(selectedCreditPurchase.createdAt)),
             },
             {
               label: "Updated At",
-              value: new Date(
-                selectedCreditPurchase.updatedAt
-              )?.toLocaleString(),
+              value: formatDateTime(new Date(selectedCreditPurchase.updatedAt)),
             },
             {
               label: "Referred Name",

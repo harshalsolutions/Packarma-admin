@@ -70,6 +70,13 @@ const renderBadge = (label: string, value: string | JSX.Element) => {
       <Badge color="failure">Not Completed</Badge>
     );
   }
+  if (label === "Active Subscription") {
+    return value === "Yes" ? (
+      <Badge color="success">Yes</Badge>
+    ) : (
+      <Badge color="failure">No</Badge>
+    );
+  }
   return value !== "null" ? value : "Not provided";
 };
 

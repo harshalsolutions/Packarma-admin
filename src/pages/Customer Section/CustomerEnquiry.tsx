@@ -9,6 +9,7 @@ import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import { TbFilter, TbFilterOff } from "react-icons/tb";
 import { AiOutlineSearch } from "react-icons/ai";
+import { formatDateTime } from "../../../utils/DateFormatter";
 
 interface EnquiryForm {
   id: number;
@@ -305,7 +306,7 @@ const CustomerEnquiry: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 text-gray-900">{enquiry.name}</td>
                     <td className="px-6 py-4 text-gray-900">
-                      {new Date(enquiry.search_time).toLocaleString()}
+                      {formatDateTime(new Date(enquiry.search_time))}
                     </td>
                     <td className="px-6 py-4 text-gray-900 text-right">
                       <button
@@ -403,7 +404,7 @@ const CustomerEnquiry: React.FC = () => {
             },
             {
               label: "Datetime",
-              value: new Date(selectedEnquiry.search_time)?.toLocaleString(),
+              value: formatDateTime(new Date(selectedEnquiry.search_time)),
             },
           ]}
           onClose={() => setselectedEnquiry(null)}

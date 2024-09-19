@@ -9,6 +9,7 @@ import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import { AiOutlineClose } from "react-icons/ai";
 import { TbFilter, TbFilterOff } from "react-icons/tb";
+import { formatDateTime } from "../../../utils/DateFormatter";
 
 interface ReferForm {
   id: number;
@@ -212,7 +213,7 @@ const RedeemRefer: React.FC = () => {
                       </td>
                     ) : (
                       <td className="px-6 py-4 text-gray-900">
-                        {new Date(refer.redeem_requested_at).toLocaleString()}
+                        {formatDateTime(new Date(refer.redeem_requested_at))}
                       </td>
                     )}
                     <td className="px-6 py-4 text-gray-900 text-right flex justify-center items-center">
@@ -318,13 +319,13 @@ const RedeemRefer: React.FC = () => {
             },
             {
               label: "Redeem Request At",
-              value: new Date(
-                selectedRefer.redeem_requested_at
-              )?.toLocaleString(),
+              value: formatDateTime(
+                new Date(selectedRefer.redeem_requested_at)
+              ),
             },
             {
               label: "Created At",
-              value: new Date(selectedRefer.createdAt)?.toLocaleString(),
+              value: formatDateTime(new Date(selectedRefer.createdAt)),
             },
           ]}
           onClose={() => setSelectedRefer(null)}

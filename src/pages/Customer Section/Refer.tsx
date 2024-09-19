@@ -7,6 +7,7 @@ import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
+import { formatDateTime } from "../../../utils/DateFormatter";
 
 interface ReferForm {
   id: number;
@@ -134,7 +135,7 @@ const Refer: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 text-gray-900">{refer.code}</td>
                       <td className="px-6 py-4 text-gray-900">
-                        {new Date(refer.createdAt).toLocaleString()}
+                        {formatDateTime(new Date(refer.createdAt))}
                       </td>
                       <td className="px-6 py-4 text-gray-900 text-right">
                         <button
@@ -239,11 +240,11 @@ const Refer: React.FC = () => {
             },
             {
               label: "Created At",
-              value: new Date(selectedRefer.createdAt)?.toLocaleString(),
+              value: formatDateTime(new Date(selectedRefer.createdAt)),
             },
             {
               label: "Updated At",
-              value: new Date(selectedRefer.updatedAt)?.toLocaleString(),
+              value: formatDateTime(new Date(selectedRefer.updatedAt)),
             },
           ]}
           onClose={() => setSelectedRefer(null)}

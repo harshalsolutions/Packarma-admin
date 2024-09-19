@@ -8,6 +8,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
+import { formatDateTime } from "../../../utils/DateFormatter";
 
 interface CustomerForm {
   id: number;
@@ -172,7 +173,7 @@ const CustomerAddresses: React.FC = () => {
                         {customerForm.phone_number}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {new Date(customerForm.created_at).toLocaleString()}
+                        {formatDateTime(new Date(customerForm.created_at))}
                       </td>
                       <td className="px-6 py-4 text-gray-900 text-right">
                         <button
@@ -247,7 +248,7 @@ const CustomerAddresses: React.FC = () => {
             { label: "Area", value: selectedAddress.area },
             {
               label: "Created At",
-              value: new Date(selectedAddress.created_at)?.toLocaleString(),
+              value: formatDateTime(new Date(selectedAddress.created_at)),
             },
             { label: "First Name", value: selectedAddress.firstname },
             { label: "Last Name", value: selectedAddress.lastname },
