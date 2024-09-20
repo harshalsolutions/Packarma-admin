@@ -390,9 +390,11 @@ const PackagingSolutions: React.FC = () => {
       setFormPackagingSolutions(null);
       setType("add");
       setActiveTab("engine");
-    } catch (err) {
-      setError("Failed to save packaging solution");
-      console.error(err);
+    } catch (err: any) {
+      toast.dismiss();
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to add");
     }
   };
 
@@ -403,8 +405,11 @@ const PackagingSolutions: React.FC = () => {
         status: newStatus,
       });
       fetchPackagingSolutions();
-    } catch (err) {
-      setError("Failed to update status");
+    } catch (err: any) {
+      toast.dismiss();
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to update");
     }
   };
 
@@ -415,8 +420,11 @@ const PackagingSolutions: React.FC = () => {
           `${BACKEND_API_KEY}/product/packaging-solutions/${selectedPackagingSolutionsId}`
         );
         fetchPackagingSolutions();
-      } catch (err) {
-        setError("Failed to delete packaging solution");
+      } catch (err: any) {
+        toast.dismiss();
+        if (err?.response && err?.response?.data) {
+          toast.error(err?.response?.data?.message);
+        } else toast.error("Failed to delete");
       }
       setIsDeletePopupOpen(false);
       setSelectedPackagingSolutionsId(null);

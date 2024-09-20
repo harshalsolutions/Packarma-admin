@@ -216,8 +216,11 @@ const Product: React.FC = () => {
         );
         fetchProducts();
         toast.success("Product deleted successfully");
-      } catch (err) {
-        toast.error("Failed to delete product");
+      } catch (err: any) {
+        toast.dismiss();
+        if (err?.response && err?.response?.data) {
+          toast.error(err?.response?.data?.message);
+        } else toast.error("Failed to delete");
       } finally {
         toast.dismiss(loadingToast);
         setDeletePopupOpen(false);
@@ -333,9 +336,11 @@ const Product: React.FC = () => {
 
       closeForm();
       fetchProducts();
-    } catch (err) {
+    } catch (err: any) {
       toast.dismiss();
-      toast.error("Failed to save product");
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to add");
     } finally {
       toast.dismiss(loadingToast);
     }
@@ -348,8 +353,11 @@ const Product: React.FC = () => {
         status: newStatus,
       });
       fetchProducts();
-    } catch (err) {
-      setError("Failed to update status");
+    } catch (err: any) {
+      toast.dismiss();
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to update");
     }
   };
 

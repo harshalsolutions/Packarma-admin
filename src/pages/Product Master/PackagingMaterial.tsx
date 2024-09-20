@@ -224,8 +224,11 @@ const PackagingMaterial: React.FC = () => {
 
       closeForm();
       fetchPackagingMaterials();
-    } catch (err) {
-      setError("Failed to save packaging material");
+    } catch (err: any) {
+      toast.dismiss();
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to add");
     }
   };
 
@@ -236,8 +239,11 @@ const PackagingMaterial: React.FC = () => {
         status: newStatus,
       });
       fetchPackagingMaterials();
-    } catch (err) {
-      setError("Failed to update status");
+    } catch (err: any) {
+      toast.dismiss();
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to update");
     }
   };
 
@@ -248,8 +254,11 @@ const PackagingMaterial: React.FC = () => {
           `${BACKEND_API_KEY}/product/packaging-materials/${selectedPackagingMaterialId}`
         );
         fetchPackagingMaterials();
-      } catch (err) {
-        setError("Failed to delete packaging material");
+      } catch (err: any) {
+        toast.dismiss();
+        if (err?.response && err?.response?.data) {
+          toast.error(err?.response?.data?.message);
+        } else toast.error("Failed to delete");
       }
       setIsDeletePopupOpen(false);
       setSelectedPackagingMaterialId(null);

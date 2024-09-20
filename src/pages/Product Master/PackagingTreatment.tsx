@@ -12,6 +12,7 @@ import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import { useUser } from "../../context/userContext";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import toast from "react-hot-toast";
 
 interface PackagingTreatment {
   id: number;
@@ -120,8 +121,11 @@ const PackagingTreatmentPage: React.FC = () => {
           `${BACKEND_API_KEY}/product/packaging-treatment/${packagingTreatmentIdToDelete}`
         );
         fetchPackagingTreatments();
-      } catch (err) {
-        setError("Failed to delete packaging treatment");
+      } catch (err: any) {
+        toast.dismiss();
+        if (err?.response && err?.response?.data) {
+          toast.error(err?.response?.data?.message);
+        } else toast.error("Failed to delete");
       }
       setDeletePopupOpen(false);
       setPackagingTreatmentIdToDelete(null);
@@ -200,8 +204,11 @@ const PackagingTreatmentPage: React.FC = () => {
 
       closeForm();
       fetchPackagingTreatments();
-    } catch (err) {
-      setError("Failed to save packaging treatment");
+    } catch (err: any) {
+      toast.dismiss();
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to add");
     }
   };
 
@@ -212,8 +219,11 @@ const PackagingTreatmentPage: React.FC = () => {
         status: newStatus,
       });
       fetchPackagingTreatments();
-    } catch (err) {
-      setError("Failed to update status");
+    } catch (err: any) {
+      toast.dismiss();
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to update");
     }
   };
 

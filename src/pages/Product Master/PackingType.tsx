@@ -12,6 +12,7 @@ import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import { useUser } from "../../context/userContext";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import toast from "react-hot-toast";
 
 interface PackingTypeForm {
   id: number;
@@ -170,8 +171,11 @@ const PackingType: React.FC = () => {
 
       closeForm();
       fetchPackingTypeForm();
-    } catch (err) {
-      setError("Failed to save packing type");
+    } catch (err: any) {
+      toast.dismiss();
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to add");
     }
   };
 
@@ -182,8 +186,11 @@ const PackingType: React.FC = () => {
         status: newStatus,
       });
       fetchPackingTypeForm();
-    } catch (err) {
-      setError("Failed to update status");
+    } catch (err: any) {
+      toast.dismiss();
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to update");
     }
   };
 

@@ -155,9 +155,10 @@ const SubCategoryPage: React.FC = () => {
         );
         fetchSubCategories();
         toast.success("Subcategory deleted successfully!");
-      } catch (err) {
-        setError("Failed to delete subcategory");
-        toast.error("Failed to delete subcategory");
+      } catch (err: any) {
+        if (err?.response && err?.response?.data) {
+          toast.error(err?.response?.data?.message);
+        } else toast.error("Failed to delete subcategory");
       }
       setDeletePopupOpen(false);
       setSubCategoryIdToDelete(null);
@@ -235,10 +236,11 @@ const SubCategoryPage: React.FC = () => {
 
       closeForm();
       fetchSubCategories();
-    } catch (err) {
-      setError("Failed to save subcategory");
+    } catch (err: any) {
       toast.dismiss();
-      toast.error("Failed to save subcategory");
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to save subcategory");
     }
   };
 
@@ -249,10 +251,11 @@ const SubCategoryPage: React.FC = () => {
         status: newStatus,
       });
       fetchSubCategories();
-    } catch (err) {
-      setError("Failed to update status");
+    } catch (err: any) {
       toast.dismiss();
-      toast.error("Failed to update status");
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to update status");
     }
   };
 

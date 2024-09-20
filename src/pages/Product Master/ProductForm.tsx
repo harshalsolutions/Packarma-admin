@@ -12,6 +12,7 @@ import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import { useUser } from "../../context/userContext";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import toast from "react-hot-toast";
 
 interface ProductForm {
   id: number;
@@ -192,8 +193,11 @@ const ProductForm: React.FC = () => {
 
       closeForm();
       fetchProductForm();
-    } catch (err) {
-      setError("Failed to save product form");
+    } catch (err: any) {
+      toast.dismiss();
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to save product form");
     }
   };
 
@@ -204,8 +208,11 @@ const ProductForm: React.FC = () => {
         status: newStatus,
       });
       fetchProductForm();
-    } catch (err) {
-      setError("Failed to update status");
+    } catch (err: any) {
+      toast.dismiss();
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to update product form");
     }
   };
 

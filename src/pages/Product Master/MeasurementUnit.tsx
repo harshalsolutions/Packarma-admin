@@ -12,6 +12,7 @@ import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import { useUser } from "../../context/userContext";
+import toast from "react-hot-toast";
 
 interface MeasurementUnit {
   id: number;
@@ -149,8 +150,11 @@ const MeasurementUnit: React.FC = () => {
 
       closeForm();
       fetchMeasurementUnits();
-    } catch (err) {
-      setError("Failed to save measurement unit");
+    } catch (err: any) {
+      toast.dismiss();
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to add");
     }
   };
 
@@ -161,8 +165,11 @@ const MeasurementUnit: React.FC = () => {
         status: newStatus,
       });
       fetchMeasurementUnits();
-    } catch (err) {
-      setError("Failed to update status");
+    } catch (err: any) {
+      toast.dismiss();
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to update");
     }
   };
 
@@ -173,8 +180,11 @@ const MeasurementUnit: React.FC = () => {
           `${BACKEND_API_KEY}/product/measurement-units/${selectedMeasurementUnitId}`
         );
         fetchMeasurementUnits();
-      } catch (err) {
-        setError("Failed to delete measurement unit");
+      } catch (err: any) {
+        toast.dismiss();
+        if (err?.response && err?.response?.data) {
+          toast.error(err?.response?.data?.message);
+        } else toast.error("Failed to delete");
       }
       setIsDeletePopupOpen(false);
       setSelectedMeasurementUnitId(null);

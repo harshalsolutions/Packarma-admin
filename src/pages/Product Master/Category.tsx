@@ -130,8 +130,10 @@ const CategoryPage: React.FC = () => {
         );
         fetchCategories();
         toast.success("Category deleted successfully");
-      } catch (err) {
-        toast.error("Failed to delete category");
+      } catch (err: any) {
+        if (err?.response && err?.response?.data) {
+          toast.error(err?.response?.data?.message);
+        } else toast.error("Failed to delete category");
       } finally {
         toast.dismiss(loadingToast);
         setDeletePopupOpen(false);
@@ -204,9 +206,11 @@ const CategoryPage: React.FC = () => {
 
       closeForm();
       fetchCategories();
-    } catch (err) {
+    } catch (err: any) {
       toast.dismiss();
-      toast.error("Failed to save category");
+      if (err?.response && err?.response?.data) {
+        toast.error(err?.response?.data?.message);
+      } else toast.error("Failed to save category");
     } finally {
       toast.dismiss(loadingToast);
     }
