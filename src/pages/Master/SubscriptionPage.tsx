@@ -232,9 +232,9 @@ const SubscriptionPage: React.FC = () => {
       const targetIndex = direction === "up" ? index - 1 : index + 1;
 
       if (subscriptions[index] && subscriptions[targetIndex]) {
-        const temp = subscriptions[index].sequence;
-        subscriptions[index].sequence = subscriptions[targetIndex].sequence;
-        subscriptions[targetIndex].sequence = temp;
+        const temp = subscriptions[index]!.sequence;
+        subscriptions[index]!.sequence = subscriptions[targetIndex]!.sequence;
+        subscriptions[targetIndex]!.sequence = temp;
       }
       await Promise.all([
         api.put(`${BACKEND_API_KEY}/master/subscription/${subscriptionId}`, {

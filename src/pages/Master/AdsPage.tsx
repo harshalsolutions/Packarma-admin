@@ -186,9 +186,9 @@ const AdsPage: React.FC = () => {
       const targetIndex = direction === "up" ? index - 1 : index + 1;
 
       if (advertisements[index] && advertisements[targetIndex]) {
-        const temp = advertisements[index].sequence;
-        advertisements[index].sequence = advertisements[targetIndex].sequence;
-        advertisements[targetIndex].sequence = temp;
+        const temp = advertisements[index]!.sequence;
+        advertisements[index]!.sequence = advertisements[targetIndex]!.sequence;
+        advertisements[targetIndex]!.sequence = temp;
       }
       await Promise.all([
         api.patch(
@@ -686,7 +686,7 @@ const AdsPage: React.FC = () => {
                                 </Badge>
                               </td>
                             )}
-                            <td className="px-6 py-4 text-gray-900 flex">
+                            <td className="px-6 py-4 text-gray-900">
                               <button
                                 onClick={() => moveAdvertisement(index, "up")}
                                 className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4 disabled:text-blue-200"

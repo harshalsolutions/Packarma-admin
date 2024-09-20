@@ -121,9 +121,9 @@ const BannerPage: React.FC = () => {
       const targetIndex = direction === "up" ? index - 1 : index + 1;
 
       if (banners[index] && banners[targetIndex]) {
-        const temp = banners[index].sequence;
-        banners[index].sequence = banners[targetIndex].sequence;
-        banners[targetIndex].sequence = temp;
+        const temp = banners[index]!.sequence;
+        banners[index]!.sequence = banners[targetIndex]!.sequence;
+        banners[targetIndex]!.sequence = temp;
       }
       await Promise.all([
         api.put(`${BACKEND_API_KEY}/master/update-banner/${bannerId}`, {
