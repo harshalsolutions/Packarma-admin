@@ -10,13 +10,13 @@ const AddCreditPopup = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onAddCredits: (userId: number, credit: number) => void;
+  onAddCredits: (userId: number, credit: number, description: string) => void;
   userId: number;
 }) => {
   const [credit, setCredit] = useState(0);
-
+  const [description, setDescription] = useState("");
   const UpdateCreditHandler = () => {
-    onAddCredits(userId, credit);
+    onAddCredits(userId, credit, description);
     onClose();
     setCredit(0);
   };
@@ -73,6 +73,15 @@ const AddCreditPopup = ({
             >
               <AiOutlinePlus className="text-xl" />
             </button>
+          </div>
+          <div className="flex justify-center w-full mb-6">
+            <textarea
+              placeholder="Description (optional)"
+              className="w-full p-2 rounded-md border border-gray-300"
+              style={{ resize: "none" }}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
           </div>
           <div className="flex justify-center mb-1">
             <button

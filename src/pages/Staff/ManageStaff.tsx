@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Spinner } from "flowbite-react";
+import { Badge, Spinner, TextInput } from "flowbite-react";
 import { MdOutlineRemoveRedEye, MdDeleteOutline } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
@@ -9,7 +9,7 @@ import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import ToggleSwitch from "../../components/ToggleSwitch";
-import { TbEdit } from "react-icons/tb";
+import { TbEdit, TbFilter, TbFilterOff } from "react-icons/tb";
 import PermissionDialog from "../../components/PermissionDialog";
 import { useUser } from "../../context/userContext";
 import toast from "react-hot-toast";
@@ -66,6 +66,20 @@ const ManageStaff: React.FC = () => {
     permissions: [],
   });
 
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filter, setFilter] = useState("");
+  const [debounceSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(filter);
+    }, 350);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [filter]);
+
   const createPermission = hasUpdateAndCreatePermissions(
     userContext,
     "Master",
@@ -86,7 +100,7 @@ const ManageStaff: React.FC = () => {
 
   useEffect(() => {
     fetchStaffForm();
-  }, [currentPage, entriesPerPage]);
+  }, [currentPage, entriesPerPage, debounceSearch]);
 
   const fetchStaffForm = async () => {
     try {
@@ -95,8 +109,10 @@ const ManageStaff: React.FC = () => {
         params: {
           page: currentPage,
           limit: entriesPerPage,
+          search: debounceSearch,
         },
       });
+
       setStaffForm(response.data.data.admins || []);
 
       if (response.data.data.pagination) {
@@ -207,20 +223,44 @@ const ManageStaff: React.FC = () => {
       <h1 className="text-2xl font-bold mb-4 border-l-8 text-black border-lime-500 pl-2">
         Manage Staff
       </h1>
+
       {!isFormOpen && (
         <div className="flex justify-between items-center w-full my-6">
           <EntriesPerPage
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
           />
-          {userContext?.user?.email === ADMIN_EMAIL && createPermission && (
+          <div className="flex justify-end items-center">
             <button
-              onClick={handleAddNewAdmin}
-              className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+              className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+              onClick={() => {
+                setFilterOpen(!filterOpen);
+                setFilter("");
+                fetchStaffForm();
+              }}
             >
-              Add New Staff
+              {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
             </button>
-          )}
+            {userContext?.user?.email === ADMIN_EMAIL && createPermission && (
+              <button
+                onClick={handleAddNewAdmin}
+                className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+              >
+                Add New Staff
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+      {filterOpen && (
+        <div className="flex justify-start items-center mb-6">
+          <TextInput
+            type="text"
+            className="w-[25%]"
+            placeholder="Search here.."
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          />
         </div>
       )}
       {!isFormOpen && (

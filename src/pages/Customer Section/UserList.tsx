@@ -68,7 +68,6 @@ const Customer: React.FC = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerForm | null>(
     null
   );
-  const [filterOpen, setFilterOpen] = useState(false);
   const [addressList, setAddressList] = useState<string[]>([]);
   const [showDetails, setShowDetails] = useState(false);
   const [onAddressDetails, setOnAddressDetails] = useState({
@@ -80,6 +79,7 @@ const Customer: React.FC = () => {
 
   const [isAddCreditPopupOpen, setIsAddCreditPopupOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [filterOpen, setFilterOpen] = useState(false);
   const [filter, setFilter] = useState({
     name: "",
     phone_number: "",
@@ -200,12 +200,16 @@ const Customer: React.FC = () => {
     setIsAddCreditPopupOpen(true);
   };
 
-  const handleAddCreditsSubmit = async (userId: number, credits: number) => {
+  const handleAddCreditsSubmit = async (
+    userId: number,
+    credits: number,
+    description = "Credit Given By Admin"
+  ) => {
     try {
       await api.post(`${BACKEND_API_KEY}/customer/users/add-credit/${userId}`, {
         credits,
+        description,
       });
-      console.log(`Added ${credits} credits for user ID: ${userId}`);
       fetchCustomerForm();
       setIsAddCreditPopupOpen(false);
     } catch (err) {
