@@ -228,3 +228,14 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+input:focus,
+select:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.customInput {
+  @apply rounded-lg border border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 !important;
+}

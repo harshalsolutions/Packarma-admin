@@ -184,6 +184,7 @@ const CustomerEnquiry: React.FC = () => {
         <div className="mb-4">
           <div className="grid grid-cols-4 gap-4">
             <TextInput
+              className="customInput"
               type="text"
               name="userId"
               value={filterParams.userId}
@@ -191,6 +192,7 @@ const CustomerEnquiry: React.FC = () => {
               placeholder="User ID"
             />
             <TextInput
+              className="customInput"
               type="text"
               name="userName"
               value={filterParams.userName}
@@ -205,7 +207,7 @@ const CustomerEnquiry: React.FC = () => {
                 label: category.name,
               }))}
               value={categories.find(
-                (category) => category.id === filterParams.category
+                (category) => category.name === filterParams.category
               )}
               onChange={(selectedOption) =>
                 setFilterParams((prevState) => ({
@@ -215,7 +217,7 @@ const CustomerEnquiry: React.FC = () => {
               }
               placeholder="Select Category"
               isSearchable
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              isClearable
             />
 
             <Select
@@ -226,7 +228,7 @@ const CustomerEnquiry: React.FC = () => {
                 label: subcategory.name,
               }))}
               value={subcategories.find(
-                (subcategory) => subcategory.id === filterParams.subCategory
+                (subcategory) => subcategory.name === filterParams.subCategory
               )}
               onChange={(selectedOption) =>
                 setFilterParams((prevState) => ({
@@ -235,10 +237,9 @@ const CustomerEnquiry: React.FC = () => {
                 }))
               }
               isSearchable
+              isClearable
               placeholder="Select Sub Category"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500"
             />
-
             <Select
               name="productName"
               id="product"
@@ -247,7 +248,7 @@ const CustomerEnquiry: React.FC = () => {
                 label: product.product_name,
               }))}
               value={products.find(
-                (product) => product.id === filterParams.productName
+                (product) => product.product_name === filterParams.productName
               )}
               onChange={(selectedOption) =>
                 setFilterParams((prevState) => ({
@@ -257,7 +258,9 @@ const CustomerEnquiry: React.FC = () => {
               }
               placeholder="Select Product"
               isSearchable
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              isClearable
+              className="react-select-container"
+              classNamePrefix="react-select"
             />
 
             <input
