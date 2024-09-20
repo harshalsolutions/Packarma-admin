@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Select, Spinner } from "flowbite-react";
-import { TbEdit } from "react-icons/tb";
+import { Badge, Select, Spinner, TextInput } from "flowbite-react";
+import { TbEdit, TbFilter, TbFilterOff } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import ToggleSwitch from "../../components/ToggleSwitch";
 import EntriesPerPage from "../../components/EntriesComp";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaRegFileExcel } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import { useUser } from "../../context/userContext";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import toast from "react-hot-toast";
+import { AiOutlineSearch } from "react-icons/ai";
+import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
 
 interface PackagingSolutionsInterface {
   id: number;
@@ -91,6 +93,29 @@ const PackagingSolutions: React.FC = () => {
   const [imagePreview, setImagePreview] = useState("");
   const userContext = useUser();
 
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filter, setFilter] = useState<{
+    name: string;
+    structure_type: string;
+    storage_condition_id: string;
+    product_name: string;
+    product_form_name: string;
+    packaging_treatment_name: string;
+    packing_type_name: string;
+    packaging_machine_name: string;
+    packaging_material_name: string;
+  }>({
+    name: "",
+    structure_type: "",
+    storage_condition_id: "",
+    product_name: "",
+    product_form_name: "",
+    packaging_treatment_name: "",
+    packing_type_name: "",
+    packaging_machine_name: "",
+    packaging_material_name: "",
+  });
+
   const updatePermission = hasUpdateAndCreatePermissions(
     userContext,
     "Product Master",
@@ -109,23 +134,53 @@ const PackagingSolutions: React.FC = () => {
     "can_delete"
   );
 
+  const exportPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Product Master",
+    "can_export"
+  );
+
   useEffect(() => {
-    fetchPackagingSolutions();
+    if (filterOpen) {
+      fetchPackagingSolutions("filter");
+    } else fetchPackagingSolutions();
     fetchSelectOptions();
   }, [currentPage, entriesPerPage]);
 
-  const fetchPackagingSolutions = async () => {
+  const fetchPackagingSolutions = async (type?: string) => {
     try {
       setLoading(true);
-      const response = await api.get(
-        `${BACKEND_API_KEY}/product/packaging-solutions`,
-        {
-          params: {
-            page: currentPage,
-            limit: entriesPerPage,
-          },
-        }
-      );
+      let response;
+      if (type === "filter") {
+        response = await api.get(
+          `${BACKEND_API_KEY}/product/packaging-solutions`,
+          {
+            params: {
+              page: currentPage,
+              limit: entriesPerPage,
+              name: filter.name,
+              structure_type: filter.structure_type,
+              storage_condition_id: filter.storage_condition_id,
+              product_name: filter.product_name,
+              product_form_name: filter.product_form_name,
+              packaging_treatment_name: filter.packaging_treatment_name,
+              packing_type_name: filter.packing_type_name,
+              packaging_machine_name: filter.packaging_machine_name,
+              packaging_material_name: filter.packaging_material_name,
+            },
+          }
+        );
+      } else {
+        response = await api.get(
+          `${BACKEND_API_KEY}/product/packaging-solutions`,
+          {
+            params: {
+              page: currentPage,
+              limit: entriesPerPage,
+            },
+          }
+        );
+      }
       setPackagingSolutions(response.data.data.packagingSolutions || []);
       if (response.data.data.pagination) {
         setPagination(response.data.data.pagination);
@@ -137,7 +192,6 @@ const PackagingSolutions: React.FC = () => {
       setLoading(false);
     }
   };
-
   const fetchSelectOptions = async () => {
     try {
       const [
@@ -413,6 +467,34 @@ const PackagingSolutions: React.FC = () => {
     }
   };
 
+  const downloadExcelController = async () => {
+    toast.loading("Exporting...");
+    try {
+      const response = await api.post(
+        `${BACKEND_API_KEY}/product/export-packaging-solutions`,
+        {
+          link: BACKEND_MEDIA_LINK,
+        },
+        {
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      let title = `packaging_solutions_exported_(${formatDateForFilename()}).xlsx`;
+      link.setAttribute("download", title);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.dismiss();
+      toast.success("Exported successfully");
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Something went wrong");
+    }
+  };
+
   const handleConfirmDelete = async () => {
     if (selectedPackagingSolutionsId !== null) {
       try {
@@ -465,14 +547,139 @@ const PackagingSolutions: React.FC = () => {
             entriesPerPage={entriesPerPage}
             setEntriesPerPage={setEntriesPerPage}
           />
-          {createPermission && (
+          <div className="flex">
             <button
-              onClick={openAddForm}
-              className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+              className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+              onClick={() => {
+                setFilterOpen(!filterOpen);
+                setFilter({
+                  name: "",
+                  structure_type: "",
+                  storage_condition_id: "",
+                  product_name: "",
+                  product_form_name: "",
+                  packaging_treatment_name: "",
+                  packing_type_name: "",
+                  packaging_machine_name: "",
+                  packaging_material_name: "",
+                });
+                fetchPackagingSolutions("nofilter");
+              }}
             >
-              Add New Packaging Solution
+              {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
             </button>
-          )}
+            {exportPermission && (
+              <button
+                className="bg-green-500 text-white px-3 py-2 rounded block mr-4"
+                onClick={downloadExcelController}
+              >
+                <FaRegFileExcel size={22} />
+              </button>
+            )}
+            {createPermission && (
+              <button
+                onClick={openAddForm}
+                className="bg-lime-500 text-black px-4 py-2 rounded block mr-4"
+              >
+                Add New Packaging Solution
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+      {filterOpen && (
+        <div className="grid grid-cols-4 gap-4 mb-6">
+          <TextInput
+            id="name"
+            placeholder="Name"
+            value={filter.name}
+            onChange={(e) => setFilter({ ...filter, name: e.target.value })}
+          />
+          <Select
+            id="structure_type"
+            value={filter.structure_type}
+            onChange={(e) =>
+              setFilter({ ...filter, structure_type: e.target.value })
+            }
+          >
+            <option value="">Structure Type</option>
+            <option value="Economical Solution">Economical Solution</option>
+            <option value="Advance Solution">Advance Solution</option>
+            <option value="Sustainable Solution">Sustainable Solution</option>
+          </Select>
+          <Select
+            id="storage_condition_id"
+            value={filter.storage_condition_id}
+            onChange={(e) =>
+              setFilter({ ...filter, storage_condition_id: e.target.value })
+            }
+          >
+            <option value="">Storage Condition</option>
+            {storageConditions.map((condition) => (
+              <option key={condition.id} value={condition.id}>
+                {condition.name}
+              </option>
+            ))}
+          </Select>
+          <TextInput
+            id="product_name"
+            placeholder="Product Name"
+            value={filter.product_name}
+            onChange={(e) =>
+              setFilter({ ...filter, product_name: e.target.value })
+            }
+          />
+          <TextInput
+            id="product_form_name"
+            placeholder="Product Form Name"
+            value={filter.product_form_name}
+            onChange={(e) =>
+              setFilter({ ...filter, product_form_name: e.target.value })
+            }
+          />
+          <TextInput
+            id="packaging_treatment_name"
+            placeholder="Packaging Treatment Name"
+            value={filter.packaging_treatment_name}
+            onChange={(e) =>
+              setFilter({
+                ...filter,
+                packaging_treatment_name: e.target.value,
+              })
+            }
+          />
+          <TextInput
+            id="packing_type_name"
+            placeholder="Packing Type Name"
+            value={filter.packing_type_name}
+            onChange={(e) =>
+              setFilter({ ...filter, packing_type_name: e.target.value })
+            }
+          />
+          <TextInput
+            id="packaging_machine_name"
+            placeholder="Packaging Machine Name"
+            value={filter.packaging_machine_name}
+            onChange={(e) =>
+              setFilter({ ...filter, packaging_machine_name: e.target.value })
+            }
+          />
+          <TextInput
+            id="packaging_material_name"
+            placeholder="Packaging Material Name"
+            value={filter.packaging_material_name}
+            onChange={(e) =>
+              setFilter({ ...filter, packaging_material_name: e.target.value })
+            }
+          />
+          <div className="flex">
+            <button
+              className="bg-lime-500 text-black px-4 py-2 rounded"
+              onClick={() => fetchPackagingSolutions("filter")}
+            >
+              <AiOutlineSearch size={22} />
+            </button>
+          </div>
         </div>
       )}
       {!isFormOpen && (
