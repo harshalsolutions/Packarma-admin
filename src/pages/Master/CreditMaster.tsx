@@ -268,13 +268,19 @@ const CreditMaster: React.FC = () => {
         </div>
       )}
       {filterOpen && (
-        <TextInput
-          type="text"
-          className="w-[25%] mb-4"
-          placeholder="Search here.."
-          value={titleFilter}
-          onChange={(e) => setTitleFilter(e.target.value)}
-        />
+        <div className="flex justify-start items-start mb-6 flex-col">
+          <label htmlFor="search" className="text-sm mb-1 font-medium">
+            Search Price and Currency
+          </label>
+          <TextInput
+            id="search"
+            type="text"
+            className="w-[25%] mb-4"
+            placeholder="Search here.."
+            value={titleFilter}
+            onChange={(e) => setTitleFilter(e.target.value)}
+          />
+        </div>
       )}
       {!isFormOpen && (
         <>

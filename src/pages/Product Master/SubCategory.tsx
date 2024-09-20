@@ -306,7 +306,7 @@ const SubCategoryPage: React.FC = () => {
           <TextInput
             type="text"
             className="w-[25%] ml-4"
-            placeholder="Search here.."
+            placeholder="Search name here.."
             value={titleFilter}
             onChange={(e) => setTitleFilter(e.target.value)}
           />

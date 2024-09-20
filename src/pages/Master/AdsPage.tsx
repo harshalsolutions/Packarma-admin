@@ -512,8 +512,12 @@ const AdsPage: React.FC = () => {
             </div>
           )}
           {filterOpen && (
-            <div className="flex justify-start items-center mb-6">
+            <div className="flex justify-start items-start mb-6 flex-col">
+              <label htmlFor="search" className="text-sm mb-1 font-medium">
+                Search Advertisement Title
+              </label>
               <TextInput
+                id="search"
                 type="text"
                 className="w-[25%]"
                 placeholder="Search here.."

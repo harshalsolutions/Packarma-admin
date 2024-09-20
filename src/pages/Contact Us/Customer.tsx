@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Spinner } from "flowbite-react";
+import { Spinner, TextInput } from "flowbite-react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
@@ -8,6 +8,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
+import { TbFilter, TbFilterOff } from "react-icons/tb";
 
 interface CustomerForm {
   id: number;
@@ -46,10 +47,23 @@ const Customer: React.FC = () => {
   const [customerIdToDelete, setCustomerIdToDelete] = useState<number | null>(
     null
   );
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filter, setFilter] = useState("");
+  const [debounceSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(filter);
+    }, 350);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [filter]);
 
   useEffect(() => {
     fetchCustomerEnquiriesForm();
-  }, [currentPage, entriesPerPage]);
+  }, [currentPage, entriesPerPage, debounceSearch]);
 
   const fetchCustomerEnquiriesForm = async () => {
     try {
@@ -60,6 +74,7 @@ const Customer: React.FC = () => {
           params: {
             page: currentPage,
             limit: entriesPerPage,
+            search: debounceSearch,
           },
         }
       );
@@ -101,10 +116,39 @@ const Customer: React.FC = () => {
         Manage Customer
       </h1>
       <>
-        <EntriesPerPage
-          entriesPerPage={entriesPerPage}
-          setEntriesPerPage={setEntriesPerPage}
-        />
+        <div className="flex justify-between items-center w-full my-6">
+          <EntriesPerPage
+            entriesPerPage={entriesPerPage}
+            setEntriesPerPage={setEntriesPerPage}
+          />
+          <div className="flex justify-end items-center">
+            <button
+              className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+              onClick={() => {
+                setFilterOpen(!filterOpen);
+                setFilter("");
+                fetchCustomerEnquiriesForm();
+              }}
+            >
+              {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
+            </button>
+          </div>
+        </div>
+
+        {filterOpen && (
+          <div className="flex justify-start items-start mb-6 flex-col">
+            <label htmlFor="search" className="text-sm mb-1 font-medium">
+              Search Name and Phone Number
+            </label>
+            <TextInput
+              id="search"
+              type="text"
+              className="w-[25%]"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            />
+          </div>
+        )}
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <Spinner size="xl" />
