@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
 import { Spinner, TextInput } from "flowbite-react";
-import { MdOutlineRemoveRedEye } from "react-icons/md";
+import { MdDescription, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -9,6 +9,7 @@ import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import { TbFilter, TbFilterOff } from "react-icons/tb";
+import DescriptionPopup from "../../components/DescriptionCustomerContactPopup";
 
 interface CustomerForm {
   id: number;
@@ -17,6 +18,9 @@ interface CustomerForm {
   issue: string;
   createdAt: string;
   updatedAt: string;
+  admin_description?: string;
+  admin_id?: number;
+  admin_name?: string;
 }
 
 interface Pagination {
@@ -50,6 +54,11 @@ const Customer: React.FC = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [filter, setFilter] = useState("");
   const [debounceSearch, setDebouncedSearch] = useState("");
+  const [description, setDescription] = useState("");
+  const [isDescriptionPopupOpen, setIsDescriptionPopupOpen] = useState(false);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -88,6 +97,37 @@ const Customer: React.FC = () => {
       setError(err?.response?.data?.message || "Failed to fetch data");
       setLoading(false);
     }
+  };
+
+  const addAdminDescription = async (id: number) => {
+    try {
+      await api.post(`${BACKEND_API_KEY}/contact-us/add-description/${id}`, {
+        admin_description: description,
+      });
+      fetchCustomerEnquiriesForm();
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to add description");
+    }
+  };
+
+  const handleAddDescription = (id: number) => {
+    setSelectedCustomerId(id);
+    setIsDescriptionPopupOpen(true);
+  };
+
+  const handleConfirmAddDescription = async () => {
+    if (selectedCustomerId !== null) {
+      await addAdminDescription(selectedCustomerId);
+      setIsDescriptionPopupOpen(false);
+      setSelectedCustomerId(null);
+      setDescription("");
+    }
+  };
+
+  const handleCancelAddDescription = () => {
+    setIsDescriptionPopupOpen(false);
+    setSelectedCustomerId(null);
+    setDescription("");
   };
 
   const handleConfirmDelete = async () => {
@@ -210,6 +250,13 @@ const Customer: React.FC = () => {
                         >
                           <MdOutlineRemoveRedEye />
                         </button>
+                        <button
+                          onClick={() => handleAddDescription(customerForm.id)}
+                          className="text-2xl text-green-600 dark:text-green-500 hover:underline"
+                          aria-label="Add Description"
+                        >
+                          <MdDescription />
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -273,6 +320,15 @@ const Customer: React.FC = () => {
             { label: "Phone Number", value: selectedEnquiry.phone_number },
             { label: "Issue", value: selectedEnquiry.issue },
             {
+              label: "Admin Id",
+              value: selectedEnquiry?.admin_id?.toString() ?? "",
+            },
+            { label: "Admin Name", value: selectedEnquiry?.admin_name ?? "" },
+            {
+              label: "Admin Description",
+              value: selectedEnquiry.admin_description ?? "",
+            },
+            {
               label: "Created At",
               value: new Date(selectedEnquiry.createdAt)?.toLocaleString(),
             },
@@ -292,6 +348,13 @@ const Customer: React.FC = () => {
           onCancel={handleCancelDelete}
         />
       )}
+      <DescriptionPopup
+        isOpen={isDescriptionPopupOpen}
+        onClose={handleCancelAddDescription}
+        onConfirm={handleConfirmAddDescription}
+        description={description}
+        setDescription={setDescription}
+      />
     </div>
   );
 };
