@@ -98,12 +98,17 @@ const DetailsPopup: React.FC<PopupProps> = ({ title, fields, onClose }) => (
         </button>
       </div>
       <div className="overflow-y-auto max-h-[70vh]">
-        <table className="w-full text-sm text-left border ">
+        <table className="w-full text-sm text-left border">
           <tbody>
             {fields.map((field, index) => (
               <tr key={index} className={`border-b`}>
-                <td className="font-medium p-3 border-r ">{field.label}</td>
-                <td className="p-3 flex items-center">
+                <td
+                  className="font-medium p-3 bg-gray-100 border-r"
+                  style={{ width: "35%" }}
+                >
+                  {field.label}
+                </td>
+                <td className="p-3 flex items-center" style={{ width: "65%" }}>
                   {renderBadge(field.label, field.value)}
                 </td>
               </tr>

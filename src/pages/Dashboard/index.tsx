@@ -33,7 +33,6 @@ const DashboardPage: FC = function () {
   const [activeSubscriptions, setActiveSubscriptions] = useState("0");
   const [signupsFromReferrals, setSignupsFromReferrals] = useState("0");
   const [totalEnquiries, setTotalEnquiries] = useState("0");
-  const [totalRevenue, setTotalRevenue] = useState("0");
   const [subscriptionsFromReferral, setSubscriptionsFromReferral] =
     useState("0");
   const [userComparison, setUserComparison] = useState([0, 0]);
@@ -48,7 +47,6 @@ const DashboardPage: FC = function () {
         api.get(`${BACKEND_API_KEY}/dashboard/total-active-subscriptions`),
         api.get(`${BACKEND_API_KEY}/dashboard/total-signups-referrals`),
         api.get(`${BACKEND_API_KEY}/dashboard/total-enquiries`),
-        api.get(`${BACKEND_API_KEY}/dashboard/total-revenue`),
         api.get(
           `${BACKEND_API_KEY}/dashboard/total-subscriptions-referral-signups`
         ),
@@ -79,15 +77,12 @@ const DashboardPage: FC = function () {
               setTotalEnquiries(data.totalCount);
               break;
             case 6:
-              setTotalRevenue(data.totalRevenue);
-              break;
-            case 7:
               setSubscriptionsFromReferral(data.totalCount);
               break;
-            case 8:
+            case 7:
               setUserComparison([data.referredUsers, data.normalUsers]);
               break;
-            case 9:
+            case 8:
               setReferralTaskCompletion([
                 data.accountsCreated,
                 data.subscriptionsBought,
@@ -167,11 +162,6 @@ const DashboardPage: FC = function () {
         <CustomCard
           title="Total No. of Enquiries"
           value={totalEnquiries}
-          icon={<FiUser />}
-        />
-        <CustomCard
-          title="Total Revenue"
-          value={totalRevenue}
           icon={<FiUser />}
         />
         <CustomCard

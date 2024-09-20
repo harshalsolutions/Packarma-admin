@@ -11,7 +11,11 @@ import CustomPopup from "../../components/CustomPopup";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { TbEdit, TbFilter, TbFilterOff } from "react-icons/tb";
 import ToggleSwitch from "../../components/ToggleSwitch";
-import { AiOutlineClose } from "react-icons/ai";
+import {
+  AiOutlineArrowDown,
+  AiOutlineArrowUp,
+  AiOutlineClose,
+} from "react-icons/ai";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import { useUser } from "../../context/userContext";
 import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
@@ -29,6 +33,7 @@ interface Banner {
   total_clicks: number;
   createdAt: string;
   updatedAt: string;
+  sequence: string;
 }
 
 interface PaginationData {
@@ -109,6 +114,39 @@ const BannerPage: React.FC = () => {
     fetchBanners();
   }, [currentPage, entriesPerPage, debouncedTitleFilter]);
 
+  const moveBanner = async (index: number, direction: "up" | "down") => {
+    const loadingToast = toast.loading("Moving Banner...");
+    try {
+      const bannerId = banners[index]?.id;
+      const targetIndex = direction === "up" ? index - 1 : index + 1;
+
+      if (banners[index] && banners[targetIndex]) {
+        const temp = banners[index].sequence;
+        banners[index].sequence = banners[targetIndex].sequence;
+        banners[targetIndex].sequence = temp;
+      }
+      await Promise.all([
+        api.put(`${BACKEND_API_KEY}/master/update-banner/${bannerId}`, {
+          sequence: banners[index]?.sequence,
+        }),
+        api.put(
+          `${BACKEND_API_KEY}/master/update-banner/${banners[targetIndex]?.id}`,
+          {
+            sequence: banners[targetIndex]?.sequence,
+          }
+        ),
+      ]);
+
+      fetchBanners();
+      toast.dismiss(loadingToast);
+      toast.success("Banner moved successfully");
+    } catch (error) {
+      console.error("Error moving banner:", error);
+      toast.dismiss(loadingToast);
+      toast.error("Failed to move banner");
+    }
+  };
+
   const fetchBanners = async () => {
     try {
       setLoading(true);
@@ -170,7 +208,7 @@ const BannerPage: React.FC = () => {
       const loadingToast = toast.loading("Deleting banner...");
       try {
         await api.delete(
-          `${BACKEND_API_KEY}/master/delete-banners/${bannerIdToDelete}`
+          `${BACKEND_API_KEY}/master/delete-banner/${bannerIdToDelete}`
         );
         fetchBanners();
         toast.success("Banner deleted successfully");
@@ -542,7 +580,7 @@ const BannerPage: React.FC = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {banners.map((banner) => (
+                        {banners.map((banner, index) => (
                           <tr
                             key={banner.id}
                             className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
@@ -569,7 +607,7 @@ const BannerPage: React.FC = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 text-gray-900">
-                              <div className="px-2 py-4 text-gray-900 flex justify-start items-start  cursor-pointer">
+                              <div className="px-2 py-4 text-gray-900 flex justify-start items-start cursor-pointer">
                                 <span>{banner.total_clicks}</span>
                                 {banner.total_clicks != 0 && (
                                   <span
@@ -616,7 +654,23 @@ const BannerPage: React.FC = () => {
                                 </Badge>
                               </td>
                             )}
-                            <td className="px-6 py-4 text-gray-900 flex">
+                            <td className="px-6 py-4 text-gray-900">
+                              <button
+                                onClick={() => moveBanner(index, "up")}
+                                className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4 disabled:text-blue-200"
+                                aria-label="Move Up"
+                                disabled={index === 0}
+                              >
+                                <AiOutlineArrowUp />
+                              </button>
+                              <button
+                                onClick={() => moveBanner(index, "down")}
+                                className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4 disabled:text-blue-200"
+                                aria-label="Move Down"
+                                disabled={index === banners.length - 1}
+                              >
+                                <AiOutlineArrowDown />
+                              </button>
                               {exportPermission && (
                                 <button
                                   onClick={() => exportBanner(banner.id)}

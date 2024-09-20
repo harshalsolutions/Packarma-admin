@@ -11,7 +11,11 @@ import CustomPopup from "../../components/CustomPopup";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { TbEdit, TbFilter, TbFilterOff } from "react-icons/tb";
 import ToggleSwitch from "../../components/ToggleSwitch";
-import { AiOutlineClose } from "react-icons/ai";
+import {
+  AiOutlineArrowDown,
+  AiOutlineArrowUp,
+  AiOutlineClose,
+} from "react-icons/ai";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import { useUser } from "../../context/userContext";
 import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
@@ -29,6 +33,7 @@ interface Advertisement {
   total_clicks: number;
   createdAt: string;
   updatedAt: string;
+  sequence: number;
 }
 
 interface PaginationData {
@@ -171,6 +176,42 @@ const AdsPage: React.FC = () => {
       document.body.removeChild(link);
     } catch (err) {
       toast.error("Failed to export advertisement");
+    }
+  };
+
+  const moveAdvertisement = async (index: number, direction: "up" | "down") => {
+    const loadingToast = toast.loading("Moving Advertisement...");
+    try {
+      const advertisementId = advertisements[index]?.id;
+      const targetIndex = direction === "up" ? index - 1 : index + 1;
+
+      if (advertisements[index] && advertisements[targetIndex]) {
+        const temp = advertisements[index].sequence;
+        advertisements[index].sequence = advertisements[targetIndex].sequence;
+        advertisements[targetIndex].sequence = temp;
+      }
+      await Promise.all([
+        api.patch(
+          `${BACKEND_API_KEY}/master/update-advertisement/${advertisementId}`,
+          {
+            sequence: advertisements[index]?.sequence,
+          }
+        ),
+        api.patch(
+          `${BACKEND_API_KEY}/master/update-advertisement/${advertisements[targetIndex]?.id}`,
+          {
+            sequence: advertisements[targetIndex]?.sequence,
+          }
+        ),
+      ]);
+
+      fetchAdvertisements();
+      toast.dismiss(loadingToast);
+      toast.success("Advertisement moved successfully");
+    } catch (error) {
+      console.error("Error moving advertisement:", error);
+      toast.dismiss(loadingToast);
+      toast.error("Failed to move advertisement");
     }
   };
 
@@ -564,7 +605,7 @@ const AdsPage: React.FC = () => {
                     </thead>
                     <tbody>
                       {advertisements.length > 0 ? (
-                        advertisements.map((advertisement) => (
+                        advertisements.map((advertisement, index) => (
                           <tr
                             key={advertisement.id}
                             className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
@@ -646,6 +687,22 @@ const AdsPage: React.FC = () => {
                               </td>
                             )}
                             <td className="px-6 py-4 text-gray-900 flex">
+                              <button
+                                onClick={() => moveAdvertisement(index, "up")}
+                                className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4 disabled:text-blue-200"
+                                aria-label="Move Up"
+                                disabled={index === 0}
+                              >
+                                <AiOutlineArrowUp />
+                              </button>
+                              <button
+                                onClick={() => moveAdvertisement(index, "down")}
+                                className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4 disabled:text-blue-200"
+                                aria-label="Move Down"
+                                disabled={index === advertisements.length - 1}
+                              >
+                                <AiOutlineArrowDown />
+                              </button>
                               {exportPermission && (
                                 <button
                                   onClick={() =>

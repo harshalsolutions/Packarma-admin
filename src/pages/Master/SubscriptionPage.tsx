@@ -25,6 +25,7 @@ interface Subscription {
   benefits: string[];
   createdAt: string;
   updatedAt: string;
+  sequence: number;
 }
 
 export interface Price {
@@ -225,31 +226,35 @@ const SubscriptionPage: React.FC = () => {
   };
 
   const moveSubscription = async (index: number, direction: "up" | "down") => {
-    const newSubscriptions = [...subscriptions];
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    const loadingToast = toast.loading("Moving Subscription...");
+    try {
+      const subscriptionId = subscriptions[index]?.id;
+      const targetIndex = direction === "up" ? index - 1 : index + 1;
 
-    if (targetIndex >= 0 && targetIndex < newSubscriptions.length) {
-      const [movedSubscription] = newSubscriptions.splice(index, 1);
-      newSubscriptions.splice(targetIndex, 0, movedSubscription!);
-      setSubscriptions(newSubscriptions);
-
-      try {
-        await api.put(
-          `${BACKEND_API_KEY}/master/subscription/${movedSubscription?.id}`,
-          { sequence: targetIndex + 1 }
-        );
-
-        const displacedSubscription = newSubscriptions[index];
-        await api.put(
-          `${BACKEND_API_KEY}/master/subscription/${displacedSubscription?.id}`,
-          { sequence: index + 1 }
-        );
-
-        fetchSubscriptions();
-      } catch (err) {
-        setError("Failed to update subscription sequence");
-        setSubscriptions([...subscriptions]);
+      if (subscriptions[index] && subscriptions[targetIndex]) {
+        const temp = subscriptions[index].sequence;
+        subscriptions[index].sequence = subscriptions[targetIndex].sequence;
+        subscriptions[targetIndex].sequence = temp;
       }
+      await Promise.all([
+        api.put(`${BACKEND_API_KEY}/master/subscription/${subscriptionId}`, {
+          sequence: subscriptions[index]?.sequence,
+        }),
+        api.put(
+          `${BACKEND_API_KEY}/master/subscription/${subscriptions[targetIndex]?.id}`,
+          {
+            sequence: subscriptions[targetIndex]?.sequence,
+          }
+        ),
+      ]);
+
+      fetchSubscriptions();
+      toast.dismiss(loadingToast);
+      toast.success("Subscription moved successfully");
+    } catch (error) {
+      console.error("Error moving subscription:", error);
+      toast.dismiss(loadingToast);
+      toast.error("Failed to move subscription");
     }
   };
 
@@ -363,7 +368,7 @@ const SubscriptionPage: React.FC = () => {
                         <td className="px-6 py-4 text-gray-900 flex">
                           <button
                             onClick={() => moveSubscription(index, "up")}
-                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4 disabled:text-blue-200"
                             aria-label="Move Up"
                             disabled={index === 0}
                           >
@@ -371,7 +376,7 @@ const SubscriptionPage: React.FC = () => {
                           </button>
                           <button
                             onClick={() => moveSubscription(index, "down")}
-                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4 disabled:text-blue-200"
                             aria-label="Move Down"
                             disabled={index === subscriptions.length - 1}
                           >
