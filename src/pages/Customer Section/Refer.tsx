@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Spinner } from "flowbite-react";
+import { Select, Spinner, TextInput } from "flowbite-react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
@@ -8,6 +8,8 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import { formatDateTime } from "../../../utils/DateFormatter";
+import { TbFilter, TbFilterOff } from "react-icons/tb";
+import { AiOutlineSearch } from "react-icons/ai";
 
 interface ReferForm {
   id: number;
@@ -46,19 +48,36 @@ const Refer: React.FC = () => {
     itemsPerPage: 10,
   });
   const [selectedRefer, setSelectedRefer] = useState<ReferForm | null>(null);
-
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterOptions, setFilterOptions] = useState({
+    from_date: "",
+    to_date: "",
+    name: "",
+    signup_done: "",
+    subscription_done: "",
+    redeem_done: "",
+  });
   useEffect(() => {
     fetchReferForm();
   }, [currentPage, entriesPerPage]);
 
-  const fetchReferForm = async () => {
+  const fetchReferForm = async (type?: string) => {
     try {
       setLoading(true);
+      const params: any = {
+        page: currentPage,
+        limit: entriesPerPage,
+      };
+      if (type !== "nofilter") {
+        params.from_date = filterOptions.from_date;
+        params.to_date = filterOptions.to_date;
+        params.name = filterOptions.name;
+        params.signup_done = filterOptions.signup_done;
+        params.subscription_done = filterOptions.subscription_done;
+        params.redeem_done = filterOptions.redeem_done;
+      }
       const response = await api.get(`${BACKEND_API_KEY}/customer/referrals`, {
-        params: {
-          page: currentPage,
-          limit: entriesPerPage,
-        },
+        params,
       });
       setReferForm(response.data.data.referrals || []);
       if (response.data.data.pagination) {
@@ -78,10 +97,148 @@ const Refer: React.FC = () => {
         Manage Refer
       </h1>
       <>
-        <EntriesPerPage
-          entriesPerPage={entriesPerPage}
-          setEntriesPerPage={setEntriesPerPage}
-        />
+        <div className="flex justify-between items-center w-full my-6">
+          <EntriesPerPage
+            entriesPerPage={entriesPerPage}
+            setEntriesPerPage={setEntriesPerPage}
+          />
+          <div className="flex justify-end items-center">
+            <button
+              className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+              onClick={() => {
+                setFilterOpen(!filterOpen);
+                setFilterOptions({
+                  ...filterOptions,
+                  from_date: "",
+                  to_date: "",
+                  name: "",
+                  signup_done: "",
+                  subscription_done: "",
+                  redeem_done: "",
+                });
+                fetchReferForm("nofilter");
+              }}
+            >
+              {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
+            </button>
+          </div>
+        </div>
+        {filterOpen && (
+          <div className="grid grid-cols-4 gap-4 flex-wrap mb-6 items-end">
+            <div>
+              <label htmlFor="signupdone" className="text-xs font-medium mb-1">
+                Account Created
+              </label>
+              <Select
+                id="signupdone"
+                value={filterOptions.signup_done}
+                onChange={(e) =>
+                  setFilterOptions({
+                    ...filterOptions,
+                    signup_done: e.target.value,
+                  })
+                }
+              >
+                <option value="">-- Select -- </option>
+                <option value="Completed">Completed</option>
+                <option value="Not Completed">Not Completed</option>
+              </Select>
+            </div>
+            <div>
+              <label
+                htmlFor="subscriptiondone"
+                className="text-xs font-medium mb-1"
+              >
+                Subscription Task
+              </label>
+              <Select
+                id="subscriptiondone"
+                value={filterOptions.subscription_done}
+                onChange={(e) =>
+                  setFilterOptions({
+                    ...filterOptions,
+                    subscription_done: e.target.value,
+                  })
+                }
+              >
+                <option value="">-- Select -- </option>
+                <option value="Completed">Completed</option>
+                <option value="Not Completed">Not Completed</option>
+              </Select>
+            </div>
+            <div>
+              <label htmlFor="redeemdone" className="text-xs font-medium mb-1">
+                Redeem Done
+              </label>
+              <Select
+                id="redeemdone"
+                value={filterOptions.redeem_done}
+                onChange={(e) =>
+                  setFilterOptions({
+                    ...filterOptions,
+                    redeem_done: e.target.value,
+                  })
+                }
+              >
+                <option value="">-- Select -- </option>
+                <option value="Completed">Completed</option>
+                <option value="Not Completed">Not Completed</option>
+              </Select>
+            </div>
+            <div>
+              <label htmlFor="username" className="text-xs font-medium mb-1">
+                Username
+              </label>
+              <TextInput
+                value={filterOptions.name}
+                onChange={(e) =>
+                  setFilterOptions({
+                    ...filterOptions,
+                    name: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div>
+              <label htmlFor="from_date" className="text-xs font-medium mb-1">
+                From Date
+              </label>
+              <TextInput
+                type="date"
+                value={filterOptions.from_date}
+                onChange={(e) =>
+                  setFilterOptions({
+                    ...filterOptions,
+                    from_date: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div>
+              <label htmlFor="to_date" className="text-xs font-medium mb-1">
+                To Date
+              </label>
+              <TextInput
+                type="date"
+                value={filterOptions.to_date}
+                onChange={(e) =>
+                  setFilterOptions({
+                    ...filterOptions,
+                    to_date: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div className="flex">
+              <button
+                className="bg-lime-500 text-black px-4 py-2 rounded mr-3"
+                onClick={() => fetchReferForm()}
+              >
+                <AiOutlineSearch size={22} />
+              </button>
+            </div>
+          </div>
+        )}
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <Spinner size="xl" />

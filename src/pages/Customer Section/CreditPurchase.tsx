@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Spinner } from "flowbite-react";
+import { Spinner, TextInput } from "flowbite-react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
@@ -9,6 +9,7 @@ import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import { formatDateTime } from "../../../utils/DateFormatter";
+import { TbFilter, TbFilterOff } from "react-icons/tb";
 
 interface CreditPurchaseForm {
   id: number;
@@ -20,7 +21,6 @@ interface CreditPurchaseForm {
   createdAt: string;
   updatedAt: string;
   currency: string;
-  indian_price: string;
   firstname: string;
   lastname: string;
   email: string;
@@ -54,10 +54,23 @@ const CreditPurchase: React.FC = () => {
   const [customerIdToDelete, setCustomerIdToDelete] = useState<number | null>(
     null
   );
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [titleFilter, setTitleFilter] = useState("");
+  const [debouncedTitleFilter, setDebouncedTitleFilter] = useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedTitleFilter(titleFilter);
+    }, 350);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [titleFilter]);
 
   useEffect(() => {
     fetchCreditPurchase();
-  }, [currentPage, entriesPerPage]);
+  }, [currentPage, entriesPerPage, debouncedTitleFilter]);
 
   const fetchCreditPurchase = async () => {
     try {
@@ -68,6 +81,7 @@ const CreditPurchase: React.FC = () => {
           params: {
             page: currentPage,
             limit: entriesPerPage,
+            search: debouncedTitleFilter,
           },
         }
       );
@@ -109,10 +123,38 @@ const CreditPurchase: React.FC = () => {
         Manage Credit Purchase
       </h1>
       <>
-        <EntriesPerPage
-          entriesPerPage={entriesPerPage}
-          setEntriesPerPage={setEntriesPerPage}
-        />
+        <div className="flex justify-between items-center w-full my-6">
+          <EntriesPerPage
+            entriesPerPage={entriesPerPage}
+            setEntriesPerPage={setEntriesPerPage}
+          />
+          <div className="flex">
+            <button
+              className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+              onClick={() => {
+                setFilterOpen(!filterOpen);
+                setTitleFilter("");
+              }}
+            >
+              {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
+            </button>
+          </div>
+        </div>
+        {filterOpen && (
+          <div className="flex justify-start items-start mb-6 flex-col">
+            <label htmlFor="search" className="text-sm mb-1 font-medium">
+              Search User Name
+            </label>
+            <TextInput
+              id="search"
+              type="text"
+              className="w-[25%]"
+              placeholder="Search here.."
+              value={titleFilter}
+              onChange={(e) => setTitleFilter(e.target.value)}
+            />
+          </div>
+        )}
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <Spinner size="xl" />
@@ -276,13 +318,21 @@ const CreditPurchase: React.FC = () => {
               value: selectedCreditPurchase.total_price,
             },
             {
-              label: "Indian Price",
-              value: selectedCreditPurchase.indian_price,
-            },
-            {
               label: "Invoice Date",
               value: formatDateTime(
                 new Date(selectedCreditPurchase.invoice_date)
+              ),
+            },
+            {
+              label: "Invoice Link",
+              value: (
+                <a
+                  href={selectedCreditPurchase.invoice_link}
+                  target="_blank"
+                  className="underline text-blue-500"
+                >
+                  Open Invoice
+                </a>
               ),
             },
             {

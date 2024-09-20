@@ -18,7 +18,6 @@ interface CustomerForm {
   subscription_name: string;
   total_price: string;
   currency: string;
-  indian_price: string;
   invoice_link: string;
   invoice_date: string;
   createdAt: string;
@@ -297,7 +296,6 @@ const Customer: React.FC = () => {
             },
             { label: "Total Price", value: selectedCustomer.total_price },
             { label: "Currency", value: selectedCustomer.currency },
-            { label: "Indian Price", value: selectedCustomer.indian_price },
             { label: "Transaction ID", value: selectedCustomer.transaction_id },
             {
               label: "Invoice Link",
