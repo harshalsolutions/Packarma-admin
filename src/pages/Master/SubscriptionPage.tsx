@@ -14,8 +14,10 @@ import toast from "react-hot-toast";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import { useUser } from "../../context/userContext";
 import { AiOutlineArrowUp, AiOutlineArrowDown } from "react-icons/ai";
+import SubscriptionPrice from "../../components/SubscriptionPrice";
+import { IoPricetagOutline } from "react-icons/io5";
 
-interface Subscription {
+export interface Subscription {
   id: number;
   type: string;
   credit_amount: number;
@@ -29,7 +31,7 @@ interface Subscription {
 }
 
 export interface Price {
-  price: number;
+  price: number | undefined;
   currency: string;
 }
 
@@ -63,13 +65,13 @@ const SubscriptionPage: React.FC = () => {
   const [selectedSubscription, setSelectedSubscription] =
     useState<Subscription | null>(null);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
-  const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<
-    number | null
-  >(null);
+  const [selectedSubscriptionData, setSelectedSubscriptionData] =
+    useState<Subscription | null>(null);
 
   const [pricePopup, setPricePopup] = useState(false);
   const [pricePopupData, setPricePopupData] = useState<Price[]>([]);
   const userContext = useUser();
+  const [subscriptionPricePopup, setSubscriptionPricePopup] = useState(false);
 
   const createPermission = hasUpdateAndCreatePermissions(
     userContext,
@@ -196,17 +198,17 @@ const SubscriptionPage: React.FC = () => {
     setBenefits([]);
   };
 
-  const deleteSubscription = (id: number) => {
-    setSelectedSubscriptionId(id);
+  const deleteSubscription = (data: Subscription) => {
+    setSelectedSubscriptionData(data);
     setIsDeletePopupOpen(true);
   };
 
   const handleConfirmDelete = async () => {
-    if (selectedSubscriptionId !== null) {
+    if (selectedSubscriptionData?.id !== null) {
       const loadingToast = toast.loading("Deleting subscription...");
       try {
         await api.delete(
-          `${BACKEND_API_KEY}/master/subscription/${selectedSubscriptionId}`
+          `${BACKEND_API_KEY}/master/subscription/${selectedSubscriptionData?.id}`
         );
         fetchSubscriptions();
         toast.success("Subscription deleted successfully");
@@ -215,14 +217,14 @@ const SubscriptionPage: React.FC = () => {
       } finally {
         toast.dismiss(loadingToast);
         setIsDeletePopupOpen(false);
-        setSelectedSubscription(null);
+        setSelectedSubscriptionData(null);
       }
     }
   };
 
   const handleCancelDelete = () => {
     setIsDeletePopupOpen(false);
-    setSelectedSubscription(null);
+    setSelectedSubscriptionData(null);
   };
 
   const moveSubscription = async (index: number, direction: "up" | "down") => {
@@ -263,7 +265,7 @@ const SubscriptionPage: React.FC = () => {
       <h1 className="text-2xl font-bold mb-4 border-l-8 text-black border-lime-500 pl-2">
         Manage Subscriptions
       </h1>
-      {!isFormOpen && (
+      {!isFormOpen && !subscriptionPricePopup && (
         <div className="flex justify-between items-center w-full my-6">
           <EntriesPerPage
             entriesPerPage={entriesPerPage}
@@ -279,7 +281,7 @@ const SubscriptionPage: React.FC = () => {
           )}
         </div>
       )}
-      {!isFormOpen && (
+      {!isFormOpen && !subscriptionPricePopup && (
         <>
           {loading ? (
             <div className="flex justify-center items-center h-64">
@@ -383,6 +385,16 @@ const SubscriptionPage: React.FC = () => {
                             <AiOutlineArrowDown />
                           </button>
                           <button
+                            onClick={() => {
+                              setSubscriptionPricePopup(true);
+                              setSelectedSubscriptionData(subscription);
+                            }}
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                            aria-label="Info"
+                          >
+                            <IoPricetagOutline />
+                          </button>
+                          <button
                             onClick={() =>
                               setSelectedSubscription(subscription)
                             }
@@ -402,9 +414,7 @@ const SubscriptionPage: React.FC = () => {
                           )}
                           {deletePermission && (
                             <button
-                              onClick={() =>
-                                deleteSubscription(subscription.id)
-                              }
+                              onClick={() => deleteSubscription(subscription)}
                               className="text-2xl text-red-600 dark:text-red-500 hover:underline"
                               aria-label="Delete"
                             >
@@ -571,6 +581,13 @@ const SubscriptionPage: React.FC = () => {
           </form>
         </div>
       )}
+      {subscriptionPricePopup && (
+        <SubscriptionPrice
+          data={selectedSubscriptionData!}
+          goBackHandler={() => setSubscriptionPricePopup(false)}
+        />
+      )}
+
       {selectedSubscription && (
         <DetailsPopup
           title="Subscription Details"

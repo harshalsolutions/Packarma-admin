@@ -9,20 +9,24 @@ import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import { formatDateTime } from "../../../utils/DateFormatter";
+import { useLocation, useNavigate } from "react-router";
+import { IoArrowBackOutline } from "react-icons/io5";
 
 interface CustomerForm {
   id: number;
   user_id: number;
   address_name: string;
-  building: string;
-  area: string;
-  created_at: string;
+  address: string;
+  state: string;
+  city: string;
   firstname: string;
   lastname: string;
   email: string;
   phone_number: string;
+  pincode: string;
+  created_at: string;
+  updatedAt: string;
 }
-
 interface Pagination {
   currentPage: number;
   totalPages: number;
@@ -52,6 +56,10 @@ const CustomerAddresses: React.FC = () => {
     null
   );
 
+  const navigate = useNavigate();
+  const location = useLocation();
+  const search = location.search.replace("?user_id=", "");
+
   useEffect(() => {
     fetchCustomerAddressesForm();
   }, [currentPage, entriesPerPage]);
@@ -59,14 +67,16 @@ const CustomerAddresses: React.FC = () => {
   const fetchCustomerAddressesForm = async () => {
     try {
       setLoading(true);
+      const params: any = {
+        page: currentPage,
+        limit: entriesPerPage,
+      };
+      if (search) {
+        params.search = search;
+      }
       const response = await api.get(
         `${BACKEND_API_KEY}/customer/users/addresses`,
-        {
-          params: {
-            page: currentPage,
-            limit: entriesPerPage,
-          },
-        }
+        { params }
       );
       setCustomerAddressesForm(response.data.data.addresses || []);
       if (response.data.data.pagination) {
@@ -106,10 +116,22 @@ const CustomerAddresses: React.FC = () => {
         Manage Customer
       </h1>
       <>
-        <EntriesPerPage
-          entriesPerPage={entriesPerPage}
-          setEntriesPerPage={setEntriesPerPage}
-        />
+        <div className="flex justify-between items-center">
+          <EntriesPerPage
+            entriesPerPage={entriesPerPage}
+            setEntriesPerPage={setEntriesPerPage}
+          />
+          {search && (
+            <div className="flex">
+              <button
+                className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+                onClick={() => navigate("/admin/customer-section/user-list")}
+              >
+                <IoArrowBackOutline />
+              </button>
+            </div>
+          )}
+        </div>
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <Spinner size="xl" />
@@ -128,16 +150,19 @@ const CustomerAddresses: React.FC = () => {
                     Name
                   </th>
                   <th scope="col" className="px-6 py-3">
+                    Address Name
+                  </th>
+                  <th scope="col" className="px-6 py-3">
                     Address
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    Building
+                    State
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    Area
+                    City
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    Phone Number
+                    Pincode
                   </th>
                   <th scope="col" className="px-6 py-3">
                     Created At
@@ -164,13 +189,16 @@ const CustomerAddresses: React.FC = () => {
                         {customerForm.address_name}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {customerForm.building}
+                        {customerForm.address}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {customerForm.area}
+                        {customerForm.state}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {customerForm.phone_number}
+                        {customerForm.city}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {customerForm.pincode}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
                         {formatDateTime(new Date(customerForm.created_at))}
@@ -243,16 +271,22 @@ const CustomerAddresses: React.FC = () => {
           fields={[
             { label: "ID", value: selectedAddress.id?.toString() },
             { label: "User ID", value: selectedAddress.user_id?.toString() },
+            { label: "First Name", value: selectedAddress.firstname },
+            { label: "Last Name", value: selectedAddress.lastname },
+            { label: "Email", value: selectedAddress.email },
             { label: "Address Name", value: selectedAddress.address_name },
-            { label: "Building", value: selectedAddress.building },
-            { label: "Area", value: selectedAddress.area },
+            { label: "Address", value: selectedAddress.address },
+            { label: "State", value: selectedAddress.state },
+            { label: "City", value: selectedAddress.city },
+            { label: "Pincode", value: selectedAddress.pincode },
             {
               label: "Created At",
               value: formatDateTime(new Date(selectedAddress.created_at)),
             },
-            { label: "First Name", value: selectedAddress.firstname },
-            { label: "Last Name", value: selectedAddress.lastname },
-            { label: "Email", value: selectedAddress.email },
+            {
+              label: "Updated At",
+              value: formatDateTime(new Date(selectedAddress.updatedAt)),
+            },
           ]}
           onClose={() => setselectedAddress(null)}
         />
