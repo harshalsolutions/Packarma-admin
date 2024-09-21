@@ -533,10 +533,9 @@ const BannerPage: React.FC = () => {
                 Search Banner Title
               </label>
               <TextInput
-                className="customInput"
+                className="customInput w-[25%]"
                 id="search"
                 type="text"
-                className="w-[25%]"
                 placeholder="Search here.."
                 value={titleFilter}
                 onChange={(e) => setTitleFilter(e.target.value)}

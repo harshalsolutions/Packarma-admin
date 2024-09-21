@@ -349,17 +349,15 @@ const Customer: React.FC = () => {
           {filterOpen && (
             <div className="grid grid-cols-4 gap-4 flex-wrap mb-6 items-end">
               <TextInput
-                className="customInput"
+                className="customInput w-full"
                 type="text"
-                className="w-full"
                 placeholder="Search Name.."
                 value={filter.name}
                 onChange={(e) => setFilter({ ...filter, name: e.target.value })}
               />
               <TextInput
-                className="customInput"
                 type="text"
-                className="w-full"
+                className="customInput w-full"
                 placeholder="Search Phone Number.."
                 value={filter.phone_number}
                 onChange={(e) =>
@@ -367,9 +365,8 @@ const Customer: React.FC = () => {
                 }
               />
               <TextInput
-                className="customInput"
+                className="customInput w-full"
                 type="text"
-                className="w-full"
                 placeholder="Search Email.."
                 value={filter.email}
                 onChange={(e) =>

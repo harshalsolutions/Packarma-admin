@@ -558,10 +558,9 @@ const AdsPage: React.FC = () => {
                 Search Advertisement Title
               </label>
               <TextInput
-                className="customInput"
                 id="search"
                 type="text"
-                className="w-[25%]"
+                className="customInput w-full"
                 placeholder="Search here.."
                 value={titleFilter}
                 onChange={(e) => setTitleFilter(e.target.value)}

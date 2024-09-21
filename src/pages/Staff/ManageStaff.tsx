@@ -258,10 +258,9 @@ const ManageStaff: React.FC = () => {
             Search Name and Email Address..
           </label>
           <TextInput
-            className="customInput"
             id="search"
             type="text"
-            className="w-[25%]"
+            className="customInput w-[25%]"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           />

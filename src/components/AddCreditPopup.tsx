@@ -63,7 +63,6 @@ const AddCreditPopup = ({
             </button>
             <TextInput
               className="customInput"
-              className="customInput"
               type="number"
               value={credit}
               onChange={(e) => setCredit(parseInt(e.target.value))}

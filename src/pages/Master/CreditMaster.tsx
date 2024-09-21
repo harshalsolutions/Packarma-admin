@@ -275,10 +275,9 @@ const CreditMaster: React.FC = () => {
             Search Price and Currency
           </label>
           <TextInput
-            className="customInput"
             id="search"
             type="text"
-            className="w-[25%] mb-4"
+            className="customInput w-[25%] mb-4"
             placeholder="Search here.."
             value={titleFilter}
             onChange={(e) => setTitleFilter(e.target.value)}

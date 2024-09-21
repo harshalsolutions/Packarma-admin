@@ -181,10 +181,9 @@ const Customer: React.FC = () => {
               Search Name and Phone Number
             </label>
             <TextInput
-              className="customInput"
+              className="customInput w-[25%]"
               id="search"
               type="text"
-              className="w-[25%]"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             />
