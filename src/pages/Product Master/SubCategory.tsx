@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Spinner, TextInput, Select } from "flowbite-react";
+import { Badge, Spinner, TextInput } from "flowbite-react";
 import { TbEdit, TbFilter, TbFilterOff } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
@@ -13,7 +13,8 @@ import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import { useUser } from "../../context/userContext";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
-
+import { customStyle } from "../../../utils/CustomSelectTheme";
+import Select, { ActionMeta, SingleValue } from "react-select";
 interface SubCategory {
   id: number;
   category_id: number;
@@ -63,8 +64,9 @@ const SubCategoryPage: React.FC = () => {
   >(null);
   const [titleFilter, setTitleFilter] = useState("");
   const [debouncedTitleFilter, setDebouncedTitleFilter] = useState("");
-  const [selectedFilterCategory, setSelectedFilterCategory] =
-    useState<string>("");
+  const [selectedFilterCategory, setSelectedFilterCategory] = useState<
+    string | undefined
+  >("");
   const [filterOpen, setFilterOpen] = useState(false);
 
   useEffect(() => {
@@ -178,6 +180,7 @@ const SubCategoryPage: React.FC = () => {
     setStatus("active");
     setCategoryId(null);
     setIsFormOpen(true);
+    setFilterOpen(false);
   };
 
   const openEditForm = (subCategory: SubCategory) => {
@@ -293,22 +296,48 @@ const SubCategoryPage: React.FC = () => {
         </div>
       )}
       {filterOpen && (
-        <div className="flex justify-start items-center w-full mb-5">
+        <div className="grid grid-cols-4 mb-6 gap-4">
           <Select
+            styles={customStyle}
             id="category_id"
-            value={selectedFilterCategory}
-            onChange={(e) => setSelectedFilterCategory(e.target.value)}
-          >
-            <option value="">All Categories</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </Select>
+            options={categories.map((category) => ({
+              value: category.id,
+              label: category.name,
+            }))}
+            value={
+              selectedFilterCategory
+                ? {
+                    label: categories.find(
+                      (category) =>
+                        category.id === Number(selectedFilterCategory)
+                    )?.name,
+                    value: Number(selectedFilterCategory),
+                  }
+                : undefined
+            }
+            onChange={(
+              newValue: SingleValue<{
+                label: string | undefined;
+                value: number;
+              }>,
+              _actionMeta: ActionMeta<{
+                label: string | undefined;
+                value: number;
+              }>
+            ) => {
+              setSelectedFilterCategory(
+                newValue?.value?.toString() || undefined
+              );
+            }}
+            placeholder="Select Category"
+            isSearchable
+            isClearable
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
           <TextInput
             type="text"
-            className="w-[25%] ml-4"
+            className=""
             placeholder="Search name here.."
             value={titleFilter}
             onChange={(e) => setTitleFilter(e.target.value)}
@@ -406,7 +435,10 @@ const SubCategoryPage: React.FC = () => {
                           </button>
                           {updatePermission && (
                             <button
-                              onClick={() => openEditForm(subCategory)}
+                              onClick={() => {
+                                openEditForm(subCategory);
+                                setFilterOpen(false);
+                              }}
                               className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-3"
                               aria-label="Edit"
                             >
@@ -536,22 +568,43 @@ const SubCategoryPage: React.FC = () => {
               >
                 Category
               </label>
-              <select
-                id="category"
-                value={categoryId ?? ""}
-                onChange={(e) => setCategoryId(Number(e.target.value))}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                required
-              >
-                <option value="" disabled>
-                  Select a category
-                </option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+
+              <Select
+                styles={customStyle}
+                id="category_id"
+                options={categories.map((category) => ({
+                  value: category.id,
+                  label: category.name,
+                }))}
+                value={
+                  selectedFilterCategory
+                    ? {
+                        label: categories.find(
+                          (category) =>
+                            category.id === Number(selectedFilterCategory)
+                        )?.name,
+                        value: Number(selectedFilterCategory),
+                      }
+                    : undefined
+                }
+                onChange={(
+                  newValue: SingleValue<{
+                    label: string | undefined;
+                    value: number;
+                  }>,
+                  _actionMeta: ActionMeta<{
+                    label: string | undefined;
+                    value: number;
+                  }>
+                ) => {
+                  setCategoryId(newValue?.value || null);
+                }}
+                placeholder="Select Category"
+                isSearchable
+                isClearable
+                className="react-select-container"
+                classNamePrefix="react-select"
+              />
             </div>
 
             <div className="flex justify-end mt-4">

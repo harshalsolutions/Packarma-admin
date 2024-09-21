@@ -10,6 +10,8 @@ import { ErrorComp } from "../../components/ErrorComp";
 import { AiOutlineClose } from "react-icons/ai";
 import { TbFilter, TbFilterOff } from "react-icons/tb";
 import { formatDateTime } from "../../../utils/DateFormatter";
+import { customStyle } from "../../../utils/CustomSelectTheme";
+import Select from "react-select";
 
 interface ReferForm {
   id: number;
@@ -51,7 +53,7 @@ const RedeemRefer: React.FC = () => {
   const [redeemDescription, setRedeemDescription] = useState<string>("");
   const [isRedeemPopupOpen, setRedeemPopupOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
-  const [filterSelected, setFilterSelected] = useState("Redeem Status");
+  const [filterSelected, setFilterSelected] = useState<string | undefined>();
 
   useEffect(() => {
     fetchReferForm();
@@ -59,34 +61,27 @@ const RedeemRefer: React.FC = () => {
 
   const fetchReferForm = async () => {
     try {
-      let response: any = {};
       setLoading(true);
-      if (filterSelected !== "Redeem Status") {
-        response = await api.get(
-          `${BACKEND_API_KEY}/customer/redeem-requests`,
-          {
-            params: {
-              page: currentPage,
-              limit: entriesPerPage,
-              redeem_status: filterSelected,
-            },
-          }
-        );
-      } else {
-        response = await api.get(
-          `${BACKEND_API_KEY}/customer/redeem-requests`,
-          {
-            params: {
-              page: currentPage,
-              limit: entriesPerPage,
-            },
-          }
-        );
+
+      const params: { page: number; limit: number; redeem_status?: string } = {
+        page: currentPage,
+        limit: entriesPerPage,
+      };
+
+      if (filterSelected) {
+        params.redeem_status = filterSelected;
       }
+
+      const response = await api.get(
+        `${BACKEND_API_KEY}/customer/redeem-requests`,
+        { params }
+      );
+
       setRedeemRequest(response.data.data.redeemRequest || []);
       if (response.data.data.pagination) {
         setPagination(response.data.data.pagination);
       }
+
       setLoading(false);
       setError(null);
     } catch (err: any) {
@@ -140,15 +135,30 @@ const RedeemRefer: React.FC = () => {
       </div>
       {filterOpen && (
         <div className="flex flex-col ml-auto w-[25%] mr-6">
-          <select
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            onChange={(e) => setFilterSelected(e.target.value)}
-            value={filterSelected}
-          >
-            <option value="">Redeem Status</option>
-            <option value="Completed">Completed</option>
-            <option value="Incompleted">Incompleted</option>
-          </select>
+          <Select
+            styles={customStyle}
+            name="redeemStatus"
+            id="redeem-status"
+            options={["Completed", "Incompleted"].map((status) => ({
+              value: status,
+              label: status,
+            }))}
+            value={
+              filterSelected
+                ? { label: filterSelected, value: filterSelected }
+                : null
+            }
+            onChange={(
+              selectedOption: { label: string; value: string } | null
+            ) => {
+              setFilterSelected(selectedOption?.value);
+            }}
+            placeholder="Select Redeem Status"
+            isSearchable
+            isClearable
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
         </div>
       )}
       {loading ? (

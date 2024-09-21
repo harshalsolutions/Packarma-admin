@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Card, Select, Spinner, TextInput } from "flowbite-react";
+import { Badge, Card, Spinner, TextInput } from "flowbite-react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
@@ -21,7 +21,16 @@ import toast from "react-hot-toast";
 import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
 import { formatDateTime } from "../../../utils/DateFormatter";
 import { TbFilter, TbFilterOff } from "react-icons/tb";
+import { customStyle } from "../../../utils/CustomSelectTheme";
+import Select from "react-select";
 
+type FilterType = {
+  name: string;
+  phone_number: string;
+  email: string;
+  active_subscription?: string;
+  user_type?: string;
+};
 interface CustomerForm {
   code: string;
   country_code: string | null;
@@ -80,12 +89,13 @@ const Customer: React.FC = () => {
   const [isAddCreditPopupOpen, setIsAddCreditPopupOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
-  const [filter, setFilter] = useState({
+
+  const [filter, setFilter] = useState<FilterType>({
     name: "",
     phone_number: "",
     email: "",
-    active_subscription: "",
-    user_type: "",
+    active_subscription: undefined,
+    user_type: undefined,
   });
   const userContext = useUser();
 
@@ -316,11 +326,11 @@ const Customer: React.FC = () => {
                   setFilterOpen(!filterOpen);
                   setFilter({
                     ...filter,
-                    active_subscription: "",
                     email: "",
                     phone_number: "",
                     name: "",
-                    user_type: "",
+                    active_subscription: undefined,
+                    user_type: undefined,
                   });
                   fetchCustomerForm("nofilter");
                 }}
@@ -361,28 +371,64 @@ const Customer: React.FC = () => {
                 }
               />
               <Select
-                value={filter.active_subscription}
-                onChange={(e) =>
+                styles={customStyle}
+                id="subscriptionStatus"
+                options={["Active", "Inactive"].map((status) => ({
+                  value: status,
+                  label: status,
+                }))}
+                value={
+                  filter.active_subscription
+                    ? {
+                        label: filter.active_subscription,
+                        value: filter.active_subscription,
+                      }
+                    : undefined
+                }
+                onChange={(
+                  selectedOption: { label: string; value: string } | null
+                ) => {
                   setFilter({
                     ...filter,
-                    active_subscription: e.target.value,
-                  })
-                }
-              >
-                <option value="">All Users</option>
-                <option value="active">Active Subsctiption</option>
-                <option value="inactive">Inactive Subscription</option>
-              </Select>
+                    active_subscription: selectedOption?.value,
+                  });
+                }}
+                placeholder="Select Subscription Status"
+                isSearchable
+                isClearable
+                className="react-select-container"
+                classNamePrefix="react-select"
+              />
               <Select
-                value={filter.user_type}
-                onChange={(e) =>
-                  setFilter({ ...filter, user_type: e.target.value })
+                styles={customStyle}
+                id="userType"
+                options={["Normal", "Referred"].map((status) => ({
+                  value: status,
+                  label: status,
+                }))}
+                value={
+                  filter.user_type
+                    ? {
+                        label: filter.user_type,
+                        value: filter.user_type,
+                      }
+                    : undefined
                 }
-              >
-                <option value="">Select User Type</option>
-                <option value="normal">Normal</option>
-                <option value="referred">Referred</option>
-              </Select>
+                onChange={(
+                  selectedOption: { label: string; value: string } | null
+                ) => {
+                  setFilter({
+                    ...filter,
+                    user_type: selectedOption?.value || undefined,
+                  });
+                }}
+                placeholder="Select User Type"
+                isSearchable
+                isClearable
+                className="react-select-container"
+                classNamePrefix="react-select"
+              />
+
               <div className="flex">
                 <button
                   className="bg-lime-500 text-black px-4 py-2 rounded mr-3"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Select, Spinner, TextInput } from "flowbite-react";
+import { Badge, Spinner, TextInput } from "flowbite-react";
 import { TbEdit, TbFilter, TbFilterOff } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
@@ -13,6 +13,8 @@ import CustomPopup from "../../components/CustomPopup";
 import toast from "react-hot-toast";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import { useUser } from "../../context/userContext";
+import { customStyle } from "../../../utils/CustomSelectTheme";
+import Select from "react-select";
 
 interface CreditPrice {
   id: number;
@@ -215,9 +217,9 @@ const CreditMaster: React.FC = () => {
 
       closeForm();
       fetchCreditPrices();
-    } catch (err) {
+    } catch (err: any) {
       toast.dismiss();
-      toast.error("Failed to save credit price");
+      toast.error(err?.response?.data.message || "Failed to save credit price");
     } finally {
       toast.dismiss(loadingToast);
     }
@@ -472,32 +474,35 @@ const CreditMaster: React.FC = () => {
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Currency</label>
             <Select
-              onChange={(e) => setCurrency(e.target.value)}
-              value={currency}
-            >
-              {!editingCreditPrice
-                ? currencies
-                    .filter(
-                      (currency) =>
-                        !creditPrices
-                          .map((price) => price.currency)
-                          .includes(currency.code)
-                    )
-                    .map((currency) => {
-                      return (
-                        <option value={currency.code}>
-                          {currency.name} : {currency.code} : {currency.symbol}
-                        </option>
-                      );
-                    })
-                : currencies.map((currency) => {
-                    return (
-                      <option value={currency.code}>
-                        {currency.name} : {currency.code} : {currency.symbol}
-                      </option>
-                    );
-                  })}
-            </Select>
+              styles={customStyle}
+              id="currency"
+              options={currencies.map((currency) => ({
+                value: currency.code,
+                label: `${currency.name} : ${currency.code} : ${currency.symbol}`,
+              }))}
+              value={
+                currency
+                  ? {
+                      label: `${
+                        currencies.find((c) => c.code === currency)?.name
+                      } : ${currency} : ${
+                        currencies.find((c) => c.code === currency)?.symbol
+                      }`,
+                      value: currency,
+                    }
+                  : undefined
+              }
+              onChange={(
+                selectedOption: { label: string; value: string } | null
+              ) => {
+                setCurrency(selectedOption?.value || "");
+              }}
+              placeholder="Select Currency"
+              isSearchable
+              isClearable
+              className="react-select-container"
+              classNamePrefix="react-select"
+            />
           </div>
           <div className="flex justify-between items-center">
             <button

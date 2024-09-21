@@ -619,7 +619,10 @@ const Product: React.FC = () => {
                           </button>
                           {updatePermission && (
                             <button
-                              onClick={() => openEditForm(product)}
+                              onClick={() => {
+                                openEditForm(product);
+                                setFilterOpen(false);
+                              }}
                               className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-4"
                               aria-label="Edit"
                             >
@@ -714,38 +717,6 @@ const Product: React.FC = () => {
                 required
               />
             </div>
-            <div className="mb-4">
-              <label
-                htmlFor="image"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Image URL
-              </label>
-              <input
-                type="file"
-                id="image"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files.length > 0) {
-                    const file = e.target.files[0];
-                    setImage(file as File | null);
-                  } else {
-                    setImage(null);
-                  }
-                }}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
-            </div>
-
-            {editingProduct && imagePreview && (
-              <div className="mb-4">
-                <img
-                  src={BACKEND_MEDIA_LINK + imagePreview}
-                  alt="Product Preview"
-                  className="w-16 h-16 object-cover mb-2"
-                />
-              </div>
-            )}
-
             <div className="mb-4">
               <label
                 htmlFor="category"
@@ -872,8 +843,38 @@ const Product: React.FC = () => {
                 ))}
               </select>
             </div>
+            <div className="mb-4">
+              <label
+                htmlFor="image"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Image URL
+              </label>
+              <input
+                type="file"
+                id="image"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    setImage(file as File | null);
+                  } else {
+                    setImage(null);
+                  }
+                }}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
 
-            <div className="flex justify-start mt-4 col-span-2">
+            {editingProduct && imagePreview && (
+              <div className="mb-4">
+                <img
+                  src={BACKEND_MEDIA_LINK + imagePreview}
+                  alt="Product Preview"
+                  className="w-16 h-16 object-cover mb-2"
+                />
+              </div>
+            )}
+            <div className="flex justify-center mt-4 col-span-2">
               <button
                 type="button"
                 onClick={closeForm}

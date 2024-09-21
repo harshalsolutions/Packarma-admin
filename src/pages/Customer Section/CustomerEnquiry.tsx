@@ -11,6 +11,7 @@ import { TbFilter, TbFilterOff } from "react-icons/tb";
 import { AiOutlineSearch } from "react-icons/ai";
 import { formatDateTime } from "../../../utils/DateFormatter";
 import Select from "react-select";
+import { customStyle } from "../../../utils/CustomSelectTheme";
 
 interface EnquiryForm {
   id: number;
@@ -114,14 +115,18 @@ const CustomerEnquiry: React.FC = () => {
     }
   }, [pagination.totalPages]);
 
-  const fetchEnquiryData = async () => {
+  const fetchEnquiryData = async (type?: string) => {
     try {
       setLoading(true);
+      let filterParam: any = {};
+      if (type !== "nofilter") {
+        filterParam = filterParams;
+      }
       const response = await api.get(`${BACKEND_API_KEY}/customer/enquiries`, {
         params: {
           page: currentPage,
           limit: entriesPerPage,
-          ...filterParams,
+          ...filterParam,
         },
       });
 
@@ -172,7 +177,17 @@ const CustomerEnquiry: React.FC = () => {
             className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
             onClick={() => {
               setFilterOpen(!filterOpen);
-              fetchEnquiryData();
+              fetchEnquiryData("nofilter");
+              setFilterParams({
+                userId: undefined,
+                userName: undefined,
+                status: undefined,
+                productName: undefined,
+                category: undefined,
+                subCategory: undefined,
+                fromDate: undefined,
+                toDate: undefined,
+              });
             }}
           >
             {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
@@ -200,6 +215,7 @@ const CustomerEnquiry: React.FC = () => {
               placeholder="User Name"
             />
             <Select
+              styles={customStyle}
               name="category"
               id="category"
               options={categories.map((category) => ({
@@ -221,6 +237,7 @@ const CustomerEnquiry: React.FC = () => {
             />
 
             <Select
+              styles={customStyle}
               name="subCategory"
               id="subcategory"
               options={subcategories.map((subcategory) => ({
@@ -241,6 +258,7 @@ const CustomerEnquiry: React.FC = () => {
               placeholder="Select Sub Category"
             />
             <Select
+              styles={customStyle}
               name="productName"
               id="product"
               options={products.map((product) => ({
@@ -262,7 +280,6 @@ const CustomerEnquiry: React.FC = () => {
               className="react-select-container"
               classNamePrefix="react-select"
             />
-
             <input
               type="date"
               name="fromDate"

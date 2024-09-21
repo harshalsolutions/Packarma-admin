@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Select, Spinner, TextInput } from "flowbite-react";
+import { Spinner, TextInput } from "flowbite-react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
@@ -10,6 +10,8 @@ import { ErrorComp } from "../../components/ErrorComp";
 import { formatDateTime } from "../../../utils/DateFormatter";
 import { TbFilter, TbFilterOff } from "react-icons/tb";
 import { AiOutlineSearch } from "react-icons/ai";
+import Select from "react-select";
+import { customStyle } from "../../../utils/CustomSelectTheme";
 
 interface ReferForm {
   id: number;
@@ -49,13 +51,20 @@ const Refer: React.FC = () => {
   });
   const [selectedRefer, setSelectedRefer] = useState<ReferForm | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
-  const [filterOptions, setFilterOptions] = useState({
-    from_date: "",
-    to_date: "",
-    name: "",
-    signup_done: "",
-    subscription_done: "",
-    redeem_done: "",
+  const [filterOptions, setFilterOptions] = useState<{
+    from_date: string | undefined;
+    to_date: string | undefined;
+    name: string | undefined;
+    signup_done: string | undefined;
+    subscription_done: string | undefined;
+    redeem_done: string | undefined;
+  }>({
+    from_date: undefined,
+    to_date: undefined,
+    name: undefined,
+    signup_done: undefined,
+    subscription_done: undefined,
+    redeem_done: undefined,
   });
   useEffect(() => {
     fetchReferForm();
@@ -130,19 +139,35 @@ const Refer: React.FC = () => {
                 Account Created
               </label>
               <Select
+                styles={customStyle}
+                name="signupStatus"
                 id="signupdone"
-                value={filterOptions.signup_done}
-                onChange={(e) =>
+                options={["Completed", "Incompleted"].map((status) => ({
+                  value: status,
+                  label: status,
+                }))}
+                value={
+                  filterOptions.signup_done
+                    ? {
+                        label: filterOptions.signup_done,
+                        value: filterOptions.signup_done,
+                      }
+                    : null
+                }
+                onChange={(
+                  selectedOption: { label: string; value: string } | null
+                ) => {
                   setFilterOptions({
                     ...filterOptions,
-                    signup_done: e.target.value,
-                  })
-                }
-              >
-                <option value="">-- Select -- </option>
-                <option value="Completed">Completed</option>
-                <option value="Not Completed">Not Completed</option>
-              </Select>
+                    signup_done: selectedOption?.value,
+                  });
+                }}
+                placeholder="Select Signup Status"
+                isSearchable
+                isClearable
+                className="react-select-container"
+                classNamePrefix="react-select"
+              />
             </div>
             <div>
               <label
@@ -152,38 +177,70 @@ const Refer: React.FC = () => {
                 Subscription Task
               </label>
               <Select
+                styles={customStyle}
+                name="subscriptionStatus"
                 id="subscriptiondone"
-                value={filterOptions.subscription_done}
-                onChange={(e) =>
+                options={["Completed", "Incompleted"].map((status) => ({
+                  value: status,
+                  label: status,
+                }))}
+                value={
+                  filterOptions.subscription_done
+                    ? {
+                        label: filterOptions.subscription_done,
+                        value: filterOptions.subscription_done,
+                      }
+                    : null
+                }
+                onChange={(
+                  selectedOption: { label: string; value: string } | null
+                ) => {
                   setFilterOptions({
                     ...filterOptions,
-                    subscription_done: e.target.value,
-                  })
-                }
-              >
-                <option value="">-- Select -- </option>
-                <option value="Completed">Completed</option>
-                <option value="Not Completed">Not Completed</option>
-              </Select>
+                    subscription_done: selectedOption?.value,
+                  });
+                }}
+                placeholder="Select Subscription Status"
+                isSearchable
+                isClearable
+                className="react-select-container"
+                classNamePrefix="react-select"
+              />
             </div>
             <div>
               <label htmlFor="redeemdone" className="text-xs font-medium mb-1">
                 Redeem Done
               </label>
               <Select
+                styles={customStyle}
+                name="redeemStatus"
                 id="redeemdone"
-                value={filterOptions.redeem_done}
-                onChange={(e) =>
+                options={["Completed", "Incompleted"].map((status) => ({
+                  value: status,
+                  label: status,
+                }))}
+                value={
+                  filterOptions.redeem_done
+                    ? {
+                        label: filterOptions.redeem_done,
+                        value: filterOptions.redeem_done,
+                      }
+                    : null
+                }
+                onChange={(
+                  selectedOption: { label: string; value: string } | null
+                ) => {
                   setFilterOptions({
                     ...filterOptions,
-                    redeem_done: e.target.value,
-                  })
-                }
-              >
-                <option value="">-- Select -- </option>
-                <option value="Completed">Completed</option>
-                <option value="Not Completed">Not Completed</option>
-              </Select>
+                    redeem_done: selectedOption?.value,
+                  });
+                }}
+                placeholder="Select Redeem Status"
+                isSearchable
+                isClearable
+                className="react-select-container"
+                classNamePrefix="react-select"
+              />
             </div>
             <div>
               <label htmlFor="username" className="text-xs font-medium mb-1">

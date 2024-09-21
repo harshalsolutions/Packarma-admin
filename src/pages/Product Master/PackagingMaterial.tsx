@@ -142,6 +142,7 @@ const PackagingMaterial: React.FC = () => {
     setMaterialName("");
     setStatus("active");
     setIsFormOpen(true);
+    setFilterOpen(false);
   };
 
   const openEditForm = (packagingMaterial: PackagingMaterial) => {
@@ -156,6 +157,7 @@ const PackagingMaterial: React.FC = () => {
     setGsm(packagingMaterial.gsm);
     setSpecialFeature(packagingMaterial.special_feature || "");
     setIsFormOpen(true);
+    setFilterOpen(false);
   };
 
   const closeForm = () => {
@@ -512,22 +514,6 @@ const PackagingMaterial: React.FC = () => {
                 required
               />
             </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor="material_description"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Short Description
-              </label>
-              <textarea
-                id="material_description"
-                value={materialDescription}
-                onChange={(e) => setMaterialDescription(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                required
-              />
-            </div>
             <div className="mb-4">
               <label
                 htmlFor="wvtr"
@@ -608,7 +594,7 @@ const PackagingMaterial: React.FC = () => {
                 required
               />
             </div>
-            <div className="mb-4">
+            <div className="mb-4 col-span-2">
               <label
                 htmlFor="special_feature"
                 className="block text-sm font-medium text-gray-700"
@@ -623,7 +609,22 @@ const PackagingMaterial: React.FC = () => {
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               />
             </div>
-            <div className="flex justify-end mt-4">
+            <div className="mb-4 col-span-2">
+              <label
+                htmlFor="material_description"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Short Description
+              </label>
+              <textarea
+                id="material_description"
+                value={materialDescription}
+                onChange={(e) => setMaterialDescription(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                required
+              />
+            </div>
+            <div className="flex justify-end col-span-2 mt-4">
               <button
                 type="button"
                 onClick={closeForm}

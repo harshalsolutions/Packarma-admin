@@ -239,6 +239,7 @@ const PackagingSolutions: React.FC = () => {
     setIsFormOpen(true);
     setImage(null);
     setType("add");
+    setFilterOpen(false);
   };
 
   const openEditForm = (product: PackagingSolutionsInterface) => {
@@ -255,6 +256,7 @@ const PackagingSolutions: React.FC = () => {
     setType("edit");
     setImage(null);
     setImagePreview(product.image);
+    setFilterOpen(false);
   };
 
   const closeForm = () => {
@@ -870,7 +872,7 @@ const PackagingSolutions: React.FC = () => {
           <div className="flex space-x-4 mb-4">
             <button
               onClick={() => setActiveTab("engine")}
-              className={`px-4 py-1 text-sm rounded ${
+              className={`px-4 py-2 text-sm rounded ${
                 activeTab === "engine"
                   ? "bg-lime-500 text-blackk"
                   : "bg-gray-200"
@@ -880,7 +882,7 @@ const PackagingSolutions: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab("product")}
-              className={`px-4 py-1 text-sm rounded ${
+              className={`px-4 py-2 text-sm rounded ${
                 activeTab === "product"
                   ? "bg-lime-500 text-blackk"
                   : "bg-gray-200"
@@ -890,7 +892,7 @@ const PackagingSolutions: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab("moq")}
-              className={`px-4 py-1 text-sm rounded ${
+              className={`px-4 py-2 text-sm rounded ${
                 activeTab === "moq" ? "bg-lime-500 text-blackk" : "bg-gray-200"
               }`}
             >

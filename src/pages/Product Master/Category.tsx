@@ -153,6 +153,7 @@ const CategoryPage: React.FC = () => {
     setImage(null);
     setStatus("active");
     setIsFormOpen(true);
+    setFilterOpen(false);
   };
 
   const openEditForm = (category: Category) => {
@@ -162,6 +163,7 @@ const CategoryPage: React.FC = () => {
     setStatus(category.status);
     setIsFormOpen(true);
     setImagePreview(category.image);
+    setFilterOpen(false);
   };
 
   const closeForm = () => {
