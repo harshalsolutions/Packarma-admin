@@ -336,8 +336,8 @@ const SubCategoryPage: React.FC = () => {
             classNamePrefix="react-select"
           />
           <TextInput
+            className="customInput"
             type="text"
-            className=""
             placeholder="Search name here.."
             value={titleFilter}
             onChange={(e) => setTitleFilter(e.target.value)}
@@ -577,13 +577,12 @@ const SubCategoryPage: React.FC = () => {
                   label: category.name,
                 }))}
                 value={
-                  selectedFilterCategory
+                  categoryId
                     ? {
                         label: categories.find(
-                          (category) =>
-                            category.id === Number(selectedFilterCategory)
+                          (category) => category.id == Number(categoryId)
                         )?.name,
-                        value: Number(selectedFilterCategory),
+                        value: Number(categoryId),
                       }
                     : undefined
                 }

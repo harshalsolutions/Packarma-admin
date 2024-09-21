@@ -320,6 +320,7 @@ const PackagingMaterial: React.FC = () => {
       {filterOpen && (
         <div className="flex justify-start items-center mb-6">
           <TextInput
+            className="customInput"
             type="text"
             className="w-[25%]"
             value={materialFilter}

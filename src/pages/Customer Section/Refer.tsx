@@ -247,6 +247,7 @@ const Refer: React.FC = () => {
                 Username
               </label>
               <TextInput
+                className="customInput"
                 value={filterOptions.name}
                 onChange={(e) =>
                   setFilterOptions({
@@ -261,6 +262,7 @@ const Refer: React.FC = () => {
                 From Date
               </label>
               <TextInput
+                className="customInput"
                 type="date"
                 value={filterOptions.from_date}
                 onChange={(e) =>
@@ -276,6 +278,7 @@ const Refer: React.FC = () => {
                 To Date
               </label>
               <TextInput
+                className="customInput"
                 type="date"
                 value={filterOptions.to_date}
                 onChange={(e) =>

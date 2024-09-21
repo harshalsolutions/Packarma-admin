@@ -23,6 +23,8 @@ import { formatDateTime } from "../../../utils/DateFormatter";
 import { TbFilter, TbFilterOff } from "react-icons/tb";
 import { customStyle } from "../../../utils/CustomSelectTheme";
 import Select from "react-select";
+import { useNavigate } from "react-router";
+import { BiSearchAlt } from "react-icons/bi";
 
 type FilterType = {
   name: string;
@@ -98,6 +100,7 @@ const Customer: React.FC = () => {
     user_type: undefined,
   });
   const userContext = useUser();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCustomerForm();
@@ -346,6 +349,7 @@ const Customer: React.FC = () => {
           {filterOpen && (
             <div className="grid grid-cols-4 gap-4 flex-wrap mb-6 items-end">
               <TextInput
+                className="customInput"
                 type="text"
                 className="w-full"
                 placeholder="Search Name.."
@@ -353,6 +357,7 @@ const Customer: React.FC = () => {
                 onChange={(e) => setFilter({ ...filter, name: e.target.value })}
               />
               <TextInput
+                className="customInput"
                 type="text"
                 className="w-full"
                 placeholder="Search Phone Number.."
@@ -362,6 +367,7 @@ const Customer: React.FC = () => {
                 }
               />
               <TextInput
+                className="customInput"
                 type="text"
                 className="w-full"
                 placeholder="Search Email.."
@@ -536,10 +542,21 @@ const Customer: React.FC = () => {
                           </button>
                           <button
                             onClick={() => fetchAddresses(customerForm.user_id)}
-                            className="text-xl text-purple-600 dark:text-purple-500 hover:underline"
+                            className="text-xl text-purple-600 dark:text-purple-500 hover:underline mr-4"
                             aria-label="Show Addresses"
                           >
                             <FaAddressBook />
+                          </button>
+                          <button
+                            onClick={() =>
+                              navigate(
+                                `/admin/customer-section/enquiry?user_id=${customerForm.user_id}`
+                              )
+                            }
+                            className="text-xl text-blue-600 dark:text-blue-500 hover:underline"
+                            aria-label="Show Addresses"
+                          >
+                            <BiSearchAlt />
                           </button>
                         </td>
                       </tr>

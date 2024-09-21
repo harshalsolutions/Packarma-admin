@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Select, Spinner, TextInput } from "flowbite-react";
+import { Badge, Spinner, TextInput } from "flowbite-react";
 import { TbEdit, TbFilter, TbFilterOff } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
@@ -15,6 +15,8 @@ import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker"
 import toast from "react-hot-toast";
 import { AiOutlineSearch } from "react-icons/ai";
 import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
+import Select, { SingleValue } from "react-select";
+import { customStyle } from "../../../utils/CustomSelectTheme";
 
 interface PackagingSolutionsInterface {
   id: number;
@@ -592,38 +594,82 @@ const PackagingSolutions: React.FC = () => {
       {filterOpen && (
         <div className="grid grid-cols-4 gap-4 mb-6">
           <TextInput
+            className="customInput"
             id="name"
             placeholder="Name"
             value={filter.name}
             onChange={(e) => setFilter({ ...filter, name: e.target.value })}
           />
           <Select
+            styles={customStyle}
             id="structure_type"
-            value={filter.structure_type}
-            onChange={(e) =>
-              setFilter({ ...filter, structure_type: e.target.value })
+            options={[
+              { value: "Economical Solution", label: "Economical Solution" },
+              { value: "Advance Solution", label: "Advance Solution" },
+              { value: "Sustainable Solution", label: "Sustainable Solution" },
+            ]}
+            value={
+              filter.structure_type
+                ? {
+                    label: filter.structure_type,
+                    value: filter.structure_type,
+                  }
+                : undefined
             }
-          >
-            <option value="">Structure Type</option>
-            <option value="Economical Solution">Economical Solution</option>
-            <option value="Advance Solution">Advance Solution</option>
-            <option value="Sustainable Solution">Sustainable Solution</option>
-          </Select>
+            onChange={(
+              newValue: SingleValue<{
+                label: string | undefined;
+                value: string;
+              }>
+            ) => {
+              setFilter({
+                ...filter,
+                structure_type: newValue?.value || "",
+              });
+            }}
+            placeholder="Select Structure Type"
+            isSearchable
+            isClearable
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
           <Select
+            styles={customStyle}
             id="storage_condition_id"
-            value={filter.storage_condition_id}
-            onChange={(e) =>
-              setFilter({ ...filter, storage_condition_id: e.target.value })
+            options={storageConditions.map((condition) => ({
+              value: condition.id,
+              label: condition.name,
+            }))}
+            value={
+              filter.storage_condition_id
+                ? {
+                    label: storageConditions.find(
+                      (condition) =>
+                        condition.id === Number(filter.storage_condition_id)
+                    )?.name,
+                    value: Number(filter.storage_condition_id),
+                  }
+                : undefined
             }
-          >
-            <option value="">Storage Condition</option>
-            {storageConditions.map((condition) => (
-              <option key={condition.id} value={condition.id}>
-                {condition.name}
-              </option>
-            ))}
-          </Select>
+            onChange={(
+              newValue: SingleValue<{
+                label: string | undefined;
+                value: number;
+              }>
+            ) => {
+              setFilter({
+                ...filter,
+                storage_condition_id: newValue?.value?.toString() || "",
+              });
+            }}
+            placeholder="Select Storage Condition"
+            isSearchable
+            isClearable
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
           <TextInput
+            className="customInput"
             id="product_name"
             placeholder="Product Name"
             value={filter.product_name}
@@ -632,6 +678,7 @@ const PackagingSolutions: React.FC = () => {
             }
           />
           <TextInput
+            className="customInput"
             id="product_form_name"
             placeholder="Product Form Name"
             value={filter.product_form_name}
@@ -640,6 +687,7 @@ const PackagingSolutions: React.FC = () => {
             }
           />
           <TextInput
+            className="customInput"
             id="packaging_treatment_name"
             placeholder="Packaging Treatment Name"
             value={filter.packaging_treatment_name}
@@ -651,6 +699,7 @@ const PackagingSolutions: React.FC = () => {
             }
           />
           <TextInput
+            className="customInput"
             id="packing_type_name"
             placeholder="Packing Type Name"
             value={filter.packing_type_name}
@@ -659,6 +708,7 @@ const PackagingSolutions: React.FC = () => {
             }
           />
           <TextInput
+            className="customInput"
             id="packaging_machine_name"
             placeholder="Packaging Machine Name"
             value={filter.packaging_machine_name}
@@ -667,6 +717,7 @@ const PackagingSolutions: React.FC = () => {
             }
           />
           <TextInput
+            className="customInput"
             id="packaging_material_name"
             placeholder="Packaging Material Name"
             value={filter.packaging_material_name}
@@ -924,34 +975,98 @@ const PackagingSolutions: React.FC = () => {
                     required
                   />
                 </div>
-
                 <div className="mb-4">
                   <label
                     htmlFor="structureType"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-gray-700 mb-1"
                   >
                     Structure Type
                   </label>
                   <Select
-                    value={formPackagingSolutions?.structure_type}
-                    onChange={(e) =>
+                    styles={customStyle}
+                    id="structure_type"
+                    options={[
+                      {
+                        value: "Economical Solution",
+                        label: "Economical Solution",
+                      },
+                      { value: "Advance Solution", label: "Advance Solution" },
+                      {
+                        value: "Sustainable Solution",
+                        label: "Sustainable Solution",
+                      },
+                    ]}
+                    value={
+                      formPackagingSolutions?.structure_type
+                        ? {
+                            label: formPackagingSolutions?.structure_type,
+                            value: formPackagingSolutions?.structure_type,
+                          }
+                        : undefined
+                    }
+                    onChange={(
+                      newValue: SingleValue<{
+                        label: string | undefined;
+                        value: string;
+                      }>
+                    ) => {
                       setFormPackagingSolutions((prev) => ({
                         ...prev!,
-                        structure_type: e.target.value,
-                      }))
-                    }
-                  >
-                    <option value="">-- Select Structure Type --</option>
-                    <option value="Economical Solution">
-                      Economical Solution
-                    </option>
-                    <option value="Advance Solution">Advance Solution</option>
-                    <option value="Sustainable Solution">
-                      Sustainable Solution
-                    </option>
-                  </Select>
+                        structure_type: newValue?.value || "",
+                      }));
+                    }}
+                    placeholder="Select Structure Type"
+                    isSearchable
+                    isClearable
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                 </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="storageCondition"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Storage Condition
+                  </label>
 
+                  <Select
+                    styles={customStyle}
+                    id="storageCondition"
+                    options={storageConditions.map((condition) => ({
+                      value: condition.id,
+                      label: condition.name,
+                    }))}
+                    value={
+                      formPackagingSolutions?.storage_condition_id
+                        ? {
+                            label: storageConditions.find(
+                              (condition) =>
+                                condition.id ===
+                                formPackagingSolutions.storage_condition_id
+                            )?.name,
+                            value: formPackagingSolutions.storage_condition_id,
+                          }
+                        : undefined
+                    }
+                    onChange={(
+                      newValue: SingleValue<{
+                        label: string | undefined;
+                        value: number;
+                      }>
+                    ) => {
+                      setFormPackagingSolutions((prev) => ({
+                        ...prev!,
+                        storage_condition_id: newValue?.value || 0,
+                      }));
+                    }}
+                    placeholder="Select Storage Condition"
+                    isSearchable
+                    isClearable
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
+                </div>
                 <div className="mb-4">
                   <label
                     htmlFor="sequence"
@@ -973,35 +1088,6 @@ const PackagingSolutions: React.FC = () => {
                     required
                   />
                 </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="storageCondition"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Storage Condition
-                  </label>
-
-                  <select
-                    id="storageCondition"
-                    value={formPackagingSolutions?.storage_condition_id || ""}
-                    onChange={(e) =>
-                      setFormPackagingSolutions((prev) => ({
-                        ...prev!,
-                        storage_condition_id: parseInt(e.target.value, 10),
-                      }))
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    required
-                  >
-                    <option value="">Select</option>
-                    {storageConditions.map((condition) => (
-                      <option key={condition.id} value={condition.id}>
-                        {condition.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
                 <div className="mb-4">
                   <label
                     htmlFor="displayShelfLife"
@@ -1034,22 +1120,38 @@ const PackagingSolutions: React.FC = () => {
                   >
                     Product
                   </label>
-                  <select
+                  <Select
+                    styles={customStyle}
                     id="product"
-                    value={formPackagingSolutions?.product_id || ""}
-                    onChange={(e) =>
-                      handleProductChange(parseInt(e.target.value, 10))
+                    options={products.map((product) => ({
+                      value: product.id,
+                      label: product.product_name,
+                    }))}
+                    value={
+                      formPackagingSolutions?.product_id
+                        ? {
+                            label: products.find(
+                              (product) =>
+                                product.id === formPackagingSolutions.product_id
+                            )?.product_name,
+                            value: formPackagingSolutions.product_id,
+                          }
+                        : undefined
                     }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    required
-                  >
-                    <option value="">Select</option>
-                    {products.map((product) => (
-                      <option key={product.id} value={product.id}>
-                        {product.product_name}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(
+                      newValue: SingleValue<{
+                        label: string | undefined;
+                        value: number;
+                      }>
+                    ) => {
+                      handleProductChange(newValue?.value || 0);
+                    }}
+                    placeholder="Select Product"
+                    isSearchable
+                    isClearable
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                 </div>
                 <div className="mb-4">
                   <label
@@ -1058,25 +1160,42 @@ const PackagingSolutions: React.FC = () => {
                   >
                     Product Category
                   </label>
-                  <select
+                  <Select
+                    styles={customStyle}
                     id="productCategory"
-                    value={formPackagingSolutions?.product_category_id || ""}
-                    onChange={(e) =>
+                    options={productCategories.map((category) => ({
+                      value: category.id,
+                      label: category.name,
+                    }))}
+                    value={
+                      formPackagingSolutions?.product_category_id
+                        ? {
+                            label: productCategories.find(
+                              (category) =>
+                                category.id ===
+                                formPackagingSolutions.product_category_id
+                            )?.name,
+                            value: formPackagingSolutions.product_category_id,
+                          }
+                        : undefined
+                    }
+                    onChange={(
+                      newValue: SingleValue<{
+                        label: string | undefined;
+                        value: number;
+                      }>
+                    ) => {
                       setFormPackagingSolutions((prev) => ({
                         ...prev!,
-                        product_category_id: parseInt(e.target.value, 10),
-                      }))
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    required
-                  >
-                    <option value="">Select</option>
-                    {productCategories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
+                        product_category_id: newValue?.value || 0,
+                      }));
+                    }}
+                    placeholder="Select Product Category"
+                    isSearchable
+                    isClearable
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                 </div>
                 <div className="mb-4">
                   <label
@@ -1085,25 +1204,42 @@ const PackagingSolutions: React.FC = () => {
                   >
                     Product Form
                   </label>
-                  <select
+                  <Select
+                    styles={customStyle}
                     id="productForm"
-                    value={formPackagingSolutions?.product_form_id || ""}
-                    onChange={(e) =>
+                    options={productForms.map((form) => ({
+                      value: form.id,
+                      label: form.name,
+                    }))}
+                    value={
+                      formPackagingSolutions?.product_form_id
+                        ? {
+                            label: productForms.find(
+                              (form) =>
+                                form.id ===
+                                formPackagingSolutions.product_form_id
+                            )?.name,
+                            value: formPackagingSolutions.product_form_id,
+                          }
+                        : undefined
+                    }
+                    onChange={(
+                      newValue: SingleValue<{
+                        label: string | undefined;
+                        value: number;
+                      }>
+                    ) => {
                       setFormPackagingSolutions((prev) => ({
                         ...prev!,
-                        product_form_id: parseInt(e.target.value, 10),
-                      }))
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    required
-                  >
-                    <option value="">Select</option>
-                    {productForms.map((form) => (
-                      <option key={form.id} value={form.id}>
-                        {form.name}
-                      </option>
-                    ))}
-                  </select>
+                        product_form_id: newValue?.value || 0,
+                      }));
+                    }}
+                    placeholder="Select Product Form"
+                    isSearchable
+                    isClearable
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                 </div>
                 <div className="mb-4">
                   <label
@@ -1112,25 +1248,43 @@ const PackagingSolutions: React.FC = () => {
                   >
                     Packaging Treatment
                   </label>
-                  <select
+                  <Select
+                    styles={customStyle}
                     id="packagingTreatment"
-                    value={formPackagingSolutions?.packaging_treatment_id || ""}
-                    onChange={(e) =>
+                    options={packagingTreatments.map((treatment) => ({
+                      value: treatment.id,
+                      label: treatment.name,
+                    }))}
+                    value={
+                      formPackagingSolutions?.packaging_treatment_id
+                        ? {
+                            label: packagingTreatments.find(
+                              (treatment) =>
+                                treatment.id ===
+                                formPackagingSolutions.packaging_treatment_id
+                            )?.name,
+                            value:
+                              formPackagingSolutions.packaging_treatment_id,
+                          }
+                        : undefined
+                    }
+                    onChange={(
+                      newValue: SingleValue<{
+                        label: string | undefined;
+                        value: number;
+                      }>
+                    ) => {
                       setFormPackagingSolutions((prev) => ({
                         ...prev!,
-                        packaging_treatment_id: parseInt(e.target.value, 10),
-                      }))
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    required
-                  >
-                    <option value="">Select</option>
-                    {packagingTreatments.map((treatment) => (
-                      <option key={treatment.id} value={treatment.id}>
-                        {treatment.name}
-                      </option>
-                    ))}
-                  </select>
+                        packaging_treatment_id: newValue?.value || 0,
+                      }));
+                    }}
+                    placeholder="Select Packaging Treatment"
+                    isSearchable
+                    isClearable
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                 </div>
                 <div className="mb-4">
                   <label
@@ -1139,25 +1293,42 @@ const PackagingSolutions: React.FC = () => {
                   >
                     Packing Type
                   </label>
-                  <select
+                  <Select
+                    styles={customStyle}
                     id="packingType"
-                    value={formPackagingSolutions?.packing_type_id || ""}
-                    onChange={(e) =>
+                    options={packingTypes.map((type) => ({
+                      value: type.id,
+                      label: type.name,
+                    }))}
+                    value={
+                      formPackagingSolutions?.packing_type_id
+                        ? {
+                            label: packingTypes.find(
+                              (type) =>
+                                type.id ===
+                                formPackagingSolutions.packing_type_id
+                            )?.name,
+                            value: formPackagingSolutions.packing_type_id,
+                          }
+                        : undefined
+                    }
+                    onChange={(
+                      newValue: SingleValue<{
+                        label: string | undefined;
+                        value: number;
+                      }>
+                    ) => {
                       setFormPackagingSolutions((prev) => ({
                         ...prev!,
-                        packing_type_id: parseInt(e.target.value, 10),
-                      }))
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    required
-                  >
-                    <option value="">Select</option>
-                    {packingTypes.map((type) => (
-                      <option key={type.id} value={type.id}>
-                        {type.name}
-                      </option>
-                    ))}
-                  </select>
+                        packing_type_id: newValue?.value || 0,
+                      }));
+                    }}
+                    placeholder="Select Packing Type"
+                    isSearchable
+                    isClearable
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                 </div>
                 <div className="mb-4">
                   <label
@@ -1166,25 +1337,42 @@ const PackagingSolutions: React.FC = () => {
                   >
                     Packaging Machine
                   </label>
-                  <select
+                  <Select
+                    styles={customStyle}
                     id="packagingMachine"
-                    value={formPackagingSolutions?.packaging_machine_id || ""}
-                    onChange={(e) =>
+                    options={packagingMachines.map((machine) => ({
+                      value: machine.id,
+                      label: machine.name,
+                    }))}
+                    value={
+                      formPackagingSolutions?.packaging_machine_id
+                        ? {
+                            label: packagingMachines.find(
+                              (machine) =>
+                                machine.id ===
+                                formPackagingSolutions.packaging_machine_id
+                            )?.name,
+                            value: formPackagingSolutions.packaging_machine_id,
+                          }
+                        : undefined
+                    }
+                    onChange={(
+                      newValue: SingleValue<{
+                        label: string | undefined;
+                        value: number;
+                      }>
+                    ) => {
                       setFormPackagingSolutions((prev) => ({
                         ...prev!,
-                        packaging_machine_id: parseInt(e.target.value, 10),
-                      }))
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    required
-                  >
-                    <option value="">Select</option>
-                    {packagingMachines.map((machine) => (
-                      <option key={machine.id} value={machine.id}>
-                        {machine.name}
-                      </option>
-                    ))}
-                  </select>
+                        packaging_machine_id: newValue?.value || 0,
+                      }));
+                    }}
+                    placeholder="Select Packaging Machine"
+                    isSearchable
+                    isClearable
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                 </div>
                 <div className="mb-4">
                   <label
@@ -1193,25 +1381,42 @@ const PackagingSolutions: React.FC = () => {
                   >
                     Packaging Material
                   </label>
-                  <select
+                  <Select
+                    styles={customStyle}
                     id="packagingMaterial"
-                    value={formPackagingSolutions?.packaging_material_id || ""}
-                    onChange={(e) =>
+                    options={packagingMaterials.map((material) => ({
+                      value: material.id,
+                      label: material.material_name,
+                    }))}
+                    value={
+                      formPackagingSolutions?.packaging_material_id
+                        ? {
+                            label: packagingMaterials.find(
+                              (material) =>
+                                material.id ===
+                                formPackagingSolutions.packaging_material_id
+                            )?.material_name,
+                            value: formPackagingSolutions.packaging_material_id,
+                          }
+                        : undefined
+                    }
+                    onChange={(
+                      newValue: SingleValue<{
+                        label: string | undefined;
+                        value: number;
+                      }>
+                    ) => {
                       setFormPackagingSolutions((prev) => ({
                         ...prev!,
-                        packaging_material_id: parseInt(e.target.value, 10),
-                      }))
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    required
-                  >
-                    <option value="">Select</option>
-                    {packagingMaterials.map((material) => (
-                      <option key={material.id} value={material.id}>
-                        {material.material_name}
-                      </option>
-                    ))}
-                  </select>
+                        packaging_material_id: newValue?.value || 0,
+                      }));
+                    }}
+                    placeholder="Select Packaging Material"
+                    isSearchable
+                    isClearable
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                 </div>
                 <div className="mb-4">
                   <label
@@ -1317,30 +1522,43 @@ const PackagingSolutions: React.FC = () => {
                   >
                     Minimum Order Quantity Unit
                   </label>
-                  <select
+                  <Select
+                    styles={customStyle}
                     id="minOrderQuantityUnit"
+                    options={measurementUnits.map((unit) => ({
+                      value: unit.id,
+                      label: unit.name,
+                    }))}
                     value={
-                      formPackagingSolutions?.min_order_quantity_unit_id || ""
+                      formPackagingSolutions?.min_order_quantity_unit_id
+                        ? {
+                            label: measurementUnits.find(
+                              (unit) =>
+                                unit.id ===
+                                formPackagingSolutions.min_order_quantity_unit_id
+                            )?.name,
+                            value:
+                              formPackagingSolutions.min_order_quantity_unit_id,
+                          }
+                        : undefined
                     }
-                    onChange={(e) =>
+                    onChange={(
+                      newValue: SingleValue<{
+                        label: string | undefined;
+                        value: number;
+                      }>
+                    ) => {
                       setFormPackagingSolutions((prev) => ({
                         ...prev!,
-                        min_order_quantity_unit_id: parseInt(
-                          e.target.value,
-                          10
-                        ),
-                      }))
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    required
-                  >
-                    <option value="">Select</option>
-                    {measurementUnits.map((unit) => (
-                      <option key={unit.id} value={unit.id}>
-                        {unit.name}
-                      </option>
-                    ))}
-                  </select>
+                        min_order_quantity_unit_id: newValue?.value || 0,
+                      }));
+                    }}
+                    placeholder="Select Minimum Order Quantity Unit"
+                    isSearchable
+                    isClearable
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                 </div>
               </div>
             )}

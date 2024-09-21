@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Select, Spinner, TextInput } from "flowbite-react";
+import { Badge, Spinner, TextInput } from "flowbite-react";
 import { TbEdit, TbFilter, TbFilterOff } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
@@ -15,6 +15,8 @@ import { useUser } from "../../context/userContext";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import { AiOutlineSearch } from "react-icons/ai";
 import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
+import Select, { SingleValue } from "react-select";
+import { customStyle } from "../../../utils/CustomSelectTheme";
 
 interface Product {
   id: number;
@@ -415,77 +417,153 @@ const Product: React.FC = () => {
       {filterOpen && (
         <div className="grid grid-cols-4 gap-4 flex-wrap mb-6">
           <Select
+            styles={customStyle}
             id="category"
-            value={filter.categoryId}
-            onChange={(e) =>
-              setFilter({ ...filter, categoryId: e.target.value })
+            options={categories.map((category) => ({
+              value: category.id,
+              label: category.name,
+            }))}
+            value={
+              filter.categoryId
+                ? {
+                    label: categories.find(
+                      (category) => category.id === Number(filter.categoryId)
+                    )?.name,
+                    value: Number(filter.categoryId),
+                  }
+                : undefined
             }
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          >
-            <option value="">Select Category</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </Select>
-          <Select
-            id="subCategoryName"
-            value={filter.subCategoryId}
-            onChange={(e) =>
-              setFilter({ ...filter, subCategoryId: e.target.value })
-            }
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          >
-            <option value="">Select Sub Category</option>
-            {filter.categoryId &&
-              subCategories
-                .filter(
-                  (subCategory) =>
-                    subCategory.category_id === Number(filter.categoryId)
-                )
-                .map((subCategory) => (
-                  <option key={subCategory.id} value={subCategory.id}>
-                    {subCategory.name}
-                  </option>
-                ))}
-          </Select>
-          <Select
-            id="productFormName"
-            value={filter.productFormId}
-            onChange={(e) =>
-              setFilter({ ...filter, productFormId: e.target.value })
-            }
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          >
-            <option value="">Select Product Form</option>
-            {productForms.map((productForm) => (
-              <option key={productForm.id} value={productForm.id}>
-                {productForm.name}
-              </option>
-            ))}
-          </Select>
-          <Select
-            id="packagingTreatmentName"
-            value={filter.packagingTreatmentId}
-            onChange={(e) =>
+            onChange={(
+              newValue: SingleValue<{
+                label: string | undefined;
+                value: number;
+              }>
+            ) => {
               setFilter({
                 ...filter,
-                packagingTreatmentId: e.target.value,
-              })
+                categoryId: newValue?.value?.toString() || "",
+              });
+            }}
+            placeholder="Select Category"
+            isSearchable
+            isClearable
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
+          <Select
+            styles={customStyle}
+            id="subCategoryName"
+            options={subCategories
+              .filter(
+                (subCategory) =>
+                  subCategory.category_id === Number(filter.categoryId)
+              )
+              .map((subCategory) => ({
+                value: subCategory.id,
+                label: subCategory.name,
+              }))}
+            value={
+              filter.subCategoryId
+                ? {
+                    label: subCategories.find(
+                      (subCategory) =>
+                        subCategory.id === Number(filter.subCategoryId)
+                    )?.name,
+                    value: Number(filter.subCategoryId),
+                  }
+                : undefined
             }
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          >
-            <option value="">Select Packaging Treatment</option>
-            {packagingTreatments.map((packagingTreatment) => (
-              <option key={packagingTreatment.id} value={packagingTreatment.id}>
-                {packagingTreatment.name}
-              </option>
-            ))}
-          </Select>
+            onChange={(
+              newValue: SingleValue<{
+                label: string | undefined;
+                value: number;
+              }>
+            ) => {
+              setFilter({
+                ...filter,
+                subCategoryId: newValue?.value?.toString() || "",
+              });
+            }}
+            placeholder="Select Sub Category"
+            isSearchable
+            isClearable
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
+          <Select
+            styles={customStyle}
+            id="productFormName"
+            options={productForms.map((productForm) => ({
+              value: productForm.id,
+              label: productForm.name,
+            }))}
+            value={
+              filter.productFormId
+                ? {
+                    label: productForms.find(
+                      (productForm) =>
+                        productForm.id === Number(filter.productFormId)
+                    )?.name,
+                    value: Number(filter.productFormId),
+                  }
+                : undefined
+            }
+            onChange={(
+              newValue: SingleValue<{
+                label: string | undefined;
+                value: number;
+              }>
+            ) => {
+              setFilter({
+                ...filter,
+                productFormId: newValue?.value?.toString() || "",
+              });
+            }}
+            placeholder="Select Product Form"
+            isSearchable
+            isClearable
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
+          <Select
+            styles={customStyle}
+            id="packagingTreatmentName"
+            options={packagingTreatments.map((packagingTreatment) => ({
+              value: packagingTreatment.id,
+              label: packagingTreatment.name,
+            }))}
+            value={
+              filter.packagingTreatmentId
+                ? {
+                    label: packagingTreatments.find(
+                      (packagingTreatment) =>
+                        packagingTreatment.id ===
+                        Number(filter.packagingTreatmentId)
+                    )?.name,
+                    value: Number(filter.packagingTreatmentId),
+                  }
+                : undefined
+            }
+            onChange={(
+              newValue: SingleValue<{
+                label: string | undefined;
+                value: number;
+              }>
+            ) => {
+              setFilter({
+                ...filter,
+                packagingTreatmentId: newValue?.value?.toString() || "",
+              });
+            }}
+            placeholder="Select Packaging Treatment"
+            isSearchable
+            isClearable
+            className="react-select-container"
+            classNamePrefix="react-select"
+          />
           <TextInput
+            className="customInput"
             type="text"
-            className=""
             placeholder="Search Product Name.."
             value={filter.productName}
             onChange={(e) =>
@@ -724,22 +802,38 @@ const Product: React.FC = () => {
               >
                 Category
               </label>
-              <select
+              <Select
+                styles={customStyle}
                 id="category"
-                value={selectedCategoryId ?? ""}
-                onChange={(e) => setSelectedCategoryId(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                required
-              >
-                <option value="" disabled>
-                  Select a category
-                </option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+                options={categories.map((category) => ({
+                  value: category.id,
+                  label: category.name,
+                }))}
+                value={
+                  selectedCategoryId
+                    ? {
+                        label: categories.find(
+                          (category) =>
+                            category.id === Number(selectedCategoryId)
+                        )?.name,
+                        value: Number(selectedCategoryId),
+                      }
+                    : undefined
+                }
+                onChange={(
+                  newValue: SingleValue<{
+                    label: string | undefined;
+                    value: number;
+                  }>
+                ) => {
+                  setSelectedCategoryId(newValue?.value?.toString() || "");
+                }}
+                placeholder="Select Category"
+                isSearchable
+                isClearable
+                className="react-select-container"
+                classNamePrefix="react-select"
+              />
             </div>
 
             <div className="mb-4">
@@ -749,22 +843,38 @@ const Product: React.FC = () => {
               >
                 Sub-Category
               </label>
-              <select
+              <Select
+                styles={customStyle}
                 id="subCategory"
-                value={selectedSubCategoryId ?? ""}
-                onChange={(e) => setSelectedSubCategoryId(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                required
-              >
-                <option value="" disabled>
-                  Select a sub-category
-                </option>
-                {filteredSubCategories.map((subCategory) => (
-                  <option key={subCategory.id} value={subCategory.id}>
-                    {subCategory.name}
-                  </option>
-                ))}
-              </select>
+                options={filteredSubCategories.map((subCategory) => ({
+                  value: subCategory.id,
+                  label: subCategory.name,
+                }))}
+                value={
+                  selectedSubCategoryId
+                    ? {
+                        label: filteredSubCategories.find(
+                          (subCategory) =>
+                            subCategory.id === Number(selectedSubCategoryId)
+                        )?.name,
+                        value: Number(selectedSubCategoryId),
+                      }
+                    : undefined
+                }
+                onChange={(
+                  newValue: SingleValue<{
+                    label: string | undefined;
+                    value: number;
+                  }>
+                ) => {
+                  setSelectedSubCategoryId(newValue?.value?.toString() || "");
+                }}
+                placeholder="Select Sub-Category"
+                isSearchable
+                isClearable
+                className="react-select-container"
+                classNamePrefix="react-select"
+              />
             </div>
 
             <div className="mb-4">
@@ -774,22 +884,38 @@ const Product: React.FC = () => {
               >
                 Product Form
               </label>
-              <select
+              <Select
+                styles={customStyle}
                 id="productForm"
-                value={selectedProductFormId ?? ""}
-                onChange={(e) => setSelectedProductFormId(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                required
-              >
-                <option value="" disabled>
-                  Select a product form
-                </option>
-                {productForms.map((productForm) => (
-                  <option key={productForm.id} value={productForm.id}>
-                    {productForm.name}
-                  </option>
-                ))}
-              </select>
+                options={productForms.map((productForm) => ({
+                  value: productForm.id,
+                  label: productForm.name,
+                }))}
+                value={
+                  selectedProductFormId
+                    ? {
+                        label: productForms.find(
+                          (productForm) =>
+                            productForm.id === Number(selectedProductFormId)
+                        )?.name,
+                        value: Number(selectedProductFormId),
+                      }
+                    : undefined
+                }
+                onChange={(
+                  newValue: SingleValue<{
+                    label: string | undefined;
+                    value: number;
+                  }>
+                ) => {
+                  setSelectedProductFormId(newValue?.value?.toString() || "");
+                }}
+                placeholder="Select Product Form"
+                isSearchable
+                isClearable
+                className="react-select-container"
+                classNamePrefix="react-select"
+              />
             </div>
 
             <div className="mb-4">
@@ -799,24 +925,41 @@ const Product: React.FC = () => {
               >
                 Packaging Treatment
               </label>
-              <select
+              <Select
+                styles={customStyle}
                 id="packagingTreatment"
-                value={selectedPackagingTreatmentId ?? ""}
-                onChange={(e) =>
-                  setSelectedPackagingTreatmentId(e.target.value)
+                options={packagingTreatments.map((treatment) => ({
+                  value: treatment.id,
+                  label: treatment.name,
+                }))}
+                value={
+                  selectedPackagingTreatmentId
+                    ? {
+                        label: packagingTreatments.find(
+                          (treatment) =>
+                            treatment.id ===
+                            Number(selectedPackagingTreatmentId)
+                        )?.name,
+                        value: Number(selectedPackagingTreatmentId),
+                      }
+                    : undefined
                 }
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                required
-              >
-                <option value="" disabled>
-                  Select a packaging treatment
-                </option>
-                {packagingTreatments.map((treatment) => (
-                  <option key={treatment.id} value={treatment.id}>
-                    {treatment.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(
+                  newValue: SingleValue<{
+                    label: string | undefined;
+                    value: number;
+                  }>
+                ) => {
+                  setSelectedPackagingTreatmentId(
+                    newValue?.value?.toString() || ""
+                  );
+                }}
+                placeholder="Select Packaging Treatment"
+                isSearchable
+                isClearable
+                className="react-select-container"
+                classNamePrefix="react-select"
+              />
             </div>
 
             <div className="mb-4">
@@ -826,22 +969,40 @@ const Product: React.FC = () => {
               >
                 Measurement Unit
               </label>
-              <select
+              <Select
+                styles={customStyle}
                 id="measurementUnit"
-                value={selectedMeasurementUnitId ?? ""}
-                onChange={(e) => setSelectedMeasurementUnitId(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                required
-              >
-                <option value="" disabled>
-                  Select a measurement unit
-                </option>
-                {measurementUnits.map((unit) => (
-                  <option key={unit.id} value={unit.id}>
-                    {unit.name}
-                  </option>
-                ))}
-              </select>
+                options={measurementUnits.map((unit) => ({
+                  value: unit.id,
+                  label: unit.name,
+                }))}
+                value={
+                  selectedMeasurementUnitId
+                    ? {
+                        label: measurementUnits.find(
+                          (unit) =>
+                            unit.id === Number(selectedMeasurementUnitId)
+                        )?.name,
+                        value: Number(selectedMeasurementUnitId),
+                      }
+                    : undefined
+                }
+                onChange={(
+                  newValue: SingleValue<{
+                    label: string | undefined;
+                    value: number;
+                  }>
+                ) => {
+                  setSelectedMeasurementUnitId(
+                    newValue?.value?.toString() || ""
+                  );
+                }}
+                placeholder="Select Measurement Unit"
+                isSearchable
+                isClearable
+                className="react-select-container"
+                classNamePrefix="react-select"
+              />
             </div>
             <div className="mb-4">
               <label

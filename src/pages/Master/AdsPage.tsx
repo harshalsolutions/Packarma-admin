@@ -558,6 +558,7 @@ const AdsPage: React.FC = () => {
                 Search Advertisement Title
               </label>
               <TextInput
+                className="customInput"
                 id="search"
                 type="text"
                 className="w-[25%]"

@@ -533,6 +533,7 @@ const BannerPage: React.FC = () => {
                 Search Banner Title
               </label>
               <TextInput
+                className="customInput"
                 id="search"
                 type="text"
                 className="w-[25%]"

@@ -12,6 +12,8 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { formatDateTime } from "../../../utils/DateFormatter";
 import Select from "react-select";
 import { customStyle } from "../../../utils/CustomSelectTheme";
+import { useLocation, useNavigate } from "react-router";
+import { IoArrowBackOutline } from "react-icons/io5";
 
 interface EnquiryForm {
   id: number;
@@ -44,6 +46,8 @@ interface EnquiryForm {
   subcategory_name: string;
   product_form_name: string;
   packaging_treatment_name: string;
+  subcategory_id: number;
+  weight_by_user: string;
 }
 
 interface Pagination {
@@ -80,6 +84,9 @@ const CustomerEnquiry: React.FC = () => {
     fromDate: undefined,
     toDate: undefined,
   });
+  const navigate = useNavigate();
+  const location = useLocation();
+  const search = location.search.replace("?user_id=", "");
 
   useEffect(() => {
     fetchAllData();
@@ -121,6 +128,9 @@ const CustomerEnquiry: React.FC = () => {
       let filterParam: any = {};
       if (type !== "nofilter") {
         filterParam = filterParams;
+      }
+      if (search) {
+        filterParam.userId = search;
       }
       const response = await api.get(`${BACKEND_API_KEY}/customer/enquiries`, {
         params: {
@@ -172,27 +182,39 @@ const CustomerEnquiry: React.FC = () => {
           entriesPerPage={entriesPerPage}
           setEntriesPerPage={setEntriesPerPage}
         />
-        <div className="flex">
-          <button
-            className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
-            onClick={() => {
-              setFilterOpen(!filterOpen);
-              fetchEnquiryData("nofilter");
-              setFilterParams({
-                userId: undefined,
-                userName: undefined,
-                status: undefined,
-                productName: undefined,
-                category: undefined,
-                subCategory: undefined,
-                fromDate: undefined,
-                toDate: undefined,
-              });
-            }}
-          >
-            {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
-          </button>
-        </div>
+        {!search && (
+          <div className="flex">
+            <button
+              className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+              onClick={() => {
+                setFilterOpen(!filterOpen);
+                fetchEnquiryData("nofilter");
+                setFilterParams({
+                  userId: undefined,
+                  userName: undefined,
+                  status: undefined,
+                  productName: undefined,
+                  category: undefined,
+                  subCategory: undefined,
+                  fromDate: undefined,
+                  toDate: undefined,
+                });
+              }}
+            >
+              {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
+            </button>
+          </div>
+        )}
+        {search && (
+          <div className="flex">
+            <button
+              className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+              onClick={() => navigate("/admin/customer-section/user-list")}
+            >
+              <IoArrowBackOutline />
+            </button>
+          </div>
+        )}
       </div>
 
       {filterOpen && (
@@ -346,7 +368,9 @@ const CustomerEnquiry: React.FC = () => {
                     <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                       {enquiry.firstname} {enquiry.lastname}
                     </td>
-                    <td className="px-6 py-4 text-gray-900">{enquiry.name}</td>
+                    <td className="px-6 py-4 text-gray-900">
+                      {enquiry.product_name}
+                    </td>
                     <td className="px-6 py-4 text-gray-900">
                       {formatDateTime(new Date(enquiry.search_time))}
                     </td>
@@ -415,38 +439,65 @@ const CustomerEnquiry: React.FC = () => {
         <DetailsPopup
           title="Enquiry Details"
           fields={[
-            { label: "ID", value: selectedEnquiry.id?.toString() },
             {
               label: "Username",
-              value: selectedEnquiry.firstname + " " + selectedEnquiry.lastname,
+              value:
+                selectedEnquiry?.firstname + " " + selectedEnquiry?.lastname,
             },
-            { label: "Product Name", value: selectedEnquiry.name },
+            {
+              label: "Weight By User",
+              value: selectedEnquiry.weight_by_user,
+            },
+            {
+              label: "Solution Name",
+              value: selectedEnquiry?.name,
+            },
+            {
+              label: "Product Name",
+              value: selectedEnquiry?.product_name,
+            },
             {
               label: "Category",
-              value: selectedEnquiry.category_name,
+              value: selectedEnquiry?.category_name,
             },
             {
               label: "Sub Category",
-              value: selectedEnquiry.subcategory_name,
+              value: selectedEnquiry?.subcategory_name,
             },
             {
               label: "Packing Type",
-              value: selectedEnquiry.packing_type_name,
+              value: selectedEnquiry?.packing_type_name,
             },
             {
-              label: "Shelf Life",
-              value: String(selectedEnquiry.display_shelf_life_days),
+              label: "Product Form",
+              value: selectedEnquiry?.product_form_name,
+            },
+            {
+              label: "Packaging Treatment",
+              value: selectedEnquiry?.packaging_treatment_name,
             },
             {
               label: "Product weight",
               value:
-                selectedEnquiry.product_min_weight +
+                selectedEnquiry?.product_min_weight +
                 " - " +
-                selectedEnquiry.product_max_weight,
+                selectedEnquiry?.product_max_weight,
+            },
+            {
+              label: "Shelf Life",
+              value: String(selectedEnquiry?.display_shelf_life_days),
+            },
+            {
+              label: "Min Order Quantity",
+              value: String(selectedEnquiry?.min_order_quantity),
+            },
+            {
+              label: "Status",
+              value: selectedEnquiry?.status,
             },
             {
               label: "Datetime",
-              value: formatDateTime(new Date(selectedEnquiry.search_time)),
+              value: formatDateTime(new Date(selectedEnquiry?.search_time)),
             },
           ]}
           onClose={() => setselectedEnquiry(null)}

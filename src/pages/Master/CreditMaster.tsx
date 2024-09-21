@@ -275,6 +275,7 @@ const CreditMaster: React.FC = () => {
             Search Price and Currency
           </label>
           <TextInput
+            className="customInput"
             id="search"
             type="text"
             className="w-[25%] mb-4"
@@ -450,6 +451,7 @@ const CreditMaster: React.FC = () => {
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Price</label>
             <TextInput
+              className="customInput"
               type="number"
               value={price}
               onChange={(e) =>
@@ -462,6 +464,7 @@ const CreditMaster: React.FC = () => {
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Percentage</label>
             <TextInput
+              className="customInput"
               type="number"
               value={percentage}
               onChange={(e) =>

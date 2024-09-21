@@ -146,6 +146,7 @@ const CreditPurchase: React.FC = () => {
               Search User Name
             </label>
             <TextInput
+              className="customInput"
               id="search"
               type="text"
               className="w-[25%]"

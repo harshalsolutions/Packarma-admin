@@ -268,6 +268,7 @@ const CategoryPage: React.FC = () => {
             Search Name Here..
           </label>
           <TextInput
+            className="customInput"
             id="search"
             type="text"
             className="w-[25%] mb-4"
