@@ -78,7 +78,7 @@ const CustomerEnquiry: React.FC = () => {
     userId: undefined,
     userName: undefined,
     status: undefined,
-    productName: undefined,
+    product: undefined,
     category: undefined,
     subCategory: undefined,
     fromDate: undefined,
@@ -193,7 +193,7 @@ const CustomerEnquiry: React.FC = () => {
                   userId: undefined,
                   userName: undefined,
                   status: undefined,
-                  productName: undefined,
+                  product: undefined,
                   category: undefined,
                   subCategory: undefined,
                   fromDate: undefined,
@@ -281,19 +281,19 @@ const CustomerEnquiry: React.FC = () => {
             />
             <Select
               styles={customStyle}
-              name="productName"
+              name="product"
               id="product"
               options={products.map((product) => ({
                 value: product.id,
                 label: product.product_name,
               }))}
               value={products.find(
-                (product) => product.product_name === filterParams.productName
+                (product) => product.product_name === filterParams.product
               )}
               onChange={(selectedOption) =>
                 setFilterParams((prevState) => ({
                   ...prevState,
-                  productName: selectedOption?.value,
+                  product: selectedOption?.value,
                 }))
               }
               placeholder="Select Product"
@@ -490,10 +490,6 @@ const CustomerEnquiry: React.FC = () => {
             {
               label: "Min Order Quantity",
               value: String(selectedEnquiry?.min_order_quantity),
-            },
-            {
-              label: "Status",
-              value: selectedEnquiry?.status,
             },
             {
               label: "Datetime",
