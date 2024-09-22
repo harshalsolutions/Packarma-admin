@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
 import { Spinner } from "flowbite-react";
 import { MdOutlineRemoveRedEye, MdPictureAsPdf } from "react-icons/md";
-import { BACKEND_API_KEY } from "../../../utils/ApiKey";
+import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
@@ -10,22 +10,56 @@ import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import { formatDateTime } from "../../../utils/DateFormatter";
 
-interface CustomerForm {
+interface User {
   user_id: number;
   firstname: string;
   lastname: string;
-  subscription_id: number;
-  subscription_name: string;
+  email: string;
+}
+
+interface Address {
+  address_name: string;
+  address: string;
+  state: string;
+  city: string;
+  pincode: string;
+  phone_number: string;
+}
+
+interface ProductDetails {
+  product_description: string;
+  amount: string;
+  discount: string;
+  taxable_value: string;
+  cgst_rate: string;
+  cgst_amount: string;
+  sgst_rate: string;
+  sgst_amount: string;
+  igst_rate: string;
+  igst_amount: string;
+  total_amount: string;
+}
+
+interface Subscription {
+  type: string;
+  credit_amount: number;
+  duration: number;
+  benefits: string;
+}
+
+interface CustomerForm {
+  id: number;
+  user: User;
+  address: Address;
+  customer_name: string;
+  customer_gstno: string;
   total_price: string;
   currency: string;
   invoice_link: string;
-  invoice_date: string;
-  createdAt: string;
-  updatedAt: string;
-  email: string;
-  start_date: string;
-  end_date: string;
   transaction_id: string;
+  invoice_date: string;
+  product_details: ProductDetails;
+  subscription: Subscription;
 }
 
 interface Pagination {
@@ -71,7 +105,7 @@ const Customer: React.FC = () => {
           },
         }
       );
-      setCustomerForm(response.data.data.subscriptions || []);
+      setCustomerForm(response.data.data.invoices || []);
       if (response.data.data.pagination) {
         setPagination(response.data.data.pagination);
       }
@@ -175,17 +209,17 @@ const Customer: React.FC = () => {
                 {customerForm.length > 0 ? (
                   customerForm.map((customerForm) => (
                     <tr
-                      key={customerForm.user_id}
+                      key={customerForm.id}
                       className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                     >
                       <td className="px-6 py-4 text-gray-900">
-                        {customerForm.user_id}
+                        {customerForm.id}
                       </td>
                       <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {customerForm.firstname} {customerForm.lastname}
+                        {customerForm.customer_name}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {customerForm.subscription_name}
+                        {customerForm.subscription.type}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
                         {customerForm.currency}
@@ -194,14 +228,18 @@ const Customer: React.FC = () => {
                         {customerForm.total_price}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {formatDateTime(new Date(customerForm.start_date))}
+                        {formatDateTime(new Date(customerForm.invoice_date))}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {formatDateTime(new Date(customerForm.end_date))}{" "}
+                        {formatDateTime(new Date(customerForm.invoice_date))}{" "}
                       </td>
                       <td className="px-6 py-4 text-gray-900 flex">
                         <button
-                          onClick={() => window.open(customerForm.invoice_link)}
+                          onClick={() =>
+                            window.open(
+                              BACKEND_MEDIA_LINK + customerForm.invoice_link
+                            )
+                          }
                           className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
                           aria-label="Info"
                         >
@@ -272,36 +310,47 @@ const Customer: React.FC = () => {
         <DetailsPopup
           title="User Subscription Details"
           fields={[
-            { label: "ID", value: selectedCustomer.user_id?.toString() },
+            { label: "ID", value: selectedCustomer.id?.toString() },
             {
               label: "Name",
-              value: `${selectedCustomer.firstname} ${selectedCustomer.lastname}`,
-            },
-            { label: "Email", value: selectedCustomer.email },
-            {
-              label: "Subscription ID",
-              value: selectedCustomer.subscription_id?.toString(),
+              value:
+                selectedCustomer.user.firstname +
+                " " +
+                selectedCustomer.user.lastname,
             },
             {
-              label: "Subscription Name",
-              value: selectedCustomer.subscription_name,
+              label: "Email",
+              value: selectedCustomer.user.email,
             },
             {
-              label: "Start Date",
-              value: formatDateTime(new Date(selectedCustomer.start_date)),
+              label: "User ID",
+              value: selectedCustomer.user.user_id?.toString(),
             },
             {
-              label: "End Date",
-              value: formatDateTime(new Date(selectedCustomer.end_date)),
+              label: "Customer Name",
+              value: selectedCustomer.customer_name,
             },
-            { label: "Total Price", value: selectedCustomer.total_price },
-            { label: "Currency", value: selectedCustomer.currency },
-            { label: "Transaction ID", value: selectedCustomer.transaction_id },
+            {
+              label: "Customer GST No",
+              value: selectedCustomer.customer_gstno,
+            },
+            {
+              label: "Total Price",
+              value: selectedCustomer.total_price,
+            },
+            {
+              label: "Currency",
+              value: selectedCustomer.currency,
+            },
+            {
+              label: "Invoice Date",
+              value: formatDateTime(new Date(selectedCustomer.invoice_date)),
+            },
             {
               label: "Invoice Link",
               value: (
                 <a
-                  href={selectedCustomer.invoice_link}
+                  href={BACKEND_MEDIA_LINK + selectedCustomer.invoice_link}
                   target="_blank"
                   className="underline text-blue-500"
                 >
@@ -310,16 +359,78 @@ const Customer: React.FC = () => {
               ),
             },
             {
-              label: "Invoice Date",
-              value: formatDateTime(new Date(selectedCustomer.invoice_date)),
+              label: "Transaction ID",
+              value: selectedCustomer.transaction_id,
             },
             {
-              label: "Created At",
-              value: formatDateTime(new Date(selectedCustomer.createdAt)),
+              label: "Product Description",
+              value: selectedCustomer.product_details.product_description,
             },
             {
-              label: "Updated At",
-              value: formatDateTime(new Date(selectedCustomer.updatedAt)),
+              label: "Amount",
+              value: selectedCustomer.product_details.amount,
+            },
+            {
+              label: "Discount",
+              value: selectedCustomer.product_details.discount,
+            },
+            {
+              label: "Taxable Value",
+              value: selectedCustomer.product_details.taxable_value,
+            },
+            {
+              label: "CGST",
+              value: `${
+                Number(selectedCustomer.product_details.cgst_rate) * 100
+              }% (${selectedCustomer.product_details.cgst_amount})`,
+            },
+            {
+              label: "SGST",
+              value: `${
+                Number(selectedCustomer.product_details.sgst_rate) * 100
+              }% (${selectedCustomer.product_details.sgst_amount})`,
+            },
+            {
+              label: "IGST",
+              value: `${
+                Number(selectedCustomer.product_details.igst_rate) * 100
+              }% (${selectedCustomer.product_details.igst_amount})`,
+            },
+            {
+              label: "Before Discount Amount",
+              value: selectedCustomer.product_details.total_amount,
+            },
+            {
+              label: "Subscription Type",
+              value: selectedCustomer.subscription.type,
+            },
+            {
+              label: "Subscription Duration",
+              value: selectedCustomer.subscription.duration.toString(),
+            },
+            {
+              label: "Address Name",
+              value: selectedCustomer.address.address_name,
+            },
+            {
+              label: "Address",
+              value: selectedCustomer.address.address,
+            },
+            {
+              label: "State",
+              value: selectedCustomer.address.state,
+            },
+            {
+              label: "City",
+              value: selectedCustomer.address.city,
+            },
+            {
+              label: "Pincode",
+              value: selectedCustomer.address.pincode,
+            },
+            {
+              label: "Phone Number",
+              value: selectedCustomer.address.phone_number,
             },
           ]}
           onClose={() => setSelectedCustomer(null)}

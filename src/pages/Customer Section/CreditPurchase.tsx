@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
 import { Spinner, TextInput } from "flowbite-react";
-import { MdOutlineRemoveRedEye } from "react-icons/md";
-import { BACKEND_API_KEY } from "../../../utils/ApiKey";
+import { MdOutlineRemoveRedEye, MdPictureAsPdf } from "react-icons/md";
+import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
@@ -11,20 +11,51 @@ import CustomPopup from "../../components/CustomPopup";
 import { formatDateTime } from "../../../utils/DateFormatter";
 import { TbFilter, TbFilterOff } from "react-icons/tb";
 
-interface CreditPurchaseForm {
-  id: number;
+interface User {
   user_id: number;
-  number_of_credits: number;
-  total_price: string;
-  invoice_link: string;
-  invoice_date: string;
-  createdAt: string;
-  updatedAt: string;
-  currency: string;
   firstname: string;
   lastname: string;
   email: string;
+}
+
+interface Address {
+  address_name: string;
+  address: string;
+  state: string;
+  city: string;
+  pincode: string;
+  phone_number: string;
+}
+
+interface ProductDetails {
+  product_description: string;
+  amount: string;
+  discount: string;
+  taxable_value: string;
+  cgst_rate: string;
+  cgst_amount: string;
+  sgst_rate: string;
+  sgst_amount: string;
+  igst_rate: string;
+  igst_amount: string;
+  total_amount: string;
+}
+
+interface CreditPurchaseForm {
+  id: number;
+  user: User;
+  address: Address;
+  no_of_credits: number;
+  customer_name: string;
+  customer_gstno: string;
+  total_price: string;
+  currency: string;
+  invoice_link: string;
   transaction_id: string;
+  invoice_date: string;
+  product_details: ProductDetails;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Pagination {
@@ -170,12 +201,11 @@ const CreditPurchase: React.FC = () => {
                     ID
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    User Name
+                    Billing Name
                   </th>
                   <th scope="col" className="px-6 py-3">
-                    Email
+                    User Name
                   </th>
-
                   <th scope="col" className="px-6 py-3">
                     Credits
                   </th>
@@ -204,13 +234,14 @@ const CreditPurchase: React.FC = () => {
                         {creditPurchase.id}
                       </td>
                       <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {creditPurchase.firstname} {creditPurchase.lastname}
+                        {creditPurchase.customer_name}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {creditPurchase.email}
+                        {creditPurchase.user.firstname}{" "}
+                        {creditPurchase.user.lastname}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {creditPurchase.number_of_credits}
+                        {creditPurchase.no_of_credits}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
                         {creditPurchase.currency}
@@ -222,6 +253,17 @@ const CreditPurchase: React.FC = () => {
                         {formatDateTime(new Date(creditPurchase.invoice_date))}
                       </td>
                       <td className="px-6 py-4 text-gray-900 flex">
+                        <button
+                          onClick={() =>
+                            window.open(
+                              BACKEND_MEDIA_LINK + creditPurchase.invoice_link
+                            )
+                          }
+                          className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                          aria-label="Info"
+                        >
+                          <MdPictureAsPdf />
+                        </button>
                         <button
                           onClick={() =>
                             setSelectedCreditPurchase(creditPurchase)
@@ -293,29 +335,37 @@ const CreditPurchase: React.FC = () => {
             {
               label: "Name",
               value:
-                selectedCreditPurchase.firstname +
+                selectedCreditPurchase.user.firstname +
                 " " +
-                selectedCreditPurchase.lastname,
+                selectedCreditPurchase.user.lastname,
             },
             {
               label: "Email",
-              value: selectedCreditPurchase.email,
+              value: selectedCreditPurchase.user.email,
             },
             {
               label: "User ID",
-              value: selectedCreditPurchase.user_id?.toString(),
+              value: selectedCreditPurchase.user.user_id?.toString(),
             },
             {
               label: "Number of Credits",
-              value: selectedCreditPurchase.number_of_credits.toString(),
+              value: selectedCreditPurchase.no_of_credits.toString(),
+            },
+            {
+              label: "Customer Name",
+              value: selectedCreditPurchase.customer_name,
+            },
+            {
+              label: "Customer GST No",
+              value: selectedCreditPurchase.customer_gstno,
+            },
+            {
+              label: "Total Price",
+              value: selectedCreditPurchase.total_price,
             },
             {
               label: "Currency",
               value: selectedCreditPurchase.currency,
-            },
-            {
-              label: "Total",
-              value: selectedCreditPurchase.total_price,
             },
             {
               label: "Invoice Date",
@@ -327,7 +377,9 @@ const CreditPurchase: React.FC = () => {
               label: "Invoice Link",
               value: (
                 <a
-                  href={selectedCreditPurchase.invoice_link}
+                  href={
+                    BACKEND_MEDIA_LINK + selectedCreditPurchase.invoice_link
+                  }
                   target="_blank"
                   className="underline text-blue-500"
                 >
@@ -340,12 +392,66 @@ const CreditPurchase: React.FC = () => {
               value: selectedCreditPurchase.transaction_id,
             },
             {
-              label: "Created At",
-              value: formatDateTime(new Date(selectedCreditPurchase.createdAt)),
+              label: "Product Description",
+              value: selectedCreditPurchase.product_details.product_description,
             },
             {
-              label: "Updated At",
-              value: formatDateTime(new Date(selectedCreditPurchase.updatedAt)),
+              label: "Amount",
+              value: selectedCreditPurchase.product_details.amount,
+            },
+            {
+              label: "Discount",
+              value: selectedCreditPurchase.product_details.discount,
+            },
+            {
+              label: "Taxable Value",
+              value: selectedCreditPurchase.product_details.taxable_value,
+            },
+            {
+              label: "CGST",
+              value: `${
+                Number(selectedCreditPurchase.product_details.cgst_rate) * 100
+              }% (${selectedCreditPurchase.product_details.cgst_amount})`,
+            },
+            {
+              label: "SGST",
+              value: `${
+                Number(selectedCreditPurchase.product_details.sgst_rate) * 100
+              }% (${selectedCreditPurchase.product_details.sgst_amount})`,
+            },
+            {
+              label: "IGST",
+              value: `${
+                Number(selectedCreditPurchase.product_details.igst_rate) * 100
+              }% (${selectedCreditPurchase.product_details.igst_amount})`,
+            },
+            {
+              label: "Before Discount Amount",
+              value: selectedCreditPurchase.product_details.total_amount,
+            },
+            {
+              label: "Address Name",
+              value: selectedCreditPurchase.address.address_name,
+            },
+            {
+              label: "Address",
+              value: selectedCreditPurchase.address.address,
+            },
+            {
+              label: "State",
+              value: selectedCreditPurchase.address.state,
+            },
+            {
+              label: "City",
+              value: selectedCreditPurchase.address.city,
+            },
+            {
+              label: "Pincode",
+              value: selectedCreditPurchase.address.pincode,
+            },
+            {
+              label: "Phone Number",
+              value: selectedCreditPurchase.address.phone_number,
             },
           ]}
           onClose={() => setSelectedCreditPurchase(null)}
