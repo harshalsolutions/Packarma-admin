@@ -20,7 +20,7 @@ import { useUser } from "../../context/userContext";
 import toast from "react-hot-toast";
 import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
 import { formatDateTime } from "../../../utils/DateFormatter";
-import { TbFilter, TbFilterOff } from "react-icons/tb";
+import { TbEdit, TbFilter, TbFilterOff } from "react-icons/tb";
 import { customStyle } from "../../../utils/CustomSelectTheme";
 import Select from "react-select";
 import { useNavigate } from "react-router";
@@ -83,7 +83,32 @@ const Customer: React.FC = () => {
   const [isAddCreditPopupOpen, setIsAddCreditPopupOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
-
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState<{
+    user_id: number;
+    firstname: string;
+    lastname: string;
+    email: string;
+    email_domain: string;
+    password: string;
+    gst_number: string;
+    gst_document_link: string;
+    phone_number: string;
+    country_code: string;
+    credits: number;
+  }>({
+    user_id: 0,
+    firstname: "",
+    lastname: "",
+    email: "",
+    email_domain: "",
+    password: "",
+    gst_number: "",
+    gst_document_link: "",
+    phone_number: "",
+    country_code: "",
+    credits: 0,
+  });
   const [filter, setFilter] = useState<FilterType>({
     name: "",
     phone_number: "",
@@ -197,44 +222,67 @@ const Customer: React.FC = () => {
     }
   };
 
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const response = await api.post(
+        `${BACKEND_API_KEY}/customer/users/update/${editingCustomer?.user_id}`,
+        {
+          ...editingCustomer,
+        }
+      );
+      if (response.status === 200) {
+        toast.success("Customer updated successfully");
+        setIsFormOpen(false);
+        fetchCustomerForm();
+      } else {
+        toast.error("Failed to update customer");
+      }
+    } catch (err) {
+      toast.error("Failed to update customer");
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto mt-8 px-4">
       <h1 className="text-2xl font-bold mb-4 border-l-8 text-black border-lime-500 pl-2">
         Manage Customer
       </h1>
-      <div className="flex justify-between items-center w-full my-6">
-        <EntriesPerPage
-          entriesPerPage={entriesPerPage}
-          setEntriesPerPage={setEntriesPerPage}
-        />
-        <div className="flex justify-end items-center">
-          {exportPermission && (
+      {!isFormOpen && (
+        <div className="flex justify-between items-center w-full my-6">
+          <EntriesPerPage
+            entriesPerPage={entriesPerPage}
+            setEntriesPerPage={setEntriesPerPage}
+          />
+          <div className="flex justify-end items-center">
+            {exportPermission && (
+              <button
+                className="bg-green-500 text-white px-3 py-2 rounded block mr-4"
+                onClick={downloadExcelController}
+              >
+                <FaRegFileExcel size={22} />
+              </button>
+            )}
             <button
-              className="bg-green-500 text-white px-3 py-2 rounded block mr-4"
-              onClick={downloadExcelController}
+              className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
+              onClick={() => {
+                setFilterOpen(!filterOpen);
+                setFilter({
+                  ...filter,
+                  email: "",
+                  phone_number: "",
+                  name: "",
+                  active_subscription: undefined,
+                  user_type: undefined,
+                });
+                fetchCustomerForm("nofilter");
+              }}
             >
-              <FaRegFileExcel size={22} />
+              {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
             </button>
-          )}
-          <button
-            className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
-            onClick={() => {
-              setFilterOpen(!filterOpen);
-              setFilter({
-                ...filter,
-                email: "",
-                phone_number: "",
-                name: "",
-                active_subscription: undefined,
-                user_type: undefined,
-              });
-              fetchCustomerForm("nofilter");
-            }}
-          >
-            {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
-          </button>
+          </div>
         </div>
-      </div>
+      )}
       {filterOpen && (
         <div className="grid grid-cols-4 gap-4 flex-wrap mb-6 items-end">
           <TextInput
@@ -329,169 +377,409 @@ const Customer: React.FC = () => {
           </div>
         </div>
       )}
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <Spinner size="xl" />
-        </div>
-      ) : error ? (
-        <ErrorComp error={error} onRetry={fetchCustomerForm} />
-      ) : (
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-6">
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                <th scope="col" className="px-6 py-3">
-                  Id
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Name
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Email Address
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Referal Code
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Active Subscription
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Credits
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Created At
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  <span className="sr-only">Actions</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {customerForm.length > 0 ? (
-                customerForm.map((customerForm) => (
-                  <tr
-                    key={customerForm.user_id}
-                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                  >
-                    <td className="px-6 py-4 text-gray-900">
-                      {customerForm.user_id}
-                    </td>
-                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      {customerForm.firstname} {customerForm.lastname}
-                    </td>
-                    <td className="px-6 py-4 text-gray-900">
-                      {customerForm.email}
-                    </td>
-                    <td className="px-6 py-4 text-gray-900">
-                      {customerForm.code}
-                    </td>
-                    <td className="px-6 py-4 text-gray-900">
-                      <Badge
-                        className="!inline-block"
-                        color={
-                          customerForm.subscription_id !== null
-                            ? "success"
-                            : "failure"
-                        }
-                      >
-                        {customerForm.subscription_id !== null ? "Yes" : "No"}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4 text-gray-900">
-                      {customerForm.credits}
-                    </td>
-                    <td className="px-6 py-4 text-gray-900">
-                      {new Date(customerForm.createdAt).toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 text-gray-900 text-right flex justify-end">
-                      {updatePermission && (
-                        <button
-                          onClick={() => setSelectedCustomer(customerForm)}
-                          className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
-                          aria-label="Info"
-                        >
-                          <MdOutlineRemoveRedEye />
-                        </button>
-                      )}
-                      <button
-                        onClick={() => handleAddCredits(customerForm.user_id)}
-                        className="text-xl text-green-600 dark:text-green-500 hover:underline mr-4"
-                        aria-label="Add Credits"
-                      >
-                        <FaPlusCircle />
-                      </button>
-                      <button
-                        onClick={() =>
-                          navigate(
-                            `/admin/customer-section/user-address-list?user_id=${customerForm.user_id}`
-                          )
-                        }
-                        className="text-xl text-purple-600 dark:text-purple-500 hover:underline mr-4"
-                        aria-label="Show Addresses"
-                      >
-                        <FaAddressBook />
-                      </button>
-                      <button
-                        onClick={() =>
-                          navigate(
-                            `/admin/customer-section/enquiry?user_id=${customerForm.user_id}`
-                          )
-                        }
-                        className="text-xl text-blue-600 dark:text-blue-500 hover:underline"
-                        aria-label="Show Addresses"
-                      >
-                        <BiSearchAlt />
-                      </button>
-                    </td>
+      {!isFormOpen && (
+        <>
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <Spinner size="xl" />
+            </div>
+          ) : error ? (
+            <ErrorComp error={error} onRetry={fetchCustomerForm} />
+          ) : (
+            <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-6">
+              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                  <tr>
+                    <th scope="col" className="px-6 py-3">
+                      Id
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Name
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Email Address
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Referal Code
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Active Subscription
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Credits
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      Created At
+                    </th>
+                    <th scope="col" className="px-6 py-3">
+                      <span className="sr-only">Actions</span>
+                    </th>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center">
-                    No customer found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                </thead>
+                <tbody>
+                  {customerForm.length > 0 ? (
+                    customerForm.map((customerForm) => (
+                      <tr
+                        key={customerForm.user_id}
+                        className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                      >
+                        <td className="px-6 py-4 text-gray-900">
+                          {customerForm.user_id}
+                        </td>
+                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                          {customerForm.firstname} {customerForm.lastname}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {customerForm.email}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {customerForm.code}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          <Badge
+                            className="!inline-block"
+                            color={
+                              customerForm.subscription_id !== null
+                                ? "success"
+                                : "failure"
+                            }
+                          >
+                            {customerForm.subscription_id !== null
+                              ? "Yes"
+                              : "No"}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {customerForm.credits}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          {new Date(customerForm.createdAt).toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900 text-right flex justify-end">
+                          {updatePermission && (
+                            <button
+                              onClick={() => setSelectedCustomer(customerForm)}
+                              className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                              aria-label="Info"
+                            >
+                              <MdOutlineRemoveRedEye />
+                            </button>
+                          )}
+                          {updatePermission && (
+                            <button
+                              onClick={() => {
+                                setEditingCustomer({
+                                  user_id: customerForm.user_id,
+                                  firstname: customerForm.firstname,
+                                  lastname: customerForm.lastname,
+                                  email: customerForm.email,
+                                  email_domain: customerForm.email_domain || "",
+                                  password: customerForm.password || "",
+                                  gst_number: customerForm.gst_number || "",
+                                  gst_document_link:
+                                    customerForm.gst_document_link || "",
+                                  phone_number: customerForm.phone_number || "",
+                                  country_code: customerForm.country_code || "",
+                                  credits: customerForm.credits || 0,
+                                });
+                                setIsFormOpen(true);
+                                setFilterOpen(false);
+                              }}
+                              className="text-2xl text-lime-600 dark:text-lime-500 hover:underline mr-4"
+                              aria-label="Edit"
+                            >
+                              <TbEdit />
+                            </button>
+                          )}
+                          <button
+                            onClick={() =>
+                              handleAddCredits(customerForm.user_id)
+                            }
+                            className="text-xl text-green-600 dark:text-green-500 hover:underline mr-4"
+                            aria-label="Add Credits"
+                          >
+                            <FaPlusCircle />
+                          </button>
+                          <button
+                            onClick={() =>
+                              navigate(
+                                `/admin/customer-section/user-address-list?user_id=${customerForm.user_id}`
+                              )
+                            }
+                            className="text-xl text-purple-600 dark:text-purple-500 hover:underline mr-4"
+                            aria-label="Show Addresses"
+                          >
+                            <FaAddressBook />
+                          </button>
+                          <button
+                            onClick={() =>
+                              navigate(
+                                `/admin/customer-section/enquiry?user_id=${customerForm.user_id}`
+                              )
+                            }
+                            className="text-xl text-blue-600 dark:text-blue-500 hover:underline"
+                            aria-label="Show Addresses"
+                          >
+                            <BiSearchAlt />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-4 text-center">
+                        No customer found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {!error && (
+            <p className="my-4 text-sm">
+              Showing {customerForm.length} out of {pagination.totalItems}{" "}
+              Customer
+            </p>
+          )}
+          {pagination.totalItems >= 10 && (
+            <div className="mt-4 flex justify-center items-center mb-8">
+              <button
+                className="px-2 py-1 rounded mr-2 disabled:opacity-50"
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                aria-label="Previous page"
+              >
+                <FaChevronLeft />
+              </button>
+              {[...Array(pagination.totalPages)].map((_, index) => (
+                <button
+                  key={index + 1}
+                  className={`px-2 py-1 rounded border mr-2 ${
+                    index + 1 === pagination.currentPage
+                      ? "bg-lime-500 text-white"
+                      : ""
+                  }`}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </button>
+              ))}
+              <button
+                className="px-2 py-1 rounded disabled:opacity-50"
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === pagination.totalPages}
+                aria-label="Next page"
+              >
+                <FaChevronRight />
+              </button>
+            </div>
+          )}
+        </>
       )}
-      {!error && (
-        <p className="my-4 text-sm">
-          Showing {customerForm.length} out of {pagination.totalItems} Customer
-        </p>
-      )}
-      {pagination.totalItems >= 10 && (
-        <div className="mt-4 flex justify-center items-center mb-8">
-          <button
-            className="px-2 py-1 rounded mr-2 disabled:opacity-50"
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            aria-label="Previous page"
-          >
-            <FaChevronLeft />
-          </button>
-          {[...Array(pagination.totalPages)].map((_, index) => (
-            <button
-              key={index + 1}
-              className={`px-2 py-1 rounded border mr-2 ${
-                index + 1 === pagination.currentPage
-                  ? "bg-lime-500 text-white"
-                  : ""
-              }`}
-              onClick={() => setCurrentPage(index + 1)}
-            >
-              {index + 1}
-            </button>
-          ))}
-          <button
-            className="px-2 py-1 rounded disabled:opacity-50"
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === pagination.totalPages}
-            aria-label="Next page"
-          >
-            <FaChevronRight />
-          </button>
+      {isFormOpen && (
+        <div className="mx-auto my-10 w-[80%]">
+          <h3 className="text-xl font-semibold leading-6 text-gray-900 mb-4">
+            Update Customer
+          </h3>
+          <form onSubmit={handleFormSubmit} className="grid grid-cols-2 gap-5">
+            <div className="mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                First Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={editingCustomer?.firstname}
+                onChange={(e) =>
+                  setEditingCustomer({
+                    ...editingCustomer,
+                    firstname: e.target.value,
+                  })
+                }
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Last Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={editingCustomer?.lastname}
+                onChange={(e) =>
+                  setEditingCustomer({
+                    ...editingCustomer,
+                    lastname: e.target.value,
+                  })
+                }
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email Address
+              </label>
+              <input
+                type="email"
+                id="name"
+                value={editingCustomer?.email}
+                onChange={(e) =>
+                  setEditingCustomer({
+                    ...editingCustomer,
+                    email: e.target.value,
+                  })
+                }
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Phone Number
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={editingCustomer?.phone_number}
+                onChange={(e) =>
+                  setEditingCustomer({
+                    ...editingCustomer,
+                    phone_number: e.target.value,
+                  })
+                }
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email Address Domain
+              </label>
+              <input
+                type="email"
+                id="name"
+                value={editingCustomer?.email_domain}
+                onChange={(e) =>
+                  setEditingCustomer({
+                    ...editingCustomer,
+                    email_domain: e.target.value,
+                  })
+                }
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <input
+                type="password"
+                id="name"
+                value={editingCustomer?.password}
+                onChange={(e) =>
+                  setEditingCustomer({
+                    ...editingCustomer,
+                    password: e.target.value,
+                  })
+                }
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                GST Number
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={editingCustomer?.gst_number}
+                onChange={(e) =>
+                  setEditingCustomer({
+                    ...editingCustomer,
+                    gst_number: e.target.value,
+                  })
+                }
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                GST Document Link
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={editingCustomer?.gst_document_link}
+                onChange={(e) =>
+                  setEditingCustomer({
+                    ...editingCustomer,
+                    gst_document_link: e.target.value,
+                  })
+                }
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Credits
+              </label>
+              <input
+                type="number"
+                id="name"
+                value={editingCustomer?.credits}
+                onChange={(e) =>
+                  setEditingCustomer({
+                    ...editingCustomer,
+                    credits: parseInt(e.target.value),
+                  })
+                }
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
+            <div className="flex justify-center mt-4 col-span-2">
+              <button
+                type="button"
+                onClick={() => setIsFormOpen(false)}
+                className="mr-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-sm font-medium text-black bg-lime-500 rounded-md hover:bg-lime-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+              >
+                Update Customer
+              </button>
+            </div>
+          </form>
         </div>
       )}
 
@@ -506,6 +794,12 @@ const Customer: React.FC = () => {
                 selectedCustomer.firstname + " " + selectedCustomer.lastname,
             },
             { label: "Email", value: selectedCustomer.email },
+            {
+              label: "Email Domain",
+              value: selectedCustomer.email_domain
+                ? selectedCustomer.email_domain
+                : "Not provided",
+            },
             {
               label: "Phone Number",
               value: selectedCustomer.country_code
