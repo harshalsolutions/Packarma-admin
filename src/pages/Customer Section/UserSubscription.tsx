@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Spinner } from "flowbite-react";
+import { Spinner, TextInput } from "flowbite-react";
 import { MdOutlineRemoveRedEye, MdPictureAsPdf } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
@@ -9,6 +9,15 @@ import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import { formatDateTime } from "../../../utils/DateFormatter";
+import { AiOutlineSearch } from "react-icons/ai";
+import { TbFilter, TbFilterOff } from "react-icons/tb";
+import { customStyle } from "../../../utils/CustomSelectTheme";
+import Select from "react-select";
+
+interface SubscriptionList {
+  id: string;
+  type: string;
+}
 
 interface User {
   user_id: number;
@@ -45,6 +54,8 @@ interface Subscription {
   credit_amount: number;
   duration: number;
   benefits: string;
+  start_date: string;
+  end_date: string;
 }
 
 interface CustomerForm {
@@ -88,23 +99,60 @@ const Customer: React.FC = () => {
   const [customerIdToDelete, setCustomerIdToDelete] = useState<number | null>(
     null
   );
+  const [subscriptionList, setSubscriptionList] = useState<SubscriptionList[]>(
+    []
+  );
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filter, setFilter] = useState<{
+    name: string | undefined;
+    subscription_type: string | undefined;
+    start_date: string | undefined;
+    end_date: string | undefined;
+  }>({
+    name: "",
+    subscription_type: "",
+    start_date: "",
+    end_date: "",
+  });
+
+  const getSubscriptionList = async () => {
+    const response = await api.get(
+      `${BACKEND_API_KEY}/customer/subscription-list`
+    );
+    setSubscriptionList(response.data.data);
+  };
+
+  useEffect(() => {
+    getSubscriptionList();
+  }, []);
 
   useEffect(() => {
     fetchCustomerForm();
   }, [currentPage, entriesPerPage]);
 
-  const fetchCustomerForm = async () => {
+  const fetchCustomerForm = async (type?: string) => {
     try {
       setLoading(true);
-      const response = await api.get(
-        `${BACKEND_API_KEY}/customer/subscriptions`,
-        {
+      let response;
+      if (type === "nofilter") {
+        response = await api.get(`${BACKEND_API_KEY}/customer/subscriptions`, {
           params: {
             page: currentPage,
             limit: entriesPerPage,
           },
-        }
-      );
+        });
+      } else {
+        response = await api.get(`${BACKEND_API_KEY}/customer/subscriptions`, {
+          params: {
+            page: currentPage,
+            limit: entriesPerPage,
+            name: filter?.name,
+            subscription_type: filter?.subscription_type,
+            start_date: filter?.start_date,
+            end_date: filter?.end_date,
+          },
+        });
+      }
       setCustomerForm(response.data.data.invoices || []);
       if (response.data.data.pagination) {
         setPagination(response.data.data.pagination);
@@ -149,25 +197,90 @@ const Customer: React.FC = () => {
             setEntriesPerPage={setEntriesPerPage}
           />
           <div className="flex justify-end items-center">
-            {/* <button
+            <button
               className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
               onClick={() => {
                 setFilterOpen(!filterOpen);
                 setFilter({
                   ...filter,
-                  active_subscription: "",
-                  email: "",
-                  phone_number: "",
                   name: "",
-                  user_type: "",
+                  subscription_type: "",
+                  start_date: "",
+                  end_date: "",
                 });
                 fetchCustomerForm("nofilter");
               }}
             >
               {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
-            </button> */}
+            </button>
           </div>
         </div>
+        {filterOpen && (
+          <div className="grid grid-cols-4 gap-4 flex-wrap mb-6 items-end">
+            <TextInput
+              className="customInput w-full"
+              type="text"
+              placeholder="Search User Name.."
+              value={filter.name}
+              onChange={(e) => setFilter({ ...filter, name: e.target.value })}
+            />
+            <Select
+              styles={customStyle}
+              id="subscriptionType"
+              options={subscriptionList.map((subscription) => ({
+                label: subscription.type,
+                value: subscription.type,
+              }))}
+              value={
+                filter.subscription_type
+                  ? {
+                      label: filter.subscription_type,
+                      value: filter.subscription_type,
+                    }
+                  : undefined
+              }
+              onChange={(
+                selectedOption: { label: string; value: string } | null
+              ) => {
+                setFilter({
+                  ...filter,
+                  subscription_type: selectedOption?.value,
+                });
+              }}
+              placeholder="Select Subscription Type"
+              isSearchable
+              isClearable
+              className="react-select-container"
+              classNamePrefix="react-select"
+            />
+            <TextInput
+              className="customInput w-full"
+              type="date"
+              placeholder="Start Date"
+              value={filter.start_date}
+              onChange={(e) =>
+                setFilter({ ...filter, start_date: e.target.value })
+              }
+            />
+            <TextInput
+              className="customInput w-full"
+              type="date"
+              placeholder="End Date"
+              value={filter.end_date}
+              onChange={(e) =>
+                setFilter({ ...filter, end_date: e.target.value })
+              }
+            />
+            <div className="flex">
+              <button
+                className="bg-lime-500 text-black px-4 py-2 rounded mr-3"
+                onClick={() => fetchCustomerForm()}
+              >
+                <AiOutlineSearch size={22} />
+              </button>
+            </div>
+          </div>
+        )}
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <Spinner size="xl" />
@@ -228,10 +341,14 @@ const Customer: React.FC = () => {
                         {customerForm.total_price}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {formatDateTime(new Date(customerForm.invoice_date))}
+                        {formatDateTime(
+                          new Date(customerForm.subscription.start_date)
+                        )}
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {formatDateTime(new Date(customerForm.invoice_date))}{" "}
+                        {formatDateTime(
+                          new Date(customerForm.subscription.end_date)
+                        )}{" "}
                       </td>
                       <td className="px-6 py-4 text-gray-900 flex">
                         <button
@@ -407,6 +524,18 @@ const Customer: React.FC = () => {
             {
               label: "Subscription Duration",
               value: selectedCustomer.subscription.duration.toString(),
+            },
+            {
+              label: "Subscription Start Date",
+              value: formatDateTime(
+                new Date(selectedCustomer.subscription.start_date)
+              ),
+            },
+            {
+              label: "Subscription End Date",
+              value: formatDateTime(
+                new Date(selectedCustomer.subscription.end_date)
+              ),
             },
             {
               label: "Address Name",
