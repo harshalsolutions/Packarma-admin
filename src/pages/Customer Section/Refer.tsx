@@ -4,7 +4,7 @@ import { Spinner, TextInput } from "flowbite-react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaRegFileExcel } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import { formatDateTime } from "../../../utils/DateFormatter";
@@ -12,6 +12,10 @@ import { TbFilter, TbFilterOff } from "react-icons/tb";
 import { AiOutlineSearch } from "react-icons/ai";
 import Select from "react-select";
 import { customStyle } from "../../../utils/CustomSelectTheme";
+import toast from "react-hot-toast";
+import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import { useUser } from "../../context/userContext";
 
 interface ReferForm {
   id: number;
@@ -70,6 +74,13 @@ const Refer: React.FC = () => {
     fetchReferForm();
   }, [currentPage, entriesPerPage]);
 
+  const userContext = useUser();
+
+  const exportPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Customer Section",
+    "can_export"
+  );
   const fetchReferForm = async (type?: string) => {
     try {
       setLoading(true);
@@ -100,6 +111,32 @@ const Refer: React.FC = () => {
     }
   };
 
+  const downloadExcelController = async () => {
+    toast.loading("Exporting...");
+    try {
+      const response = await api.post(
+        `${BACKEND_API_KEY}/customer/referrals/export`,
+        {},
+        {
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      let title = `referrals_data_exported_(${formatDateForFilename()}).xlsx`;
+      link.setAttribute("download", title);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.dismiss();
+      toast.success("Exported successfully");
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Something went wrong");
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto mt-8 px-4">
       <h1 className="text-2xl font-bold mb-4 border-l-8 text-black border-lime-500 pl-2">
@@ -112,6 +149,14 @@ const Refer: React.FC = () => {
             setEntriesPerPage={setEntriesPerPage}
           />
           <div className="flex justify-end items-center">
+            {exportPermission && (
+              <button
+                className="bg-green-500 text-white px-3 py-2 rounded block mr-4"
+                onClick={downloadExcelController}
+              >
+                <FaRegFileExcel size={22} />
+              </button>
+            )}
             <button
               className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
               onClick={() => {

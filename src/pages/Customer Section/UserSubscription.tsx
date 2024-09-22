@@ -4,15 +4,18 @@ import { Spinner, TextInput } from "flowbite-react";
 import { MdOutlineRemoveRedEye, MdPictureAsPdf } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaRegFileExcel } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
-import CustomPopup from "../../components/CustomPopup";
 import { formatDateTime } from "../../../utils/DateFormatter";
 import { AiOutlineSearch } from "react-icons/ai";
 import { TbFilter, TbFilterOff } from "react-icons/tb";
 import { customStyle } from "../../../utils/CustomSelectTheme";
 import Select from "react-select";
+import toast from "react-hot-toast";
+import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import { useUser } from "../../context/userContext";
 
 interface SubscriptionList {
   id: string;
@@ -95,10 +98,6 @@ const Customer: React.FC = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerForm | null>(
     null
   );
-  const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
-  const [customerIdToDelete, setCustomerIdToDelete] = useState<number | null>(
-    null
-  );
   const [subscriptionList, setSubscriptionList] = useState<SubscriptionList[]>(
     []
   );
@@ -114,6 +113,14 @@ const Customer: React.FC = () => {
     start_date: "",
     end_date: "",
   });
+
+  const userContext = useUser();
+
+  const exportPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Customer Section",
+    "can_export"
+  );
 
   const getSubscriptionList = async () => {
     const response = await api.get(
@@ -165,24 +172,32 @@ const Customer: React.FC = () => {
     }
   };
 
-  const handleConfirmDelete = async () => {
-    if (customerIdToDelete !== null) {
-      try {
-        await api.delete(
-          `${BACKEND_API_KEY}/product/customers/${customerIdToDelete}`
-        );
-        fetchCustomerForm();
-      } catch (err) {
-        setError("Failed to delete customer");
-      }
-      setDeletePopupOpen(false);
-      setCustomerIdToDelete(null);
+  const downloadExcelController = async () => {
+    toast.loading("Exporting...");
+    try {
+      const response = await api.post(
+        `${BACKEND_API_KEY}/customer/subscriptions/export`,
+        {
+          link: BACKEND_MEDIA_LINK,
+        },
+        {
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      let title = `subscriptions_data_exported_(${formatDateForFilename()}).xlsx`;
+      link.setAttribute("download", title);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.dismiss();
+      toast.success("Exported successfully");
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Something went wrong");
     }
-  };
-
-  const handleCancelDelete = () => {
-    setDeletePopupOpen(false);
-    setCustomerIdToDelete(null);
   };
 
   return (
@@ -197,6 +212,14 @@ const Customer: React.FC = () => {
             setEntriesPerPage={setEntriesPerPage}
           />
           <div className="flex justify-end items-center">
+            {exportPermission && (
+              <button
+                className="bg-green-500 text-white px-3 py-2 rounded block mr-4"
+                onClick={downloadExcelController}
+              >
+                <FaRegFileExcel size={22} />
+              </button>
+            )}
             <button
               className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
               onClick={() => {
@@ -563,14 +586,6 @@ const Customer: React.FC = () => {
             },
           ]}
           onClose={() => setSelectedCustomer(null)}
-        />
-      )}
-      {isDeletePopupOpen && (
-        <CustomPopup
-          title="Confirm Deletion"
-          description="Are you sure you want to delete this customer?"
-          onConfirm={handleConfirmDelete}
-          onCancel={handleCancelDelete}
         />
       )}
     </div>
