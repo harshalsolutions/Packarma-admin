@@ -3,7 +3,7 @@ import api from "../../../utils/axiosInstance";
 import { Badge, Card, Spinner, TextInput } from "flowbite-react";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
-import { FaChevronLeft, FaChevronRight, FaRegFileExcel } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { toast } from "react-hot-toast";
 import { ErrorComp } from "../../components/ErrorComp";
@@ -20,6 +20,14 @@ import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker"
 import { useUser } from "../../context/userContext";
 import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
 import { HiCursorClick } from "react-icons/hi";
+import Select from "react-select";
+
+interface Product {
+  product_id: number;
+  product_name: string;
+  product_image: string;
+}
+
 interface Advertisement {
   id: number;
   title: string;
@@ -35,6 +43,7 @@ interface Advertisement {
   createdAt: string;
   updatedAt: string;
   sequence: number;
+  products: Product[];
 }
 
 interface PaginationData {
@@ -82,6 +91,8 @@ const AdsPage: React.FC = () => {
   const [debouncedTitleFilter, setDebouncedTitleFilter] = useState(titleFilter);
   const [filterOpen, setFilterOpen] = useState(false);
   const userContext = useUser();
+  const [products, setProducts] = useState<any[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<number[]>([]);
 
   const createPermission = hasUpdateAndCreatePermissions(
     userContext,
@@ -106,6 +117,10 @@ const AdsPage: React.FC = () => {
     "Master",
     "can_export"
   );
+
+  useEffect(() => {
+    getProducts();
+  }, []);
 
   useEffect(() => {
     fetchAdvertisements();
@@ -156,6 +171,13 @@ const AdsPage: React.FC = () => {
   const deleteAdvertisement = (id: string) => {
     setAdvertisementIdToDelete(Number(id));
     setDeletePopupOpen(true);
+  };
+
+  const getProducts = async () => {
+    const response = await api.get(
+      `${BACKEND_API_KEY}/product/get-products?pagination=false`
+    );
+    setProducts(response.data.data.products);
   };
 
   const exportAdvertisement = async (id: number, type: string) => {
@@ -302,6 +324,9 @@ const AdsPage: React.FC = () => {
       formData.append("link", link);
       formData.append("app_page", appPage);
       formData.append("status", status);
+      if (selectedProduct.length > 0) {
+        formData.append("products", selectedProduct.toString());
+      }
       formData.append("type", "advertisement");
       if (advertisementImage) {
         formData.append("advertisement_image", advertisementImage);
@@ -599,6 +624,11 @@ const AdsPage: React.FC = () => {
                         <th scope="col" className="px-6 py-3">
                           Status
                         </th>
+                        {exportPermission && (
+                          <th scope="col" className="px-6 py-3">
+                            Export
+                          </th>
+                        )}
                         <th scope="col" className="px-6 py-3">
                           <span className="sr-only">Actions</span>
                         </th>
@@ -687,7 +717,35 @@ const AdsPage: React.FC = () => {
                                 </Badge>
                               </td>
                             )}
-                            <td className="px-6 py-4 text-gray-900">
+                            {exportPermission && (
+                              <td className="px-6 py-4 text-gray-900">
+                                <button
+                                  onClick={() =>
+                                    exportAdvertisement(
+                                      advertisement.id,
+                                      "view"
+                                    )
+                                  }
+                                  className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
+                                  aria-label="Export"
+                                >
+                                  <MdOutlineRemoveRedEye />
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    exportAdvertisement(
+                                      advertisement.id,
+                                      "click"
+                                    )
+                                  }
+                                  className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
+                                  aria-label="Export"
+                                >
+                                  <HiCursorClick />
+                                </button>
+                              </td>
+                            )}
+                            <td className="px-6 py-4 text-gray-900 flex">
                               <button
                                 onClick={() => moveAdvertisement(index, "up")}
                                 className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4 disabled:text-blue-200"
@@ -704,34 +762,7 @@ const AdsPage: React.FC = () => {
                               >
                                 <AiOutlineArrowDown />
                               </button>
-                              {exportPermission && (
-                                <>
-                                  <button
-                                    onClick={() =>
-                                      exportAdvertisement(
-                                        advertisement.id,
-                                        "view"
-                                      )
-                                    }
-                                    className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
-                                    aria-label="Export"
-                                  >
-                                    <MdOutlineRemoveRedEye />
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      exportAdvertisement(
-                                        advertisement.id,
-                                        "click"
-                                      )
-                                    }
-                                    className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
-                                    aria-label="Export"
-                                  >
-                                    <HiCursorClick />
-                                  </button>
-                                </>
-                              )}
+
                               <button
                                 onClick={() =>
                                   setSelectedAdvertisement(advertisement)
@@ -924,6 +955,34 @@ const AdsPage: React.FC = () => {
                 </div>
                 <div className="mb-4">
                   <label
+                    htmlFor="products"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Products
+                  </label>
+                  <Select
+                    isMulti
+                    id="products"
+                    options={products.map((product) => ({
+                      label: product.product_name,
+                      value: product.id,
+                    }))}
+                    value={selectedProduct.map((productId) => ({
+                      label: products.find((p) => p.id === productId)
+                        ?.product_name,
+                      value: productId,
+                    }))}
+                    onChange={(selectedOptions) =>
+                      setSelectedProduct(
+                        selectedOptions
+                          ? selectedOptions.map((option) => option.value)
+                          : []
+                      )
+                    }
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
                     htmlFor="image"
                     className="block text-sm font-medium text-gray-700"
                   >
@@ -1002,6 +1061,22 @@ const AdsPage: React.FC = () => {
                 },
                 { label: "Link", value: selectedAdvertisement.link },
                 { label: "App Page", value: selectedAdvertisement.app_page },
+                {
+                  label: "Products",
+                  value: (
+                    <div>
+                      {selectedAdvertisement.products.map((product) => (
+                        <Badge
+                          color={"info"}
+                          key={product.product_id}
+                          className="!inline-block mr-2"
+                        >
+                          {product.product_name}
+                        </Badge>
+                      ))}
+                    </div>
+                  ),
+                },
                 {
                   label: "Advertisement Image",
                   value: (

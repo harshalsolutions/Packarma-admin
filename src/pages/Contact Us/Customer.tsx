@@ -216,6 +216,9 @@ const Customer: React.FC = () => {
                     Created At
                   </th>
                   <th scope="col" className="px-6 py-3">
+                    Admin Description
+                  </th>
+                  <th scope="col" className="px-6 py-3">
                     <span className="sr-only">Actions</span>
                   </th>
                 </tr>
@@ -241,6 +244,9 @@ const Customer: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 text-gray-900">
                         {new Date(customerForm.createdAt).toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 text-gray-900">
+                        {customerForm.admin_description}
                       </td>
                       <td className="px-6 py-4 text-gray-900 flex">
                         <button

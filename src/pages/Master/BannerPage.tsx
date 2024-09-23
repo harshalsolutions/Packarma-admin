@@ -3,7 +3,7 @@ import api from "../../../utils/axiosInstance";
 import { Badge, Card, Spinner, TextInput } from "flowbite-react";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
-import { FaChevronLeft, FaChevronRight, FaRegFileExcel } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { toast } from "react-hot-toast";
 import { ErrorComp } from "../../components/ErrorComp";
@@ -20,6 +20,7 @@ import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker"
 import { useUser } from "../../context/userContext";
 import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
 import { HiCursorClick } from "react-icons/hi";
+import Select from "react-select";
 interface Banner {
   id: number;
   title: string;
@@ -76,7 +77,7 @@ const BannerPage: React.FC = () => {
   const [debouncedTitleFilter, setDebouncedTitleFilter] = useState(titleFilter);
   const [filterOpen, setFilterOpen] = useState(false);
   const userContext = useUser();
-
+  const [appPages] = useState<string[]>(["home", "about", "contact"]);
   const createPermission = hasUpdateAndCreatePermissions(
     userContext,
     "Master",
@@ -272,6 +273,10 @@ const BannerPage: React.FC = () => {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (link !== "" && appPage !== "") {
+      toast.error("Link or App Page any one is allowed");
+      return;
+    }
     const loadingToast = toast.loading("Saving banner...");
     try {
       const formData = new FormData();
@@ -575,6 +580,11 @@ const BannerPage: React.FC = () => {
                           <th scope="col" className="px-6 py-3">
                             Status
                           </th>
+                          {exportPermission && (
+                            <th scope="col" className="px-6 py-3">
+                              Export
+                            </th>
+                          )}
                           <th scope="col" className="px-6 py-3">
                             <span className="sr-only">Actions</span>
                           </th>
@@ -655,6 +665,28 @@ const BannerPage: React.FC = () => {
                                 </Badge>
                               </td>
                             )}
+                            {exportPermission && (
+                              <td className="px-6 py-4 text-gray-900">
+                                <button
+                                  onClick={() =>
+                                    exportBanner(banner.id, "view")
+                                  }
+                                  className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
+                                  aria-label="Export"
+                                >
+                                  <MdOutlineRemoveRedEye />
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    exportBanner(banner.id, "click")
+                                  }
+                                  className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
+                                  aria-label="Export"
+                                >
+                                  <HiCursorClick />
+                                </button>
+                              </td>
+                            )}
                             <td className="px-6 py-4 text-gray-900">
                               <button
                                 onClick={() => moveBanner(index, "up")}
@@ -672,28 +704,7 @@ const BannerPage: React.FC = () => {
                               >
                                 <AiOutlineArrowDown />
                               </button>
-                              {exportPermission && (
-                                <>
-                                  <button
-                                    onClick={() =>
-                                      exportBanner(banner.id, "view")
-                                    }
-                                    className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
-                                    aria-label="Export"
-                                  >
-                                    <MdOutlineRemoveRedEye />
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      exportBanner(banner.id, "click")
-                                    }
-                                    className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
-                                    aria-label="Export"
-                                  >
-                                    <HiCursorClick />
-                                  </button>
-                                </>
-                              )}
+
                               <button
                                 onClick={() => setSelectedBanner(banner)}
                                 className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
@@ -796,7 +807,7 @@ const BannerPage: React.FC = () => {
                     id="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    className="customInput mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     required
                   />
                 </div>
@@ -858,7 +869,7 @@ const BannerPage: React.FC = () => {
                     id="link"
                     value={link}
                     onChange={(e) => setLink(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    className="customInput mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
                 <div className="mb-4">
@@ -868,12 +879,19 @@ const BannerPage: React.FC = () => {
                   >
                     App Page
                   </label>
-                  <input
-                    type="text"
+                  <Select
+                    isClearable
                     id="app_page"
-                    value={appPage}
-                    onChange={(e) => setAppPage(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    value={{
+                      label: appPage,
+                      value: appPage,
+                    }}
+                    onChange={(e) => setAppPage(e?.value || "")}
+                    options={appPages.map((page) => ({
+                      label: page,
+                      value: page,
+                    }))}
+                    className="customInput mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
                 <div className="mb-4">
