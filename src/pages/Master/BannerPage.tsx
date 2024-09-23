@@ -19,6 +19,7 @@ import {
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import { useUser } from "../../context/userContext";
 import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
+import { HiCursorClick } from "react-icons/hi";
 interface Banner {
   id: number;
   title: string;
@@ -176,10 +177,10 @@ const BannerPage: React.FC = () => {
     }
   };
 
-  const exportBanner = async (id: number) => {
+  const exportBanner = async (id: number, type: string) => {
     try {
       const response = await api.post(
-        `${BACKEND_API_KEY}/master/export-banner/${id}`,
+        `${BACKEND_API_KEY}/master/export-banner/${id}?type=${type}`,
         { link: BACKEND_MEDIA_LINK },
         {
           responseType: "blob",
@@ -188,13 +189,13 @@ const BannerPage: React.FC = () => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      let title = `banner_exported_(${formatDateForFilename()}).xlsx`;
+      let title = `Banner_${id}_${type}_Exported_(${formatDateForFilename()}).xlsx`;
       link.setAttribute("download", title);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } catch (err) {
-      toast.error("Failed to export banner");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to export banner");
     }
   };
 
@@ -672,13 +673,26 @@ const BannerPage: React.FC = () => {
                                 <AiOutlineArrowDown />
                               </button>
                               {exportPermission && (
-                                <button
-                                  onClick={() => exportBanner(banner.id)}
-                                  className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
-                                  aria-label="Export"
-                                >
-                                  <FaRegFileExcel />
-                                </button>
+                                <>
+                                  <button
+                                    onClick={() =>
+                                      exportBanner(banner.id, "view")
+                                    }
+                                    className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
+                                    aria-label="Export"
+                                  >
+                                    <MdOutlineRemoveRedEye />
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      exportBanner(banner.id, "click")
+                                    }
+                                    className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
+                                    aria-label="Export"
+                                  >
+                                    <HiCursorClick />
+                                  </button>
+                                </>
                               )}
                               <button
                                 onClick={() => setSelectedBanner(banner)}

@@ -19,6 +19,7 @@ import {
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import { useUser } from "../../context/userContext";
 import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
+import { HiCursorClick } from "react-icons/hi";
 interface Advertisement {
   id: number;
   title: string;
@@ -157,10 +158,10 @@ const AdsPage: React.FC = () => {
     setDeletePopupOpen(true);
   };
 
-  const exportAdvertisement = async (id: number) => {
+  const exportAdvertisement = async (id: number, type: string) => {
     try {
       const response = await api.post(
-        `${BACKEND_API_KEY}/master/export-advertisement/${id}`,
+        `${BACKEND_API_KEY}/master/export-advertisement/${id}?type=${type}`,
         { link: BACKEND_MEDIA_LINK },
         {
           responseType: "blob",
@@ -169,7 +170,7 @@ const AdsPage: React.FC = () => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      let title = `advertisement_exported_(${formatDateForFilename()}).xlsx`;
+      let title = `Advertisement_${id}_${type}_Exported_(${formatDateForFilename()}).xlsx`;
       link.setAttribute("download", title);
       document.body.appendChild(link);
       link.click();
@@ -704,15 +705,32 @@ const AdsPage: React.FC = () => {
                                 <AiOutlineArrowDown />
                               </button>
                               {exportPermission && (
-                                <button
-                                  onClick={() =>
-                                    exportAdvertisement(advertisement.id)
-                                  }
-                                  className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
-                                  aria-label="Export"
-                                >
-                                  <FaRegFileExcel />
-                                </button>
+                                <>
+                                  <button
+                                    onClick={() =>
+                                      exportAdvertisement(
+                                        advertisement.id,
+                                        "view"
+                                      )
+                                    }
+                                    className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
+                                    aria-label="Export"
+                                  >
+                                    <MdOutlineRemoveRedEye />
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      exportAdvertisement(
+                                        advertisement.id,
+                                        "click"
+                                      )
+                                    }
+                                    className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
+                                    aria-label="Export"
+                                  >
+                                    <HiCursorClick />
+                                  </button>
+                                </>
                               )}
                               <button
                                 onClick={() =>
