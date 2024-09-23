@@ -239,7 +239,7 @@ const Customer: React.FC = () => {
           </div>
         </div>
         {filterOpen && (
-          <div className="grid grid-cols-4 gap-4 flex-wrap mb-6 items-end">
+          <div className="grid grid-cols-3 gap-4 flex-wrap mb-6 items-end">
             <TextInput
               className="customInput w-full"
               type="text"

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
 import { Spinner, TextInput } from "flowbite-react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
-import { BACKEND_API_KEY } from "../../../utils/ApiKey";
+import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaRegFileExcel } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import { TbFilter, TbFilterOff } from "react-icons/tb";
@@ -14,6 +14,10 @@ import Select from "react-select";
 import { customStyle } from "../../../utils/CustomSelectTheme";
 import { useLocation, useNavigate } from "react-router";
 import { IoArrowBackOutline } from "react-icons/io5";
+import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
+import toast from "react-hot-toast";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import { useUser } from "../../context/userContext";
 
 interface EnquiryForm {
   id: number;
@@ -95,7 +99,7 @@ const CustomerEnquiry: React.FC = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [subcategories, setSubCategories] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
-
+  const userContext = useUser();
   useEffect(() => {
     fetchEnquiryData();
   }, [currentPage, entriesPerPage]);
@@ -156,6 +160,12 @@ const CustomerEnquiry: React.FC = () => {
     }
   };
 
+  const exportPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Customer Section",
+    "can_export"
+  );
+
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -172,6 +182,34 @@ const CustomerEnquiry: React.FC = () => {
     });
   };
 
+  const downloadExcelController = async () => {
+    toast.loading("Exporting...");
+    try {
+      const response = await api.post(
+        `${BACKEND_API_KEY}/customer/enquiries/export`,
+        {
+          link: BACKEND_MEDIA_LINK,
+        },
+        {
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      let title = `customer_enquiry_data_exported_(${formatDateForFilename()}).xlsx`;
+      link.setAttribute("download", title);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.dismiss();
+      toast.success("Exported successfully");
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Something went wrong");
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto mt-8 px-4">
       <h1 className="text-2xl font-bold mb-4 border-l-8 text-black border-lime-500 pl-2">
@@ -184,6 +222,14 @@ const CustomerEnquiry: React.FC = () => {
         />
         {!search && (
           <div className="flex">
+            {exportPermission && (
+              <button
+                className="bg-green-500 text-white px-3 py-2 rounded block mr-4"
+                onClick={downloadExcelController}
+              >
+                <FaRegFileExcel size={22} />
+              </button>
+            )}
             <button
               className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
               onClick={() => {

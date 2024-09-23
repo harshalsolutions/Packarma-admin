@@ -4,12 +4,15 @@ import { Spinner, TextInput } from "flowbite-react";
 import { MdOutlineRemoveRedEye, MdPictureAsPdf } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaRegFileExcel } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
-import CustomPopup from "../../components/CustomPopup";
 import { formatDateTime } from "../../../utils/DateFormatter";
 import { TbFilter, TbFilterOff } from "react-icons/tb";
+import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
+import { useUser } from "../../context/userContext";
+import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
+import toast from "react-hot-toast";
 
 interface User {
   user_id: number;
@@ -81,13 +84,16 @@ const CreditPurchase: React.FC = () => {
   });
   const [selectedCreditPurchase, setSelectedCreditPurchase] =
     useState<CreditPurchaseForm | null>(null);
-  const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
-  const [customerIdToDelete, setCustomerIdToDelete] = useState<number | null>(
-    null
-  );
   const [filterOpen, setFilterOpen] = useState(false);
   const [titleFilter, setTitleFilter] = useState("");
   const [debouncedTitleFilter, setDebouncedTitleFilter] = useState("");
+  const userContext = useUser();
+
+  const exportPermission = hasUpdateAndCreatePermissions(
+    userContext,
+    "Customer Section",
+    "can_export"
+  );
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -128,24 +134,32 @@ const CreditPurchase: React.FC = () => {
     }
   };
 
-  const handleConfirmDelete = async () => {
-    if (customerIdToDelete !== null) {
-      try {
-        await api.delete(
-          `${BACKEND_API_KEY}/product/refer/${customerIdToDelete}`
-        );
-        fetchCreditPurchase();
-      } catch (err) {
-        setError("Failed to delete refer");
-      }
-      setDeletePopupOpen(false);
-      setCustomerIdToDelete(null);
+  const downloadExcelController = async () => {
+    toast.loading("Exporting...");
+    try {
+      const response = await api.post(
+        `${BACKEND_API_KEY}/customer/credit-purchase/export`,
+        {
+          link: BACKEND_MEDIA_LINK,
+        },
+        {
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      let title = `credit_purchase_data_exported_(${formatDateForFilename()}).xlsx`;
+      link.setAttribute("download", title);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.dismiss();
+      toast.success("Exported successfully");
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Something went wrong");
     }
-  };
-
-  const handleCancelDelete = () => {
-    setDeletePopupOpen(false);
-    setCustomerIdToDelete(null);
   };
 
   return (
@@ -160,6 +174,14 @@ const CreditPurchase: React.FC = () => {
             setEntriesPerPage={setEntriesPerPage}
           />
           <div className="flex">
+            {exportPermission && (
+              <button
+                className="bg-green-500 text-white px-3 py-2 rounded block mr-4"
+                onClick={downloadExcelController}
+              >
+                <FaRegFileExcel size={22} />
+              </button>
+            )}
             <button
               className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
               onClick={() => {
@@ -455,14 +477,6 @@ const CreditPurchase: React.FC = () => {
             },
           ]}
           onClose={() => setSelectedCreditPurchase(null)}
-        />
-      )}
-      {isDeletePopupOpen && (
-        <CustomPopup
-          title="Confirm Deletion"
-          description="Are you sure you want to delete this credit purchase?"
-          onConfirm={handleConfirmDelete}
-          onCancel={handleCancelDelete}
         />
       )}
     </div>
