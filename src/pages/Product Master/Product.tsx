@@ -185,11 +185,15 @@ const Product: React.FC = () => {
         packagingTreatmentsResponse,
         measurementUnitsResponse,
       ] = await Promise.all([
-        api.get(`${BACKEND_API_KEY}/product/categories`),
-        api.get(`${BACKEND_API_KEY}/product/subcategories`),
-        api.get(`${BACKEND_API_KEY}/product/product-form`),
-        api.get(`${BACKEND_API_KEY}/product/packaging-treatment`),
-        api.get(`${BACKEND_API_KEY}/product/measurement-units`),
+        api.get(`${BACKEND_API_KEY}/product/categories?pagination=false`),
+        api.get(`${BACKEND_API_KEY}/product/subcategories?pagination=false`),
+        api.get(`${BACKEND_API_KEY}/product/product-form?pagination=false`),
+        api.get(
+          `${BACKEND_API_KEY}/product/packaging-treatment?pagination=false`
+        ),
+        api.get(
+          `${BACKEND_API_KEY}/product/measurement-units?pagination=false`
+        ),
       ]);
 
       setCategories(categoriesResponse.data.data.categories);

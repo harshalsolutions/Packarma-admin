@@ -207,15 +207,25 @@ const PackagingSolutions: React.FC = () => {
         storageConditionsResponse,
         unitsResponse,
       ] = await Promise.all([
-        api.get(`${BACKEND_API_KEY}/product/get-products`),
-        api.get(`${BACKEND_API_KEY}/product/categories`),
-        api.get(`${BACKEND_API_KEY}/product/product-form`),
-        api.get(`${BACKEND_API_KEY}/product/packaging-treatment`),
-        api.get(`${BACKEND_API_KEY}/product/packing-types`),
-        api.get(`${BACKEND_API_KEY}/product/packaging-machines`),
-        api.get(`${BACKEND_API_KEY}/product/packaging-materials`),
-        api.get(`${BACKEND_API_KEY}/product/storage-conditions`),
-        api.get(`${BACKEND_API_KEY}/product/measurement-units`),
+        api.get(`${BACKEND_API_KEY}/product/get-products?pagination=false`),
+        api.get(`${BACKEND_API_KEY}/product/categories?pagination=false`),
+        api.get(`${BACKEND_API_KEY}/product/product-form?pagination=false`),
+        api.get(
+          `${BACKEND_API_KEY}/product/packaging-treatment?pagination=false`
+        ),
+        api.get(`${BACKEND_API_KEY}/product/packing-types?pagination=false`),
+        api.get(
+          `${BACKEND_API_KEY}/product/packaging-machines?pagination=false`
+        ),
+        api.get(
+          `${BACKEND_API_KEY}/product/packaging-materials?pagination=false`
+        ),
+        api.get(
+          `${BACKEND_API_KEY}/product/storage-conditions?pagination=false`
+        ),
+        api.get(
+          `${BACKEND_API_KEY}/product/measurement-units?pagination=false`
+        ),
       ]);
 
       setProducts(productsResponse.data.data.products);

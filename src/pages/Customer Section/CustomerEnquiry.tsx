@@ -108,9 +108,9 @@ const CustomerEnquiry: React.FC = () => {
     try {
       const [categoriesResponse, subCategoriesResponse, productsResponse] =
         await Promise.all([
-          api.get(`${BACKEND_API_KEY}/product/categories`),
-          api.get(`${BACKEND_API_KEY}/product/subcategories`),
-          api.get(`${BACKEND_API_KEY}/product/get-products`),
+          api.get(`${BACKEND_API_KEY}/product/categories?pagination=false`),
+          api.get(`${BACKEND_API_KEY}/product/subcategories?pagination=false`),
+          api.get(`${BACKEND_API_KEY}/product/get-products?pagination=false`),
         ]);
       setCategories(categoriesResponse.data.data.categories);
       setSubCategories(subCategoriesResponse.data.data.subcategories);

@@ -137,7 +137,9 @@ const SubCategoryPage: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await api.get(`${BACKEND_API_KEY}/product/categories`);
+      const response = await api.get(
+        `${BACKEND_API_KEY}/product/categories?pagination=false`
+      );
       setCategories(response.data.data.categories || []);
     } catch (err: any) {
       setError(err?.response?.data?.message || "Failed to fetch data");
