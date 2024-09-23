@@ -24,6 +24,8 @@ interface StaffData {
   phonenumber: string;
   country_code: string;
   address: string;
+  createdAt: string;
+  updatedAt: string;
   permissions?: [];
 }
 
@@ -54,7 +56,7 @@ const ManageStaff: React.FC = () => {
   const [isDeletePopupOpen, setDeletePopupOpen] = useState(false);
   const [staffIdToDelete, setStaffIdToDelete] = useState<number | null>(null);
   const [editStaff, setEditStaff] = useState<StaffData | null>(null);
-  const [formData, setFormData] = useState<StaffData>({
+  const [formData, setFormData] = useState({
     emailid: "",
     id: 0,
     name: "",
@@ -127,16 +129,14 @@ const ManageStaff: React.FC = () => {
   };
 
   const handleConfirmDelete = async () => {
-    if (staffIdToDelete !== null) {
-      try {
-        await api.delete(`${BACKEND_API_KEY}/staff/${staffIdToDelete}`);
-        fetchStaffForm();
-      } catch (err) {
-        setError("Failed to delete staff");
-      }
-      setDeletePopupOpen(false);
-      setStaffIdToDelete(null);
+    try {
+      await api.delete(`${BACKEND_API_KEY}/staff/${staffIdToDelete}`);
+      fetchStaffForm();
+    } catch (err) {
+      setError("Failed to delete staff");
     }
+    setDeletePopupOpen(false);
+    setStaffIdToDelete(null);
   };
 
   const handleToggleStatus = async (staffId: number, staffStatus: string) => {
@@ -157,49 +157,62 @@ const ManageStaff: React.FC = () => {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.emailid !== ADMIN_EMAIL) {
+
+    if (userContext?.user?.email !== ADMIN_EMAIL) {
       toast.error("Only the admin can add or update staff details.");
       return;
     }
-    let dataToSend = { ...formData };
-    delete dataToSend.permissions;
+
+    const dataToSend = { ...formData };
+
     try {
       if (editStaff) {
-        await api.put(`${BACKEND_API_KEY}/staff/${editStaff.id}`, {
-          ...dataToSend,
-        });
+        console.log("Updating staff:", dataToSend);
+        await api.put(`${BACKEND_API_KEY}/staff/${editStaff.id}`, dataToSend);
+        toast.success("Staff updated successfully");
       } else {
-        await api.post(`${BACKEND_API_KEY}/staff/add`, {
-          ...dataToSend,
-        });
+        console.log("Adding new staff:", dataToSend);
+        await api.post(`${BACKEND_API_KEY}/staff/add`, dataToSend);
+        toast.success("Staff added successfully");
       }
+
       fetchStaffForm();
       setIsFormOpen(false);
       setEditStaff(null);
-      setFormData({
-        emailid: "",
-        id: 0,
-        name: "",
-        status: "inactive",
-        password: "",
-        phonenumber: "",
-        country_code: "",
-        address: "",
-        permissions: [],
-      });
+      resetFormData();
     } catch (err) {
+      console.error("Error saving staff:", err);
       setError("Failed to save staff");
     }
   };
 
+  const resetFormData = () => {
+    setFormData({
+      emailid: "",
+      id: 0,
+      name: "",
+      status: "inactive",
+      password: "",
+      phonenumber: "",
+      country_code: "",
+      address: "",
+      permissions: [],
+    });
+  };
+
   const handleEditStaff = (staff: StaffData) => {
+    const { password, ...staffWithoutPassword } = staff;
     setEditStaff(staff);
-    setFormData(staff);
+    setFormData({
+      ...staffWithoutPassword,
+      password: "",
+      permissions: staff.permissions || [],
+    });
     setIsFormOpen(true);
   };
 
   const handleAddNewAdmin = () => {
-    if (formData.emailid !== ADMIN_EMAIL) {
+    if (userContext?.user?.email !== ADMIN_EMAIL) {
       setError("Only the admin can add new staff.");
       return;
     }
@@ -216,6 +229,11 @@ const ManageStaff: React.FC = () => {
       permissions: [],
     });
     setIsFormOpen(true);
+  };
+
+  const handleDeleteClick = (staffId: number) => {
+    setStaffIdToDelete(staffId);
+    setDeletePopupOpen(true);
   };
 
   return (
@@ -311,34 +329,30 @@ const ManageStaff: React.FC = () => {
                           {staff.emailid}
                         </td>
                         <td className="px-6 py-4 text-gray-900">
-                          {ADMIN_EMAIL === staff.emailid ? (
+                          {staff.emailid === ADMIN_EMAIL ? (
                             <Badge className="!inline-block" color="success">
                               Active
                             </Badge>
+                          ) : userContext?.user?.email === ADMIN_EMAIL ? (
+                            <ToggleSwitch
+                              checked={staff.status === "active"}
+                              onChange={() =>
+                                handleToggleStatus(staff.id, staff.status)
+                              }
+                            />
                           ) : (
-                            updatePermission && (
-                              <ToggleSwitch
-                                checked={staff.status === "active"}
-                                onChange={() =>
-                                  handleToggleStatus(staff.id, staff.status)
-                                }
-                              />
-                            )
+                            <Badge
+                              className="!inline-block"
+                              color={
+                                staff.status === "active"
+                                  ? "success"
+                                  : "failure"
+                              }
+                            >
+                              {staff.status.charAt(0).toUpperCase() +
+                                staff.status.slice(1)}
+                            </Badge>
                           )}
-                          {!updatePermission &&
-                            ADMIN_EMAIL !== staff.emailid && (
-                              <Badge
-                                className="!inline-block"
-                                color={
-                                  staff.status === "active"
-                                    ? "success"
-                                    : "failure"
-                                }
-                              >
-                                {staff.status.charAt(0).toUpperCase() +
-                                  staff.status.slice(1)}
-                              </Badge>
-                            )}
                         </td>
                         <td className="px-6 py-4 text-gray-900 flex">
                           <button
@@ -357,15 +371,16 @@ const ManageStaff: React.FC = () => {
                               <TbEdit />
                             </button>
                           )}
-                          {deletePermission && (
-                            <button
-                              onClick={() => setDeletePopupOpen(true)}
-                              className="text-2xl text-red-600 dark:text-red-500 hover:underline"
-                              aria-label="Delete"
-                            >
-                              <MdDeleteOutline />
-                            </button>
-                          )}
+                          {deletePermission &&
+                            staff.emailid !== ADMIN_EMAIL && (
+                              <button
+                                onClick={() => handleDeleteClick(staff.id)}
+                                className="text-2xl text-red-600 dark:text-red-500 hover:underline"
+                                aria-label="Delete"
+                              >
+                                <MdDeleteOutline />
+                              </button>
+                            )}
                         </td>
                       </tr>
                     ))
@@ -503,7 +518,6 @@ const ManageStaff: React.FC = () => {
                 value={formData.password}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                required
               />
             </div>
             <div className="mb-4">
@@ -576,7 +590,7 @@ const ManageStaff: React.FC = () => {
             </div>
           </form>
           <hr className="w-full my-8" />
-          {ADMIN_EMAIL !== formData.emailid && (
+          {ADMIN_EMAIL === userContext?.user?.email && (
             <PermissionDialog id={editStaff?.id || 0} />
           )}
         </div>
