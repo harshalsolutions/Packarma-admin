@@ -4,12 +4,12 @@ const NoAccess = () => {
   const navigate = useNavigate();
 
   const goToHome = () => {
-    navigate("/");
+    navigate("/admin");
   };
 
   const logout = () => {
     localStorage.removeItem("token");
-    navigate("/login");
+    navigate("/admin/login");
   };
 
   return (
