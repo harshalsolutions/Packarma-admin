@@ -28,7 +28,6 @@ import ManageStaff from "./pages/Staff/ManageStaff";
 import Settings from "./pages/GeneralSettings/settings";
 import Customer from "./pages/Contact Us/Customer";
 import SystemDetails from "./pages/Contact Us/SystemDetails";
-import Report from "./pages/Report/Report";
 import NoAccess from "./NoAccess";
 import NotFoundPage from "./404Page";
 import VerifyOtpPage from "./pages/Authentication/VerifyPassword";
@@ -306,17 +305,6 @@ const AppRoutes = () => (
         <ProtectedRoute>
           <NavbarSidebarLayout>
             <ManageStaff />
-          </NavbarSidebarLayout>
-        </ProtectedRoute>
-      }
-    />
-    {/* Report */}
-    <Route
-      path="/admin/report"
-      element={
-        <ProtectedRoute>
-          <NavbarSidebarLayout>
-            <Report />
           </NavbarSidebarLayout>
         </ProtectedRoute>
       }

@@ -174,11 +174,6 @@ const menuItems: MenuItem[] = [
     ],
   },
   {
-    name: "Report",
-    path: "/admin/report",
-    icon: RiFileExcel2Line,
-  },
-  {
     name: "General Settings",
     path: "/admin/general-settings",
     icon: RiSettings4Line,

@@ -269,7 +269,7 @@ const Customer: React.FC = () => {
                 ) : (
                   <tr>
                     <td colSpan={6} className="px-6 py-4 text-center">
-                      No customer enquiries found // Updated message
+                      No customer enquiries found
                     </td>
                   </tr>
                 )}

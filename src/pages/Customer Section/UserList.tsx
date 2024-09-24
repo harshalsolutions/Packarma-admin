@@ -25,6 +25,7 @@ import { customStyle } from "../../../utils/CustomSelectTheme";
 import Select from "react-select";
 import { useNavigate } from "react-router";
 import { BiSearchAlt } from "react-icons/bi";
+import ToggleSwitch from "../../components/ToggleSwitch";
 
 type FilterType = {
   name: string;
@@ -55,6 +56,7 @@ interface CustomerForm {
   subscription_name: string | null;
   updatedAt: string;
   user_id: number;
+  block: number;
 }
 
 interface Pagination {
@@ -219,6 +221,27 @@ const Customer: React.FC = () => {
     } catch (err) {
       setError("Failed to add credits");
       setIsAddCreditPopupOpen(false);
+    }
+  };
+
+  const toggleBlockHandler = async (id: string, blockValue: number) => {
+    try {
+      const response = await api.post(
+        `${BACKEND_API_KEY}/customer/users/block/${id}`,
+        {
+          block: blockValue === 1 ? 0 : 1,
+        }
+      );
+      if (response.status === 200) {
+        toast.dismiss();
+        toast.success("Block Status Updated!");
+        setIsFormOpen(false);
+        fetchCustomerForm();
+      } else {
+        toast.error("Failed to update customer");
+      }
+    } catch (err) {
+      toast.error("Failed to update customer");
     }
   };
 
@@ -412,6 +435,9 @@ const Customer: React.FC = () => {
                       Created At
                     </th>
                     <th scope="col" className="px-6 py-3">
+                      Block
+                    </th>
+                    <th scope="col" className="px-6 py-3">
                       <span className="sr-only">Actions</span>
                     </th>
                   </tr>
@@ -454,6 +480,17 @@ const Customer: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 text-gray-900">
                           {new Date(customerForm.createdAt).toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">
+                          <ToggleSwitch
+                            checked={customerForm.block === 1}
+                            onChange={() =>
+                              toggleBlockHandler(
+                                customerForm.user_id.toString(),
+                                customerForm.block
+                              )
+                            }
+                          />
                         </td>
                         <td className="px-6 py-4 text-gray-900 text-right flex justify-end">
                           {updatePermission && (

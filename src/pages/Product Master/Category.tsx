@@ -21,6 +21,8 @@ interface Category {
   status: string;
   createdAt: string;
   updatedAt: string;
+  sequence: number;
+  unselected: string;
 }
 
 interface PaginationData {
@@ -39,9 +41,12 @@ const CategoryPage: React.FC = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [name, setName] = useState("");
+  const [sequence, setSequence] = useState<number | null>(null);
   const [image, setImage] = useState<File | null>(null);
+  const [unselectedImage, setUnselectedImage] = useState<File | null>(null);
   const [status, setStatus] = useState("");
   const [imagePreview, setImagePreview] = useState("");
+  const [unselectedPreview, setUnSelectedPreview] = useState("");
   const [pagination, setPagination] = useState<PaginationData>({
     currentPage: 1,
     totalPages: 1,
@@ -154,6 +159,8 @@ const CategoryPage: React.FC = () => {
     setStatus("active");
     setIsFormOpen(true);
     setFilterOpen(false);
+    setSequence(null);
+    setUnselectedImage(null);
   };
 
   const openEditForm = (category: Category) => {
@@ -164,6 +171,9 @@ const CategoryPage: React.FC = () => {
     setIsFormOpen(true);
     setImagePreview(category.image);
     setFilterOpen(false);
+    setSequence(category.sequence);
+    setUnselectedImage(null);
+    setUnSelectedPreview(category.unselected);
   };
 
   const closeForm = () => {
@@ -172,6 +182,7 @@ const CategoryPage: React.FC = () => {
     setName("");
     setImage(null);
     setStatus("");
+    setSequence(null);
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -181,7 +192,12 @@ const CategoryPage: React.FC = () => {
       const formData = new FormData();
       formData.append("name", name);
       formData.append("status", status);
+      formData.append("sequence", sequence?.toString() || "0");
       formData.append("type", "categories");
+
+      if (unselectedImage) {
+        formData.append("unselected", unselectedImage);
+      }
       if (image) {
         formData.append("image", image);
       }
@@ -437,11 +453,11 @@ const CategoryPage: React.FC = () => {
       )}
 
       {isFormOpen && (
-        <div className="w-[50%] mx-auto my-10">
+        <div className="w-[90%] mx-auto my-10">
           <h3 className="text-xl font-semibold leading-6 text-gray-900 mb-4">
             {editingCategory ? "Edit Category" : "Add New Category"}
           </h3>
-          <form onSubmit={handleFormSubmit}>
+          <form onSubmit={handleFormSubmit} className="grid grid-cols-2 gap-4">
             <div className="mb-4">
               <label
                 htmlFor="name"
@@ -449,12 +465,28 @@ const CategoryPage: React.FC = () => {
               >
                 Name
               </label>
-              <input
+              <TextInput
                 type="text"
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 customInput"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="sequence"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Sequence
+              </label>
+              <TextInput
+                type="number"
+                id="sequence"
+                value={sequence?.toString()}
+                onChange={(e) => setSequence(Number(e.target.value))}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 customInput"
                 required
               />
             </div>
@@ -463,7 +495,7 @@ const CategoryPage: React.FC = () => {
                 htmlFor="image"
                 className="block text-sm font-medium text-gray-700"
               >
-                Image URL
+                Image
               </label>
               <input
                 type="file"
@@ -479,18 +511,49 @@ const CategoryPage: React.FC = () => {
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               />
             </div>
+            <div className="mb-4">
+              <label
+                htmlFor="unselectedimage"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Unselected Image
+              </label>
+              <input
+                type="file"
+                id="unselectedimage"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    setUnselectedImage(file as File | null);
+                  } else {
+                    setUnselectedImage(null);
+                  }
+                }}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              />
+            </div>
 
-            {editingCategory && imagePreview && (
-              <div className="mb-4">
+            <div className="mb-4">
+              {editingCategory && imagePreview && (
                 <img
                   src={BACKEND_MEDIA_LINK + imagePreview}
                   alt="Category Preview"
                   className="w-16 h-16 object-cover mb-2"
                 />
-              </div>
-            )}
+              )}
+            </div>
 
-            <div className="flex justify-end mt-4">
+            <div className="mb-4">
+              {editingCategory && unselectedPreview && (
+                <img
+                  src={BACKEND_MEDIA_LINK + unselectedPreview}
+                  alt="Category Preview"
+                  className="w-16 h-16 object-cover mb-2"
+                />
+              )}
+            </div>
+
+            <div className="flex justify-end items-center mt-4 grid-cols-2">
               <button
                 type="button"
                 onClick={closeForm}
