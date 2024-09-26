@@ -172,25 +172,25 @@ const RedeemRefer: React.FC = () => {
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-4 py-3">
                   ID
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-4 py-3">
                   Referred Name
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-4 py-3">
                   Referred Email
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-4 py-3">
                   Referrer Name
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-4 py-3">
                   Code
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-4 py-3">
                   Request
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="px-4 py-3">
                   <span className="sr-only">Actions</span>
                 </th>
               </tr>
@@ -202,27 +202,25 @@ const RedeemRefer: React.FC = () => {
                     key={refer.id}
                     className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                   >
-                    <td className="px-6 py-4 text-gray-900">{refer.id}</td>
-                    <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <td className="p-4 text-gray-900">{refer.id}</td>
+                    <td className="p-4 text-gray-900">
                       {refer.referred_firstname} {refer.referred_lastname}
                     </td>
-                    <td className="px-6 py-4 text-gray-900">
+                    <td className="p-4 text-gray-900">
                       {refer.referred_email}
                     </td>
-                    <td className="px-6 py-4 text-gray-900">
+                    <td className="p-4 text-gray-900">
                       {refer.referrer_firstname} {refer.referrer_lastname}
                     </td>
-                    <td className="px-6 py-4 text-gray-900">
-                      {refer.referral_code}
-                    </td>
+                    <td className="p-4 text-gray-900">{refer.referral_code}</td>
                     {refer.redeem_status ? (
-                      <td className="px-6 py-4 text-gray-900">
+                      <td className="p-4 text-gray-900">
                         <Badge color="success" className="!inline-block">
                           Completed
                         </Badge>
                       </td>
                     ) : (
-                      <td className="px-6 py-4 text-gray-900">
+                      <td className="p-4 text-gray-900">
                         {formatDateTime(new Date(refer.redeem_requested_at))}
                       </td>
                     )}

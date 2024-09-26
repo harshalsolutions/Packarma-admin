@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Spinner } from "flowbite-react";
+import { Spinner, Tooltip } from "flowbite-react";
 import { FaChevronLeft, FaChevronRight, FaInfoCircle } from "react-icons/fa";
 import { TbEdit } from "react-icons/tb";
 import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
@@ -294,25 +294,25 @@ const SubscriptionPage: React.FC = () => {
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Id
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Name
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Credit Amount
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Duration
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Prices
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Benefits
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       <span className="sr-only">Actions</span>
                     </th>
                   </tr>
@@ -324,19 +324,17 @@ const SubscriptionPage: React.FC = () => {
                         key={subscription.id}
                         className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                       >
-                        <td className="px-6 py-4 text-gray-900">
-                          {subscription.id}
-                        </td>
-                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <td className="p-4 text-gray-900">{subscription.id}</td>
+                        <td className="p-4 text-gray-900">
                           {subscription.type}
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           {subscription.credit_amount}
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           {subscription.duration} days
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           {subscription.prices ? (
                             <button
                               onClick={() => {
@@ -346,13 +344,13 @@ const SubscriptionPage: React.FC = () => {
                               className="text-xl text-blue-600 dark:text-blue-500 hover:underline"
                               aria-label="View Prices"
                             >
-                              <FaInfoCircle />
+                              <FaInfoCircle aria-label="View Prices" />
                             </button>
                           ) : (
                             "No Data!"
                           )}
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           {subscription.benefits ? (
                             <button
                               onClick={() =>
@@ -392,7 +390,9 @@ const SubscriptionPage: React.FC = () => {
                             className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
                             aria-label="Info"
                           >
-                            <IoPricetagOutline />
+                            <Tooltip content="Add Prices">
+                              <IoPricetagOutline />
+                            </Tooltip>
                           </button>
                           <button
                             onClick={() =>
@@ -658,36 +658,34 @@ const SubscriptionPage: React.FC = () => {
 
       {pricePopup && (
         <div className="fixed inset-0 bg-black z-40 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full">
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr>
-                    <th className="border-b-2 border-gray-200 bg-gray-100 px-4 py-2 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider">
-                      Currency
-                    </th>
-                    <th className="border-b-2 border-gray-200 bg-gray-100 px-4 py-2 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider">
-                      Price
-                    </th>
+          <div className="bg-white p-6 rounded-lg max-w-md w-full max-h-[80vh]">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th className="border-b-2 border-gray-200 bg-gray-100 px-4 py-2 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider">
+                    Currency
+                  </th>
+                  <th className="border-b-2 border-gray-200 bg-gray-100 px-4 py-2 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider">
+                    Price
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {pricePopupData.map((price, index) => (
+                  <tr
+                    key={index}
+                    className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                  >
+                    <td className="px-4 py-2 border-b border-gray-200">
+                      {price.currency}
+                    </td>
+                    <td className="px-4 py-2 border-b border-gray-200">
+                      {price.price}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {pricePopupData.map((price, index) => (
-                    <tr
-                      key={index}
-                      className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                    >
-                      <td className="px-4 py-2 border-b border-gray-200">
-                        {price.currency}
-                      </td>
-                      <td className="px-4 py-2 border-b border-gray-200">
-                        {price.price}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
             <button
               onClick={() => setPricePopup(false)}
               className="mt-4 px-4 py-2 bg-lime-500 text-black rounded hover:bg-lime-600 transition duration-300 ease-in-out"

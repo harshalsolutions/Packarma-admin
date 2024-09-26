@@ -597,28 +597,28 @@ const Product: React.FC = () => {
               <table className="w-full overflow-x-auto text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Id
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Name
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Category
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Sub-Category
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Product Form
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Image
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Status
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       <span className="sr-only">Actions</span>
                     </th>
                   </tr>
@@ -630,20 +630,18 @@ const Product: React.FC = () => {
                         key={product.id}
                         className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                       >
-                        <td className="px-6 py-4 text-gray-900">
-                          {product.id}
-                        </td>
-                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <td className="p-4 text-gray-900">{product.id}</td>
+                        <td className="p-4 text-gray-900">
                           {product.product_name}
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           {
                             categories.find(
                               (category) => category.id === product.category_id
                             )?.name
                           }
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           {
                             subCategories.find(
                               (category) =>
@@ -651,7 +649,7 @@ const Product: React.FC = () => {
                             )?.name
                           }
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           {
                             productForms.find(
                               (category) =>
@@ -659,7 +657,7 @@ const Product: React.FC = () => {
                             )?.name
                           }
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           <img
                             src={BACKEND_MEDIA_LINK + product.product_image}
                             alt={product.product_name}
@@ -667,7 +665,7 @@ const Product: React.FC = () => {
                           />
                         </td>
                         {updatePermission && (
-                          <td className="px-6 py-4 text-gray-900">
+                          <td className="p-4 text-gray-900">
                             <ToggleSwitch
                               checked={product.status === "active"}
                               onChange={() =>
@@ -677,7 +675,7 @@ const Product: React.FC = () => {
                           </td>
                         )}
                         {!updatePermission && (
-                          <td className="px-6 py-4 text-gray-900">
+                          <td className="p-4 text-gray-900">
                             <Badge
                               className="!inline-block"
                               color={

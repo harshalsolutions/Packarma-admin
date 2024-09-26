@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Card, Spinner, TextInput } from "flowbite-react";
+import { Badge, Card, Spinner, TextInput, Tooltip } from "flowbite-react";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -494,16 +494,16 @@ const AdsPage: React.FC = () => {
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                   <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
-                      <th scope="col" className="px-6 py-3">
+                      <th scope="col" className="px-4 py-3">
                         Id
                       </th>
-                      <th scope="col" className="px-6 py-3">
+                      <th scope="col" className="px-4 py-3">
                         Name
                       </th>
-                      <th scope="col" className="px-6 py-3">
+                      <th scope="col" className="px-4 py-3">
                         Email
                       </th>
-                      <th scope="col" className="px-6 py-3">
+                      <th scope="col" className="px-4 py-3">
                         Timestamp
                       </th>
                     </tr>
@@ -515,16 +515,12 @@ const AdsPage: React.FC = () => {
                           key={index}
                           className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                         >
-                          <td className="px-6 py-4 text-gray-900">
-                            {index + 1}
-                          </td>
-                          <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                          <td className="p-4 text-gray-900">{index + 1}</td>
+                          <td className="p-4 text-gray-900">
                             {item.firstname} {item.lastname}
                           </td>
-                          <td className="px-6 py-4 text-gray-900">
-                            {item.email}
-                          </td>
-                          <td className="px-6 py-4 text-gray-900">
+                          <td className="p-4 text-gray-900">{item.email}</td>
+                          <td className="p-4 text-gray-900">
                             {new Date(item.activity_timestamp).toLocaleString()}
                           </td>
                         </tr>
@@ -606,30 +602,30 @@ const AdsPage: React.FC = () => {
                   <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                       <tr>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-4 py-3">
                           Id
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-4 py-3">
                           Title
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-4 py-3">
                           Views
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-4 py-3">
                           Clicks
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-4 py-3">
                           Image
                         </th>
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-4 py-3">
                           Status
                         </th>
                         {exportPermission && (
-                          <th scope="col" className="px-6 py-3">
+                          <th scope="col" className="px-4 py-3">
                             Export
                           </th>
                         )}
-                        <th scope="col" className="px-6 py-3">
+                        <th scope="col" className="px-4 py-3">
                           <span className="sr-only">Actions</span>
                         </th>
                       </tr>
@@ -641,13 +637,13 @@ const AdsPage: React.FC = () => {
                             key={advertisement.id}
                             className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                           >
-                            <td className="px-6 py-4 text-gray-900">
+                            <td className="p-4 text-gray-900">
                               {advertisement.id}
                             </td>
-                            <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            <td className="p-4 text-gray-900">
                               {advertisement.title}
                             </td>
-                            <td className="px-6 py-4 text-gray-900">
+                            <td className="p-4 text-gray-900">
                               <div className="px-2 py-4 text-gray-900 flex justify-start items-start  cursor-pointer">
                                 <span>{advertisement.total_views}</span>
                                 {advertisement.total_views != 0 && (
@@ -662,7 +658,7 @@ const AdsPage: React.FC = () => {
                                 )}
                               </div>
                             </td>
-                            <td className="px-6 py-4 text-gray-900">
+                            <td className="p-4 text-gray-900">
                               <div className="px-2 py-4 text-gray-900 flex justify-start items-start  cursor-pointer">
                                 <span>{advertisement.total_clicks}</span>
                                 {advertisement.total_clicks != 0 && (
@@ -688,7 +684,7 @@ const AdsPage: React.FC = () => {
                               />
                             </td>
                             {updatePermission && (
-                              <td className="px-6 py-4 text-gray-900">
+                              <td className="p-4 text-gray-900">
                                 <ToggleSwitch
                                   checked={advertisement.status === "active"}
                                   onChange={() =>
@@ -701,7 +697,7 @@ const AdsPage: React.FC = () => {
                               </td>
                             )}
                             {!updatePermission && (
-                              <td className="px-6 py-4 text-gray-900">
+                              <td className="p-4 text-gray-900">
                                 <Badge
                                   className="!inline-block"
                                   color={
@@ -718,7 +714,7 @@ const AdsPage: React.FC = () => {
                               </td>
                             )}
                             {exportPermission && (
-                              <td className="px-6 py-4 text-gray-900">
+                              <td className="p-4 text-gray-900">
                                 <button
                                   onClick={() =>
                                     exportAdvertisement(
@@ -729,7 +725,9 @@ const AdsPage: React.FC = () => {
                                   className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
                                   aria-label="Export"
                                 >
-                                  <MdOutlineRemoveRedEye />
+                                  <Tooltip content="Views">
+                                    <MdOutlineRemoveRedEye />
+                                  </Tooltip>
                                 </button>
                                 <button
                                   onClick={() =>
@@ -741,7 +739,9 @@ const AdsPage: React.FC = () => {
                                   className="text-2xl text-green-600 dark:text-green-500 hover:underline mr-4"
                                   aria-label="Export"
                                 >
-                                  <HiCursorClick />
+                                  <Tooltip content="Clicks">
+                                    <HiCursorClick />
+                                  </Tooltip>
                                 </button>
                               </td>
                             )}

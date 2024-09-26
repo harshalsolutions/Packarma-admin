@@ -359,22 +359,22 @@ const SubCategoryPage: React.FC = () => {
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Id
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Name
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Image
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Category
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Status
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       <span className="sr-only">Actions</span>
                     </th>
                   </tr>
@@ -386,24 +386,22 @@ const SubCategoryPage: React.FC = () => {
                         key={subCategory.id}
                         className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                       >
-                        <td className="px-6 py-4 text-gray-900">
-                          {subCategory.id}
-                        </td>
-                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <td className="p-4 text-gray-900">{subCategory.id}</td>
+                        <td className="p-4 text-gray-900">
                           {subCategory.name}
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           <img
                             src={BACKEND_MEDIA_LINK + subCategory.image}
                             alt={subCategory.name}
                             className="w-20 h-20 object-cover"
                           />
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           {subCategory.category_name}
                         </td>
                         {updatePermission && (
-                          <td className="px-6 py-4 text-gray-900">
+                          <td className="p-4 text-gray-900">
                             <ToggleSwitch
                               checked={subCategory.status === "active"}
                               onChange={() =>

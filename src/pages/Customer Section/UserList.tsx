@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../utils/axiosInstance";
-import { Badge, Spinner, TextInput } from "flowbite-react";
+import { Badge, Spinner, TextInput, Tooltip } from "flowbite-react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
 import {
   FaChevronLeft,
   FaChevronRight,
-  FaAddressBook,
   FaPlusCircle,
   FaRegFileExcel,
 } from "react-icons/fa";
@@ -26,6 +25,7 @@ import Select from "react-select";
 import { useNavigate } from "react-router";
 import { BiSearchAlt } from "react-icons/bi";
 import ToggleSwitch from "../../components/ToggleSwitch";
+import { IoLocationOutline } from "react-icons/io5";
 
 type FilterType = {
   name: string;
@@ -410,34 +410,34 @@ const Customer: React.FC = () => {
             <ErrorComp error={error} onRetry={fetchCustomerForm} />
           ) : (
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-6">
-              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <table className="w-full overflow-x-scroll text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Id
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Name
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Email Address
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Referal Code
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Active Subscription
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Credits
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Created At
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Block
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       <span className="sr-only">Actions</span>
                     </th>
                   </tr>
@@ -449,19 +449,19 @@ const Customer: React.FC = () => {
                         key={customerForm.user_id}
                         className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                       >
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           {customerForm.user_id}
                         </td>
-                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <td className="p-4 text-gray-900">
                           {customerForm.firstname} {customerForm.lastname}
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           {customerForm.email}
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           {customerForm.code}
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           <Badge
                             className="!inline-block"
                             color={
@@ -475,13 +475,13 @@ const Customer: React.FC = () => {
                               : "No"}
                           </Badge>
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           {customerForm.credits}
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           {new Date(customerForm.createdAt).toLocaleString()}
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           <ToggleSwitch
                             checked={customerForm.block === 1}
                             onChange={() =>
@@ -493,15 +493,6 @@ const Customer: React.FC = () => {
                           />
                         </td>
                         <td className="px-6 py-4 text-gray-900 text-right flex justify-end">
-                          {updatePermission && (
-                            <button
-                              onClick={() => setSelectedCustomer(customerForm)}
-                              className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
-                              aria-label="Info"
-                            >
-                              <MdOutlineRemoveRedEye />
-                            </button>
-                          )}
                           {updatePermission && (
                             <button
                               onClick={() => {
@@ -535,7 +526,9 @@ const Customer: React.FC = () => {
                             className="text-xl text-green-600 dark:text-green-500 hover:underline mr-4"
                             aria-label="Add Credits"
                           >
-                            <FaPlusCircle />
+                            <Tooltip content="Add Credits">
+                              <FaPlusCircle />
+                            </Tooltip>
                           </button>
                           <button
                             onClick={() =>
@@ -543,10 +536,12 @@ const Customer: React.FC = () => {
                                 `/admin/customer-section/user-address-list?user_id=${customerForm.user_id}`
                               )
                             }
-                            className="text-xl text-purple-600 dark:text-purple-500 hover:underline mr-4"
+                            className="text-2xl text-purple-600 dark:text-purple-500 hover:underline mr-4"
                             aria-label="Show Addresses"
                           >
-                            <FaAddressBook />
+                            <Tooltip content="Address">
+                              <IoLocationOutline />
+                            </Tooltip>
                           </button>
                           <button
                             onClick={() =>
@@ -554,10 +549,19 @@ const Customer: React.FC = () => {
                                 `/admin/customer-section/enquiry?user_id=${customerForm.user_id}`
                               )
                             }
-                            className="text-xl text-blue-600 dark:text-blue-500 hover:underline"
-                            aria-label="Show Addresses"
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
+                            aria-label="Search History"
                           >
-                            <BiSearchAlt />
+                            <Tooltip content="Search History">
+                              <BiSearchAlt />
+                            </Tooltip>
+                          </button>
+                          <button
+                            onClick={() => setSelectedCustomer(customerForm)}
+                            className="text-2xl text-blue-600 dark:text-blue-500 hover:underline"
+                            aria-label="Info"
+                          >
+                            <MdOutlineRemoveRedEye />
                           </button>
                         </td>
                       </tr>

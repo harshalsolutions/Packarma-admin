@@ -6,7 +6,7 @@ import { HiChartPie, HiUsers } from "react-icons/hi";
 import { VscDebugBreakpointDataUnverified } from "react-icons/vsc";
 import { HiOutlineSquares2X2 } from "react-icons/hi2";
 import { IconType } from "react-icons";
-import { RiFileExcel2Line, RiSettings4Line } from "react-icons/ri";
+import { RiSettings4Line } from "react-icons/ri";
 import { FiHeadphones } from "react-icons/fi";
 import { useUser } from "../context/userContext";
 import { MdDeveloperMode } from "react-icons/md";

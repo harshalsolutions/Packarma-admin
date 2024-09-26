@@ -273,22 +273,22 @@ const PackagingTreatmentPage: React.FC = () => {
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Id
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Name
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Image
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Status
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       Featured
                     </th>
-                    <th scope="col" className="px-6 py-3">
+                    <th scope="col" className="px-4 py-3">
                       <span className="sr-only">Actions</span>
                     </th>
                   </tr>
@@ -300,13 +300,13 @@ const PackagingTreatmentPage: React.FC = () => {
                         key={packagingTreatment.id}
                         className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                       >
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           {packagingTreatment.id}
                         </td>
-                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <td className="p-4 text-gray-900">
                           {packagingTreatment.name}
                         </td>
-                        <td className="px-6 py-4 text-gray-900">
+                        <td className="p-4 text-gray-900">
                           <img
                             src={BACKEND_MEDIA_LINK + packagingTreatment.image}
                             alt={packagingTreatment.name}
@@ -314,7 +314,7 @@ const PackagingTreatmentPage: React.FC = () => {
                           />
                         </td>
                         {updatePermission && (
-                          <td className="px-6 py-4 text-gray-900">
+                          <td className="p-4 text-gray-900">
                             <ToggleSwitch
                               checked={packagingTreatment.status === "active"}
                               onChange={() =>
@@ -327,7 +327,7 @@ const PackagingTreatmentPage: React.FC = () => {
                           </td>
                         )}
                         {!updatePermission && (
-                          <td className="px-6 py-4 text-gray-900">
+                          <td className="p-4 text-gray-900">
                             <Badge
                               className="!inline-block"
                               color={
@@ -344,7 +344,7 @@ const PackagingTreatmentPage: React.FC = () => {
                           </td>
                         )}
                         {updatePermission && (
-                          <td className="px-6 py-4 text-gray-900">
+                          <td className="p-4 text-gray-900">
                             <ToggleSwitch
                               checked={packagingTreatment.featured === 1}
                               onChange={() =>
@@ -357,7 +357,7 @@ const PackagingTreatmentPage: React.FC = () => {
                           </td>
                         )}
                         {!updatePermission && (
-                          <td className="px-6 py-4 text-gray-900">
+                          <td className="p-4 text-gray-900">
                             <Badge
                               className="!inline-block"
                               color={
