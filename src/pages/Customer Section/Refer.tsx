@@ -116,7 +116,14 @@ const Refer: React.FC = () => {
     try {
       const response = await api.post(
         `${BACKEND_API_KEY}/customer/referrals/export`,
-        {},
+        {
+          from_date: filterOptions.from_date,
+          to_date: filterOptions.to_date,
+          name: filterOptions.name,
+          signup_done: filterOptions.signup_done,
+          subscription_done: filterOptions.subscription_done,
+          redeem_done: filterOptions.redeem_done,
+        },
         {
           responseType: "blob",
         }
@@ -131,9 +138,10 @@ const Refer: React.FC = () => {
       document.body.removeChild(link);
       toast.dismiss();
       toast.success("Exported successfully");
-    } catch (err) {
+    } catch (err: any) {
+      console.log(err);
       toast.dismiss();
-      toast.error("Something went wrong");
+      toast.error(err?.response?.data?.message || "Something went wrong");
     }
   };
 

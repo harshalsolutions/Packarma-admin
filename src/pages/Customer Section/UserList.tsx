@@ -180,6 +180,11 @@ const Customer: React.FC = () => {
         `${BACKEND_API_KEY}/customer/users/export`,
         {
           link: BACKEND_MEDIA_LINK,
+          name: filter.name,
+          phone_number: filter.phone_number,
+          email: filter.email,
+          active_subscription: filter.active_subscription,
+          user_type: filter.user_type,
         },
         {
           responseType: "blob",

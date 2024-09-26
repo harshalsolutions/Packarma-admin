@@ -179,6 +179,10 @@ const Customer: React.FC = () => {
         `${BACKEND_API_KEY}/customer/subscriptions/export`,
         {
           link: BACKEND_MEDIA_LINK,
+          name: filter?.name,
+          subscription_type: filter?.subscription_type,
+          start_date: filter?.start_date,
+          end_date: filter?.end_date,
         },
         {
           responseType: "blob",

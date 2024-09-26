@@ -241,6 +241,11 @@ const Product: React.FC = () => {
       const response = await api.post(
         `${BACKEND_API_KEY}/product/export-products`,
         {
+          category_id: filter.categoryId,
+          sub_category_id: filter.subCategoryId,
+          product_form_id: filter.productFormId,
+          packaging_treatment_id: filter.packagingTreatmentId,
+          productName: filter.productName,
           link: BACKEND_MEDIA_LINK,
         },
         {

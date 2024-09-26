@@ -141,6 +141,7 @@ const CreditPurchase: React.FC = () => {
         `${BACKEND_API_KEY}/customer/credit-purchase/export`,
         {
           link: BACKEND_MEDIA_LINK,
+          search: debouncedTitleFilter,
         },
         {
           responseType: "blob",

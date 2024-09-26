@@ -189,6 +189,7 @@ const CustomerEnquiry: React.FC = () => {
         `${BACKEND_API_KEY}/customer/enquiries/export`,
         {
           link: BACKEND_MEDIA_LINK,
+          ...filterParams,
         },
         {
           responseType: "blob",

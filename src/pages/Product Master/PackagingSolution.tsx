@@ -488,6 +488,15 @@ const PackagingSolutions: React.FC = () => {
         `${BACKEND_API_KEY}/product/export-packaging-solutions`,
         {
           link: BACKEND_MEDIA_LINK,
+          name: filter.name,
+          structure_type: filter.structure_type,
+          storage_condition_id: filter.storage_condition_id,
+          product_name: filter.product_name,
+          product_form_name: filter.product_form_name,
+          packaging_treatment_name: filter.packaging_treatment_name,
+          packing_type_name: filter.packing_type_name,
+          packaging_machine_name: filter.packaging_machine_name,
+          packaging_material_name: filter.packaging_material_name,
         },
         {
           responseType: "blob",
