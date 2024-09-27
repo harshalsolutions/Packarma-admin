@@ -191,7 +191,7 @@
   @apply hover:bg-gray-50 cursor-pointer !important;
 }
 
-::-webkit-scrollbar {
+.sidebar-hidden::-webkit-scrollbar {
   display: none !important;
 }
 

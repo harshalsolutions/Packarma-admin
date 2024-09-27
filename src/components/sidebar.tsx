@@ -1,4 +1,3 @@
-import { Sidebar } from "flowbite-react";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -10,6 +9,7 @@ import { RiSettings4Line } from "react-icons/ri";
 import { FiHeadphones } from "react-icons/fi";
 import { useUser } from "../context/userContext";
 import { MdDeveloperMode } from "react-icons/md";
+import { BiChevronDown, BiChevronUp } from "react-icons/bi";
 
 interface MenuItem {
   name: string;
@@ -199,6 +199,7 @@ const menuItems: MenuItem[] = [
 
 const SidebarComponent: FC = function () {
   const [currentPage, setCurrentPage] = useState("");
+  const [openSubmenus, setOpenSubmenus] = useState<string[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
   const userContext = useUser();
@@ -214,63 +215,95 @@ const SidebarComponent: FC = function () {
     );
   };
 
-  const renderMenuItem = (item: MenuItem) => {
-    return (
-      <div key={item.path}>
-        {item.submenu ? (
-          <Sidebar.Collapse
-            icon={item.icon}
-            label={item.name}
-            open={currentPage.startsWith(item.path)}
+  const toggleSubmenu = (path: string) => {
+    setOpenSubmenus((prev) => (prev.includes(path) ? [] : [path]));
+  };
+
+  const isSubmenuOpen = (path: string) => openSubmenus.includes(path);
+
+  const renderMenuItem = (item: MenuItem) => (
+    <div key={item.path}>
+      {item.submenu ? (
+        <div>
+          <div
+            className={`flex items-center text-gray-800 justify-between p-2 cursor-pointer rounded-lg mt-2 ${
+              currentPage.startsWith(item.path) ? "bg-gray-100" : ""
+            }`}
+            onClick={() => toggleSubmenu(item.path)}
           >
-            <div className="p-0">{item.submenu.map(renderMenuItem)}</div>
-          </Sidebar.Collapse>
-        ) : (
-          <Sidebar.Item
-            onClick={() => {
-              if (item.path === currentPage) {
-                window.location.reload();
-              } else {
-                navigate(item.path);
-              }
-            }}
-            icon={({ className }: { className: string }) => (
-              <item.icon
-                className={`${className} ${
-                  item.path === currentPage ? "text-black" : ""
+            <div className="flex items-center">
+              <item.icon className="w-6 h-6 mr-2 text-gray-800" />
+              <span>{item.name}</span>
+            </div>
+            <div>
+              {isSubmenuOpen(item.path) ? (
+                <BiChevronDown className="w-6 h-6" />
+              ) : (
+                <BiChevronUp className="w-6 h-6" />
+              )}
+            </div>
+          </div>{" "}
+          <div
+            className={`ml-4 transition-all duration-300 ${
+              isSubmenuOpen(item.path) ? "block" : "hidden"
+            }`}
+          >
+            {item.submenu.map((item) => (
+              <div
+                key={item.path}
+                className={`flex items-center text-gray-800 justify-start p-2 cursor-pointer rounded-lg mt-2 ${
+                  item.path === currentPage
+                    ? "bg-lime-500"
+                    : "hover:bg-gray-100"
                 }`}
-              />
-            )}
-            className={`${
-              item.name !== "Dashboard" &&
-              item.name !== "Report" &&
-              item.name !== "General Settings" &&
-              item.name !== "Staff"
-                ? "!pl-2 !text-sm"
-                : "font-medium"
-            } ${
-              item.path === currentPage ? "bg-lime-500 hover:bg-lime-500" : ""
-            } cursor-pointer`}
-          >
-            <span className="whitespace-normal">{item.name}</span>
-          </Sidebar.Item>
-        )}
-      </div>
-    );
+                onClick={() => navigateToPage(item.path)}
+              >
+                <item.icon
+                  className={`w-5 h-5 mr-2 ${
+                    item.path === currentPage
+                      ? "text-gray-900"
+                      : "text-gray-700"
+                  }`}
+                />
+                <span className="text-sm">{item.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div
+          className={`flex items-center text-gray-800 justify-start p-3 cursor-pointer rounded-lg mt-2 ${
+            item.path === currentPage ? "bg-lime-500" : "hover:bg-gray-100"
+          }`}
+          onClick={() => navigateToPage(item.path)}
+        >
+          <item.icon
+            className={`w-6 h-6 mr-2 ${
+              item.path === currentPage ? "text-gray-900" : "text-gray-700"
+            }`}
+          />
+          <span>{item.name}</span>
+        </div>
+      )}
+    </div>
+  );
+
+  const navigateToPage = (path: string) => {
+    if (path === currentPage) {
+      window.location.reload();
+    } else {
+      navigate(path);
+    }
   };
 
   return (
-    <Sidebar className="flex-grow h-[100vh] pt-16">
-      <div className="flex flex-col justify-between">
-        <Sidebar.Items>
-          <Sidebar.ItemGroup>
-            {menuItems
-              .filter((item) => hasPermission(item.name))
-              .map(renderMenuItem)}
-          </Sidebar.ItemGroup>
-        </Sidebar.Items>
+    <div className="w-[26%] select-none max-h-[100vh] overflow-x-hidden sidebar-hidden bg-white border-r pt-20">
+      <div className="flex flex-col p-2">
+        {menuItems
+          .filter((item) => hasPermission(item.name))
+          .map(renderMenuItem)}
       </div>
-    </Sidebar>
+    </div>
   );
 };
 
