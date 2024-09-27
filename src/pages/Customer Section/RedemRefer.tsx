@@ -4,7 +4,6 @@ import { Badge, Button, Spinner, Textarea } from "flowbite-react";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import { AiOutlineClose } from "react-icons/ai";
@@ -12,6 +11,7 @@ import { TbFilter, TbFilterOff } from "react-icons/tb";
 import { formatDateTime } from "../../../utils/DateFormatter";
 import { customStyle } from "../../../utils/CustomSelectTheme";
 import Select from "react-select";
+import PaginationComponent from "../../components/PaginatonComponent";
 
 interface ReferForm {
   id: number;
@@ -262,39 +262,11 @@ const RedeemRefer: React.FC = () => {
           Showing {referForm.length} out of {pagination.totalItems} Refer
         </p>
       )}
-      {pagination.totalItems >= 10 && (
-        <div className="mt-4 flex justify-center items-center mb-8">
-          <button
-            className="px-2 py-1 rounded mr-2 disabled:opacity-50"
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            aria-label="Previous page"
-          >
-            <FaChevronLeft />
-          </button>
-          {[...Array(pagination.totalPages)].map((_, index) => (
-            <button
-              key={index + 1}
-              className={`px-2 py-1 rounded border mr-2 ${
-                index + 1 === pagination.currentPage
-                  ? "bg-lime-500 text-white"
-                  : ""
-              }`}
-              onClick={() => setCurrentPage(index + 1)}
-            >
-              {index + 1}
-            </button>
-          ))}
-          <button
-            className="px-2 py-1 rounded disabled:opacity-50"
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === pagination.totalPages}
-            aria-label="Next page"
-          >
-            <FaChevronRight />
-          </button>
-        </div>
-      )}
+      <PaginationComponent
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        pagination={pagination}
+      />
       {!isRedeemPopupOpen && selectedRefer && (
         <DetailsPopup
           title="Refer Details"

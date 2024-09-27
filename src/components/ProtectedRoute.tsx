@@ -58,10 +58,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }, [token, userContext, isUserDataFetched, navigate]);
 
   const hasPermission = (permissionName: string) => {
-    const permissionNameLower = permissionName.toLowerCase();
+    const permissionNameLower = permissionName?.toLowerCase();
     const result = userContext?.user.permissions?.some((permission) =>
       permissionNameLower.includes(
-        permission.page_name.toLowerCase().replace(" ", "-")
+        permission.page_name?.toLowerCase().replace(" ", "-")
       )
     );
     return result;

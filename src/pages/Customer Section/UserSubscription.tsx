@@ -4,7 +4,7 @@ import { Spinner, TextInput } from "flowbite-react";
 import { MdOutlineRemoveRedEye, MdPictureAsPdf } from "react-icons/md";
 import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
-import { FaChevronLeft, FaChevronRight, FaRegFileExcel } from "react-icons/fa";
+import { FaRegFileExcel } from "react-icons/fa";
 import DetailsPopup from "../../components/DetailsPopup";
 import { ErrorComp } from "../../components/ErrorComp";
 import { formatDateTime } from "../../../utils/DateFormatter";
@@ -16,6 +16,7 @@ import toast from "react-hot-toast";
 import { formatDateForFilename } from "../../../utils/ExportDateFormatter";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import { useUser } from "../../context/userContext";
+import PaginationComponent from "../../components/PaginatonComponent";
 
 interface SubscriptionList {
   id: string;
@@ -414,39 +415,11 @@ const Customer: React.FC = () => {
             Customer
           </p>
         )}
-        {pagination.totalItems >= 10 && (
-          <div className="mt-4 flex justify-center items-center mb-8">
-            <button
-              className="px-2 py-1 rounded mr-2 disabled:opacity-50"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              aria-label="Previous page"
-            >
-              <FaChevronLeft />
-            </button>
-            {[...Array(pagination.totalPages)].map((_, index) => (
-              <button
-                key={index + 1}
-                className={`px-2 py-1 rounded border mr-2 ${
-                  index + 1 === pagination.currentPage
-                    ? "bg-lime-500 text-white"
-                    : ""
-                }`}
-                onClick={() => setCurrentPage(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-            <button
-              className="px-2 py-1 rounded disabled:opacity-50"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === pagination.totalPages}
-              aria-label="Next page"
-            >
-              <FaChevronRight />
-            </button>
-          </div>
-        )}
+        <PaginationComponent
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          pagination={pagination}
+        />
       </>
       {selectedCustomer && (
         <DetailsPopup
