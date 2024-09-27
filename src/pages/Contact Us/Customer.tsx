@@ -9,6 +9,7 @@ import { ErrorComp } from "../../components/ErrorComp";
 import CustomPopup from "../../components/CustomPopup";
 import { TbFilter, TbFilterOff } from "react-icons/tb";
 import DescriptionPopup from "../../components/DescriptionCustomerContactPopup";
+import PaginationComponent from "../../components/PaginatonComponent";
 
 interface CustomerForm {
   id: number;
