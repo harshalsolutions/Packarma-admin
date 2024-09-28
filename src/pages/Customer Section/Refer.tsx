@@ -180,6 +180,7 @@ const Refer: React.FC = () => {
                   redeem_done: "",
                 });
                 fetchReferForm("nofilter");
+                setCurrentPage(1);
               }}
             >
               {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
@@ -346,7 +347,10 @@ const Refer: React.FC = () => {
             <div className="flex">
               <button
                 className="bg-lime-500 text-black px-4 py-2 rounded mr-3"
-                onClick={() => fetchReferForm()}
+                onClick={() => {
+                  fetchReferForm();
+                  setCurrentPage(1);
+                }}
               >
                 <AiOutlineSearch size={22} />
               </button>

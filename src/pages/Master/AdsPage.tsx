@@ -799,7 +799,7 @@ const AdsPage: React.FC = () => {
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={5} className="px-6 py-4 text-center">
+                          <td colSpan={7} className="px-6 py-4 text-center">
                             No advertisements found
                           </td>
                         </tr>

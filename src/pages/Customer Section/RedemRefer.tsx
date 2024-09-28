@@ -127,6 +127,7 @@ const RedeemRefer: React.FC = () => {
             onClick={() => {
               setFilterOpen(!filterOpen);
               fetchReferForm();
+              setCurrentPage(1);
             }}
           >
             {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
@@ -152,6 +153,7 @@ const RedeemRefer: React.FC = () => {
               selectedOption: { label: string; value: string } | null
             ) => {
               setFilterSelected(selectedOption?.value);
+              setCurrentPage(1);
             }}
             placeholder="Select Redeem Status"
             isSearchable

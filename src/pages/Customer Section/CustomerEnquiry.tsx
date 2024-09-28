@@ -247,6 +247,7 @@ const CustomerEnquiry: React.FC = () => {
                   fromDate: undefined,
                   toDate: undefined,
                 });
+                setCurrentPage(1);
               }}
             >
               {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
@@ -369,7 +370,10 @@ const CustomerEnquiry: React.FC = () => {
             <div className="flex">
               <button
                 className="bg-lime-500 text-black px-4 py-2 rounded"
-                onClick={() => fetchEnquiryData()}
+                onClick={() => {
+                  fetchEnquiryData();
+                  setCurrentPage(1);
+                }}
               >
                 <AiOutlineSearch size={22} />
               </button>

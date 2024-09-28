@@ -100,7 +100,7 @@ const CreditPurchase: React.FC = () => {
     const handler = setTimeout(() => {
       setDebouncedTitleFilter(titleFilter);
     }, 350);
-
+    setCurrentPage(1);
     return () => {
       clearTimeout(handler);
     };
@@ -189,6 +189,7 @@ const CreditPurchase: React.FC = () => {
               onClick={() => {
                 setFilterOpen(!filterOpen);
                 setTitleFilter("");
+                setCurrentPage(1);
               }}
             >
               {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}

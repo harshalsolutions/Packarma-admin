@@ -73,7 +73,7 @@ const SubCategoryPage: React.FC = () => {
     const handler = setTimeout(() => {
       setDebouncedTitleFilter(titleFilter);
     }, 350);
-
+    setCurrentPage(1);
     return () => {
       clearTimeout(handler);
     };
@@ -282,6 +282,7 @@ const SubCategoryPage: React.FC = () => {
                 setFilterOpen(!filterOpen);
                 setTitleFilter("");
                 setSelectedFilterCategory("");
+                setCurrentPage(1);
               }}
             >
               {filterOpen ? <TbFilterOff size={22} /> : <TbFilter size={22} />}
@@ -330,6 +331,7 @@ const SubCategoryPage: React.FC = () => {
               setSelectedFilterCategory(
                 newValue?.value?.toString() || undefined
               );
+              setCurrentPage(1);
             }}
             placeholder="Select Category"
             isSearchable

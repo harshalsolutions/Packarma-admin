@@ -103,6 +103,7 @@ const PackagingMaterial: React.FC = () => {
     const handler = setTimeout(() => {
       setDebouncedMaterialFilter(materialFilter);
     }, 350);
+    setCurrentPage(1);
 
     return () => {
       clearTimeout(handler);

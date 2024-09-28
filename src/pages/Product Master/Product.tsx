@@ -147,6 +147,7 @@ const Product: React.FC = () => {
       setLoading(true);
       let response;
       if (type === "filter") {
+        setCurrentPage(1);
         response = await api.get(`${BACKEND_API_KEY}/product/get-products`, {
           params: {
             page: currentPage,

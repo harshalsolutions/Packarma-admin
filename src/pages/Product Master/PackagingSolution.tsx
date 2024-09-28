@@ -576,6 +576,7 @@ const PackagingSolutions: React.FC = () => {
               className="bg-blue-500 text-white px-3 py-2 rounded block mr-4"
               onClick={() => {
                 setFilterOpen(!filterOpen);
+                setCurrentPage(1);
                 setFilter({
                   name: "",
                   structure_type: "",
@@ -748,7 +749,10 @@ const PackagingSolutions: React.FC = () => {
           <div className="flex">
             <button
               className="bg-lime-500 text-black px-4 py-2 rounded"
-              onClick={() => fetchPackagingSolutions("filter")}
+              onClick={() => {
+                fetchPackagingSolutions("filter");
+                setCurrentPage(1);
+              }}
             >
               <AiOutlineSearch size={22} />
             </button>

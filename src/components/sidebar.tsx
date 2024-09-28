@@ -297,7 +297,7 @@ const SidebarComponent: FC = function () {
   };
 
   return (
-    <div className="w-[26%] select-none max-h-[100vh] overflow-x-hidden sidebar-hidden bg-white border-r pt-20">
+    <div className="w-[26%] select-none max-h-[100vh] overflow-x-hidden sidebar-hidden bg-white border-r pt-16">
       <div className="flex flex-col p-2">
         {menuItems
           .filter((item) => hasPermission(item.name))
