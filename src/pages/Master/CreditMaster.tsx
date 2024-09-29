@@ -21,6 +21,7 @@ interface CreditPrice {
   price: number;
   percentage: number;
   currency: string;
+  country: string;
   status: "active" | "inactive";
   createdAt: string;
   updatedAt: string;
@@ -51,6 +52,7 @@ const CreditMaster: React.FC = () => {
   const [price, setPrice] = useState<number | "">("");
   const [percentage, setPercentage] = useState<number | "">("");
   const [currency, setCurrency] = useState("");
+  const [country, setCountry] = useState("");
   const [status, setStatus] = useState<"active" | "inactive">("active");
   const [pagination, setPagination] = useState<PaginationData>({
     currentPage: 1,
@@ -180,6 +182,7 @@ const CreditMaster: React.FC = () => {
     setPrice(creditPrice.price);
     setPercentage(creditPrice.percentage);
     setCurrency(creditPrice.currency);
+    setCountry(creditPrice.country);
     setStatus(creditPrice.status);
     setIsFormOpen(true);
   };
@@ -202,6 +205,7 @@ const CreditMaster: React.FC = () => {
         percentage,
         currency,
         status,
+        country,
       };
 
       if (editingCreditPrice) {
@@ -307,6 +311,9 @@ const CreditMaster: React.FC = () => {
                       Percentage
                     </th>
                     <th scope="col" className="px-4 py-3">
+                      Country
+                    </th>
+                    <th scope="col" className="px-4 py-3">
                       Currency
                     </th>
                     <th scope="col" className="px-4 py-3">
@@ -329,6 +336,9 @@ const CreditMaster: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 text-gray-800">
                           {creditPrice.percentage}%
+                        </td>
+                        <td className="px-6 py-4 text-gray-800">
+                          {creditPrice.country}
                         </td>
                         <td className="px-6 py-4 text-gray-800">
                           {creditPrice.currency}
@@ -452,15 +462,13 @@ const CreditMaster: React.FC = () => {
               id="currency"
               options={currencies.map((currency) => ({
                 value: currency.code,
-                label: `${currency.name} : ${currency.code} : ${currency.symbol}`,
+                label: currency.name,
               }))}
               value={
                 currency
                   ? {
                       label: `${
                         currencies.find((c) => c.code === currency)?.name
-                      } : ${currency} : ${
-                        currencies.find((c) => c.code === currency)?.symbol
                       }`,
                       value: currency,
                     }
@@ -470,6 +478,7 @@ const CreditMaster: React.FC = () => {
                 selectedOption: { label: string; value: string } | null
               ) => {
                 setCurrency(selectedOption?.value || "");
+                setCountry(selectedOption?.label || "");
               }}
               placeholder="Select Currency"
               isSearchable
