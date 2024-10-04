@@ -22,6 +22,28 @@ import { HiCursorClick } from "react-icons/hi";
 import Select from "react-select";
 import PaginationComponent from "../../components/PaginatonComponent";
 
+const appPages = [
+  "BusinessEnquiryScreen",
+  "BusinessDescriptionScreen",
+  "MainPage",
+  "EnterInformationScreen",
+  "SearchHistoryScreen",
+  "TreatmentDetailPage",
+  "TreatmentsPage",
+  "InvoiceDetailsScreen",
+  "InvoicePage",
+  "InvoicesScreen",
+  "ManageAddressPage",
+  "SubscriptionScreen",
+  "CreditHistoryScreen",
+  "FreeCreditsScreen",
+  "HelpSupportScreen",
+  "MyCreditsPage",
+  "ProfileScreen",
+  "ReferralProgramPage",
+  "TermsAndConditionsScreen",
+];
+
 interface Product {
   product_id: number;
   product_name: string;
@@ -912,17 +934,24 @@ const AdsPage: React.FC = () => {
                 </div>
                 <div className="mb-4">
                   <label
-                    htmlFor="app_page"
+                    htmlFor="link"
                     className="block text-sm font-medium text-gray-700"
                   >
                     App Page
                   </label>
-                  <input
-                    type="text"
+                  <Select
+                    isClearable
                     id="app_page"
-                    value={appPage}
-                    onChange={(e) => setAppPage(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    value={{
+                      label: appPage,
+                      value: appPage,
+                    }}
+                    onChange={(e) => setAppPage(e?.value || "")}
+                    options={appPages.map((page) => ({
+                      label: page,
+                      value: page,
+                    }))}
+                    className="customInput mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   />
                 </div>
                 <div className="mb-4">
