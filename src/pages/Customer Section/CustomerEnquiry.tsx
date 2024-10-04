@@ -39,8 +39,10 @@ interface EnquiryForm {
   packing_type_name: string;
   packaging_machine_id: number;
   packaging_material_id: number;
-  product_min_weight: string;
-  product_max_weight: string;
+  product_min_weight: number;
+  product_max_weight: number;
+  original_product_min_weight: number;
+  original_product_max_weight: number;
   min_order_quantity: number;
   min_order_quantity_unit_id: number;
   status: string;
@@ -471,7 +473,7 @@ const CustomerEnquiry: React.FC = () => {
             },
             {
               label: "Weight By User",
-              value: selectedEnquiry.weight_by_user,
+              value: `${selectedEnquiry.product_min_weight} - ${selectedEnquiry.product_max_weight}`,
             },
             {
               label: "Solution Name",
@@ -503,10 +505,7 @@ const CustomerEnquiry: React.FC = () => {
             },
             {
               label: "Product weight",
-              value:
-                selectedEnquiry?.product_min_weight +
-                " - " +
-                selectedEnquiry?.product_max_weight,
+              value: `${selectedEnquiry.original_product_min_weight} - ${selectedEnquiry.original_product_max_weight}`,
             },
             {
               label: "Shelf Life",

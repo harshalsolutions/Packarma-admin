@@ -77,7 +77,28 @@ const BannerPage: React.FC = () => {
   const [debouncedTitleFilter, setDebouncedTitleFilter] = useState(titleFilter);
   const [filterOpen, setFilterOpen] = useState(false);
   const userContext = useUser();
-  const [appPages] = useState<string[]>(["home", "about", "contact"]);
+  const appPages = [
+    "BusinessEnquiryScreen",
+    "BusinessDescriptionScreen",
+    "MainPage",
+    "EnterInformationScreen",
+    "SearchHistoryScreen",
+    "TreatmentDetailPage",
+    "TreatmentsPage",
+    "InvoiceDetailsScreen",
+    "InvoicePage",
+    "InvoicesScreen",
+    "ManageAddressPage",
+    "SubscriptionScreen",
+    "CreditHistoryScreen",
+    "FreeCreditsScreen",
+    "HelpSupportScreen",
+    "MyCreditsPage",
+    "ProfileScreen",
+    "ReferralProgramPage",
+    "TermsAndConditionsScreen",
+  ];
+
   const createPermission = hasUpdateAndCreatePermissions(
     userContext,
     "Master",
