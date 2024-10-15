@@ -24,6 +24,7 @@ interface SubCategory {
   category_name: string;
   createdAt: string;
   updatedAt: string;
+  sequence: number;
 }
 
 interface Pagination {
@@ -46,6 +47,7 @@ const SubCategoryPage: React.FC = () => {
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState("");
   const [status, setStatus] = useState("");
+  const [sequence, setSequence] = useState<number | null>(null);
   const [categoryId, setCategoryId] = useState<number | null>(null);
   const [categories, setCategories] = useState<{ id: number; name: string }[]>(
     []
@@ -181,6 +183,7 @@ const SubCategoryPage: React.FC = () => {
     setImagePreview("");
     setStatus("active");
     setCategoryId(null);
+    setSequence(null);
     setIsFormOpen(true);
     setFilterOpen(false);
   };
@@ -193,6 +196,7 @@ const SubCategoryPage: React.FC = () => {
     setStatus(subCategory.status);
     setCategoryId(subCategory.category_id);
     setIsFormOpen(true);
+    setSequence(subCategory.sequence);
   };
 
   const closeForm = () => {
@@ -203,6 +207,7 @@ const SubCategoryPage: React.FC = () => {
     setImagePreview("");
     setStatus("");
     setCategoryId(null);
+    setSequence(null);
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -211,6 +216,7 @@ const SubCategoryPage: React.FC = () => {
       const formData = new FormData();
       formData.append("name", name);
       formData.append("status", status);
+      formData.append("sequence", sequence?.toString() || "0");
       if (categoryId !== null) {
         formData.append("category_id", categoryId.toString());
       }
@@ -579,7 +585,22 @@ const SubCategoryPage: React.FC = () => {
                 classNamePrefix="react-select"
               />
             </div>
-
+            <div className="mb-4">
+              <label
+                htmlFor="sequence"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Sequence
+              </label>
+              <input
+                type="number"
+                id="sequence"
+                value={sequence || ""}
+                onChange={(e) => setSequence(Number(e.target.value))}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                required
+              />
+            </div>
             <div className="flex justify-end mt-4">
               <button
                 type="button"
