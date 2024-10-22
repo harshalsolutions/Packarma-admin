@@ -68,10 +68,10 @@ const AppDetails: React.FC = () => {
     toast.loading("Updating app details...");
     try {
       const formData = {
-        app_link_android: appDetails.app_link_android,
-        app_link_ios: appDetails.app_link_ios,
-        app_version_android: appDetails.app_version_android,
-        app_version_ios: appDetails.app_version_ios,
+        app_link_android: appDetails?.app_link_android,
+        app_link_ios: appDetails?.app_link_ios,
+        app_version_android: appDetails?.app_version_android,
+        app_version_ios: appDetails?.app_version_ios,
       };
       await api.put(
         `${BACKEND_API_KEY}/general-settings/app-details`,
@@ -105,7 +105,7 @@ const AppDetails: React.FC = () => {
             <input
               type="text"
               id="app_link_android"
-              value={appDetails.app_link_android}
+              value={appDetails?.app_link_android}
               onChange={(e) =>
                 setAppDetails({
                   ...appDetails,
@@ -126,7 +126,7 @@ const AppDetails: React.FC = () => {
             <input
               type="text"
               id="app_link_ios"
-              value={appDetails.app_link_ios}
+              value={appDetails?.app_link_ios}
               onChange={(e) =>
                 setAppDetails({
                   ...appDetails,
@@ -147,7 +147,7 @@ const AppDetails: React.FC = () => {
             <input
               type="text"
               id="app_version_android"
-              value={appDetails.app_version_android}
+              value={appDetails?.app_version_android}
               onChange={(e) =>
                 setAppDetails({
                   ...appDetails,
@@ -168,7 +168,7 @@ const AppDetails: React.FC = () => {
             <input
               type="text"
               id="app_version_ios"
-              value={appDetails.app_version_ios}
+              value={appDetails?.app_version_ios}
               onChange={(e) =>
                 setAppDetails({
                   ...appDetails,

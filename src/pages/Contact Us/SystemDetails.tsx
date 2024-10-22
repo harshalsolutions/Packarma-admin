@@ -60,8 +60,8 @@ const SystemDetails: React.FC = () => {
     toast.loading("Updating system details...");
     try {
       const formData = {
-        system_email: systemDetails.system_email,
-        system_phone_number: systemDetails.system_phone_number,
+        system_email: systemDetails?.system_email,
+        system_phone_number: systemDetails?.system_phone_number,
       };
       await api.put(`${BACKEND_API_KEY}/contact-us/system-details`, formData);
       fetchSystemDetails();
@@ -100,7 +100,7 @@ const SystemDetails: React.FC = () => {
             <input
               type="email"
               id="system_email"
-              value={systemDetails.system_email}
+              value={systemDetails?.system_email}
               disabled={!updatePermission || !createPermission}
               onChange={(e) =>
                 setSystemDetails({
@@ -122,7 +122,7 @@ const SystemDetails: React.FC = () => {
             <input
               type="tel"
               id="system_phone_number"
-              value={systemDetails.system_phone_number}
+              value={systemDetails?.system_phone_number}
               disabled={!updatePermission || !createPermission}
               onChange={(e) =>
                 setSystemDetails({

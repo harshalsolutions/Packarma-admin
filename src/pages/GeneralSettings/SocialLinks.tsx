@@ -68,10 +68,10 @@ const SocialLinks: React.FC = () => {
     toast.loading("Updating social links...");
     try {
       const formData = {
-        instagram_link: socialLinks.instagram_link,
-        twitter_link: socialLinks.twitter_link,
-        youtube_link: socialLinks.youtube_link,
-        facebook_link: socialLinks.facebook_link,
+        instagram_link: socialLinks?.instagram_link,
+        twitter_link: socialLinks?.twitter_link,
+        youtube_link: socialLinks?.youtube_link,
+        facebook_link: socialLinks?.facebook_link,
       };
       await api.put(
         `${BACKEND_API_KEY}/general-settings/social-links`,
@@ -105,7 +105,7 @@ const SocialLinks: React.FC = () => {
             <input
               type="text"
               id="instagram_link"
-              value={socialLinks.instagram_link}
+              value={socialLinks?.instagram_link}
               onChange={(e) =>
                 setSocialLinks({
                   ...socialLinks,
@@ -126,7 +126,7 @@ const SocialLinks: React.FC = () => {
             <input
               type="text"
               id="twitter_link"
-              value={socialLinks.twitter_link}
+              value={socialLinks?.twitter_link}
               onChange={(e) =>
                 setSocialLinks({
                   ...socialLinks,
@@ -147,7 +147,7 @@ const SocialLinks: React.FC = () => {
             <input
               type="text"
               id="youtube_link"
-              value={socialLinks.youtube_link}
+              value={socialLinks?.youtube_link}
               onChange={(e) =>
                 setSocialLinks({
                   ...socialLinks,
@@ -168,7 +168,7 @@ const SocialLinks: React.FC = () => {
             <input
               type="text"
               id="facebook_link"
-              value={socialLinks.facebook_link}
+              value={socialLinks?.facebook_link}
               onChange={(e) =>
                 setSocialLinks({
                   ...socialLinks,

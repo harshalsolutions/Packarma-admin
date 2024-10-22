@@ -64,9 +64,9 @@ const MetaSettings: React.FC = () => {
     toast.loading("Updating meta details...");
     try {
       const formData = {
-        meta_title: metaDetails.meta_title,
-        meta_keywords: metaDetails.meta_keywords,
-        meta_description: metaDetails.meta_description,
+        meta_title: metaDetails?.meta_title,
+        meta_keywords: metaDetails?.meta_keywords,
+        meta_description: metaDetails?.meta_description,
       };
       await api.put(
         `${BACKEND_API_KEY}/general-settings/meta-details`,
@@ -100,7 +100,7 @@ const MetaSettings: React.FC = () => {
             <input
               type="text"
               id="meta_title"
-              value={metaDetails.meta_title}
+              value={metaDetails?.meta_title}
               onChange={(e) =>
                 setMetaDetails({
                   ...metaDetails,
@@ -121,7 +121,7 @@ const MetaSettings: React.FC = () => {
             <input
               type="text"
               id="meta_keywords"
-              value={metaDetails.meta_keywords}
+              value={metaDetails?.meta_keywords}
               onChange={(e) =>
                 setMetaDetails({
                   ...metaDetails,
@@ -142,7 +142,7 @@ const MetaSettings: React.FC = () => {
             <input
               type="text"
               id="meta_description"
-              value={metaDetails.meta_description}
+              value={metaDetails?.meta_description}
               onChange={(e) =>
                 setMetaDetails({
                   ...metaDetails,

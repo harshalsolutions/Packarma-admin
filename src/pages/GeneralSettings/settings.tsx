@@ -13,6 +13,8 @@ import AboutUs from "./AboutUs";
 import AppDetails from "./AppDetails";
 import SocialLinks from "./SocialLinks";
 import InvoiceDetails from "./InvoiceDetails";
+import ReferEarnTAC from "./ReferEarnTAC";
+import ReferEarnBenefits from "./ReferEarnBenefits";
 
 const settings = () => {
   const [selectedSetting, setSelectedSetting] =
@@ -26,7 +28,10 @@ const settings = () => {
     { name: "Social Links", icon: <AiOutlineLink /> },
     { name: "App Details", icon: <AiOutlineAppstore /> },
     { name: "Invoice Detail", icon: <AiOutlineFileDone /> },
+    { name: "Refer and Earn Benefits", icon: <AiOutlineFileDone /> },
+    { name: "Refer and Earn T&C", icon: <AiOutlineFileDone /> },
   ];
+
   return (
     <div className="max-w-7xl mx-auto mt-8 px-4">
       <h1 className="text-2xl font-bold mb-4 border-l-8 text-black border-lime-500 pl-2">
@@ -61,6 +66,10 @@ const settings = () => {
           {selectedSetting === "App Details" && <AppDetails />}
           {selectedSetting === "Social Links" && <SocialLinks />}
           {selectedSetting === "Invoice Detail" && <InvoiceDetails />}
+          {selectedSetting === "Refer and Earn Benefits" && (
+            <ReferEarnBenefits />
+          )}
+          {selectedSetting === "Refer and Earn T&C" && <ReferEarnTAC />}
         </div>
       </section>
     </div>
