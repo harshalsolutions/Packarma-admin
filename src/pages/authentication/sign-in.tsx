@@ -96,7 +96,7 @@ const SignInPage: FC = function () {
           </form>
         </Card>
         <div className="mt-4">
-          <Link to="/forgot-password">Forgot Password?</Link>
+          <Link to="/admin/forgot-password">Forgot Password?</Link>
         </div>
       </div>
     </div>

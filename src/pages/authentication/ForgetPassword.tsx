@@ -22,7 +22,7 @@ const ForgotPasswordPage: FC = function () {
       });
       setLoading(false);
       toast.success("Email sent successfully");
-      navigate("/update-password");
+      navigate("/admin/update-password");
     } catch (error: any) {
       console.log(error);
       console.error(error?.response?.data?.message || "Something went wrong");
@@ -69,7 +69,7 @@ const ForgotPasswordPage: FC = function () {
           </form>
         </Card>
         <div className="mt-4">
-          <Link to="/login">Back to Login?</Link>
+          <Link to="/admin/login">Back to Login?</Link>
         </div>
       </div>
     </div>

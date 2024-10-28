@@ -120,13 +120,13 @@ const ReferEarnBenefits: React.FC = () => {
               <MdAdd />
             </button>
           </form>
-          <ul>
-            {benefits.map((benefit, index) => (
+          <ul className="list-disc">
+            {benefits.map((benefit) => (
               <li
                 key={benefit.benefit_id}
                 className="flex justify-between items-center mb-2 p-2 rounded-md bg-white text-sm"
               >
-                {index + 1}. {benefit.benefit_text}
+                {benefit.benefit_text}
                 <button
                   onClick={() => handleDeleteBenefit(benefit.benefit_id)}
                   className="p-2 bg-red-500 text-white rounded"
