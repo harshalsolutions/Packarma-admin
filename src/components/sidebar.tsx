@@ -140,6 +140,11 @@ const menuItems: MenuItem[] = [
         icon: VscDebugBreakpointDataUnverified,
       },
       {
+        name: "User Free Trail",
+        path: "/admin/customer-section/user-free-trail",
+        icon: VscDebugBreakpointDataUnverified,
+      },
+      {
         name: "Credit Purchase",
         path: "/admin/customer-section/credit-purchase",
         icon: VscDebugBreakpointDataUnverified,

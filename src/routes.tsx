@@ -36,6 +36,7 @@ import TermsandCondition from "./pages/Developer Settings/TermsandCondition";
 import PrivacyPolicy from "./pages/Developer Settings/PrivacyPolicy";
 import RedemRefer from "./pages/Customer Section/RedemRefer";
 import Redirect from "./Redirect";
+import FreeTrialSubscriptions from "./pages/Customer Section/UserFreeTrial";
 
 const AppRoutes = () => (
   <Routes>
@@ -247,13 +248,22 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     />
-
     <Route
       path="/admin/customer-section/user-subscription"
       element={
         <ProtectedRoute>
           <NavbarSidebarLayout>
             <UserSubscription />
+          </NavbarSidebarLayout>
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/customer-section/user-free-trail"
+      element={
+        <ProtectedRoute>
+          <NavbarSidebarLayout>
+            <FreeTrialSubscriptions />
           </NavbarSidebarLayout>
         </ProtectedRoute>
       }
