@@ -428,6 +428,9 @@ const Customer: React.FC = () => {
                       Email Address
                     </th>
                     <th scope="col" className="px-4 py-3">
+                      Phone No.
+                    </th>
+                    <th scope="col" className="px-4 py-3">
                       Referal Code
                     </th>
                     <th scope="col" className="px-4 py-3">
@@ -462,6 +465,9 @@ const Customer: React.FC = () => {
                         </td>
                         <td className="p-4 text-gray-900">
                           {customerForm.email}
+                        </td>
+                        <td className="p-4 text-gray-900">
+                          {customerForm.phone_number}
                         </td>
                         <td className="p-4 text-gray-900">
                           {customerForm.code}

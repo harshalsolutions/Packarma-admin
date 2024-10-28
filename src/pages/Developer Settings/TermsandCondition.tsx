@@ -3,7 +3,7 @@ import ReactQuill from "react-quill";
 import { useUser } from "../../context/userContext";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import api from "../../../utils/axiosInstance";
-import { BACKEND_API_KEY } from "../../../utils/ApiKey";
+import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import toast from "react-hot-toast";
 
 const TermsAndCondition = () => {
@@ -73,6 +73,13 @@ const TermsAndCondition = () => {
           Update Data
         </button>
       )}
+      <a
+        className="pb-10 text-sm"
+        target="_blank"
+        href={BACKEND_MEDIA_LINK + "/public/terms-and-conditions"}
+      >
+        Link: {BACKEND_MEDIA_LINK + "/public/terms-and-conditions"}
+      </a>
     </div>
   );
 };

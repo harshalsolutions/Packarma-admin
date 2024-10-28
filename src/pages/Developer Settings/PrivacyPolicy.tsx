@@ -3,7 +3,7 @@ import ReactQuill from "react-quill";
 import { useUser } from "../../context/userContext";
 import { hasUpdateAndCreatePermissions } from "../../../utils/PermissionChecker";
 import toast from "react-hot-toast";
-import { BACKEND_API_KEY } from "../../../utils/ApiKey";
+import { BACKEND_API_KEY, BACKEND_MEDIA_LINK } from "../../../utils/ApiKey";
 import api from "../../../utils/axiosInstance";
 
 const PrivacyPolicy = () => {
@@ -73,6 +73,13 @@ const PrivacyPolicy = () => {
           Update Data
         </button>
       )}
+      <a
+        className="pb-10 text-sm"
+        target="_blank"
+        href={BACKEND_MEDIA_LINK + "/public/privacy-policy"}
+      >
+        Link: {BACKEND_MEDIA_LINK + "/public/privacy-policy"}
+      </a>
     </div>
   );
 };
