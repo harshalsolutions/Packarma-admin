@@ -558,7 +558,7 @@ const ManageStaff: React.FC = () => {
             </div>
           </form>
           <hr className="w-full my-8" />
-          {ADMIN_EMAIL === userContext?.user?.email && (
+          {ADMIN_EMAIL === userContext?.user?.email && editStaff && (
             <PermissionDialog id={editStaff?.id || 0} />
           )}
         </div>

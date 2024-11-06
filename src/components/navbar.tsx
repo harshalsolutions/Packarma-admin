@@ -19,7 +19,7 @@ const ExampleNavbar: FC = function () {
       status: "",
     });
     localStorage.removeItem("token");
-    navigate("/login");
+    navigate("/admin/login");
   };
 
   return (
