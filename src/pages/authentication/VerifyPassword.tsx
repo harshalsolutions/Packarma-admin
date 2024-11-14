@@ -25,7 +25,7 @@ const VerifyOtpPage: FC = function () {
         newPassword,
       });
       toast.success("Password updated successfully");
-      navigate("/login");
+      navigate("/admin/login");
       setLoading(false);
     } catch (error: any) {
       console.log(error);
@@ -102,7 +102,7 @@ const VerifyOtpPage: FC = function () {
           </form>
         </Card>
         <div className="mt-4">
-          <Link to="/forgot-password">Resend OTP?</Link>
+          <Link to="/admin/forgot-password">Resend OTP?</Link>
         </div>
       </div>
     </div>
