@@ -471,10 +471,10 @@ const CustomerEnquiry: React.FC = () => {
               value:
                 selectedEnquiry?.firstname + " " + selectedEnquiry?.lastname,
             },
-            {
-              label: "Weight By User",
-              value: `${selectedEnquiry.product_min_weight} - ${selectedEnquiry.product_max_weight}`,
-            },
+            // {
+            //   label: "Weight By User",
+            //   value: `${selectedEnquiry.product_min_weight} - ${selectedEnquiry.product_max_weight}`,
+            // },
             {
               label: "Solution Name",
               value: selectedEnquiry?.name,
