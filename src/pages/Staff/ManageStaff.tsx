@@ -85,19 +85,19 @@ const ManageStaff: React.FC = () => {
   const createPermission = hasUpdateAndCreatePermissions(
     userContext,
     "Master",
-    "can_create"
+    "can_create",
   );
 
   const updatePermission = hasUpdateAndCreatePermissions(
     userContext,
     "Master",
-    "can_update"
+    "can_update",
   );
 
   const deletePermission = hasUpdateAndCreatePermissions(
     userContext,
     "Master",
-    "can_delete"
+    "can_delete",
   );
 
   useEffect(() => {
@@ -558,9 +558,9 @@ const ManageStaff: React.FC = () => {
             </div>
           </form>
           <hr className="w-full my-8" />
-          {ADMIN_EMAIL === userContext?.user?.email && editStaff && (
-            <PermissionDialog id={editStaff?.id || 0} />
-          )}
+          {ADMIN_EMAIL === userContext?.user?.email &&
+            ADMIN_EMAIL !== editStaff?.emailid &&
+            editStaff && <PermissionDialog id={editStaff?.id || 0} />}
         </div>
       )}
     </div>

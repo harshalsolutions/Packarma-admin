@@ -24,7 +24,7 @@ const PermissionsPopup: React.FC<{ id: number }> = ({ id }) => {
 
   const fetchPermissions = async () => {
     const response = await api.get(
-      `${BACKEND_API_KEY}/staff/permissions/${id}`
+      `${BACKEND_API_KEY}/staff/permissions/${id}`,
     );
     setPermissions(response.data.data);
   };
@@ -45,7 +45,7 @@ const PermissionsPopup: React.FC<{ id: number }> = ({ id }) => {
 
   const handleToggle = async (
     pageName: string,
-    permissionType: PermissionType
+    permissionType: PermissionType,
   ) => {
     const updatedPermissions = permissions?.map((permission: Permission) =>
       permission.page_name === pageName
@@ -53,13 +53,13 @@ const PermissionsPopup: React.FC<{ id: number }> = ({ id }) => {
             ...permission,
             [permissionType]: permission[permissionType] === 1 ? 0 : 1,
           }
-        : permission
+        : permission,
     );
 
     setPermissions(updatedPermissions);
 
     const updatedPermission = updatedPermissions.find(
-      (permission) => permission.page_name === pageName
+      (permission) => permission.page_name === pageName,
     );
 
     if (updatedPermission) {
@@ -69,7 +69,7 @@ const PermissionsPopup: React.FC<{ id: number }> = ({ id }) => {
           {
             [permissionType]: updatedPermission[permissionType],
             page_id: updatedPermission.page_id,
-          }
+          },
         );
       } catch (error) {
         console.error("Failed to update permission", error);
@@ -83,12 +83,12 @@ const PermissionsPopup: React.FC<{ id: number }> = ({ id }) => {
   const handleConfirmDelete = async () => {
     try {
       await api.delete(
-        `${BACKEND_API_KEY}/staff/permissions/${permissionIdToDelete}`
+        `${BACKEND_API_KEY}/staff/permissions/${permissionIdToDelete}`,
       );
       setPermissions(
         permissions.filter(
-          (permission) => permission.id !== permissionIdToDelete
-        )
+          (permission) => permission.id !== permissionIdToDelete,
+        ),
       );
       setDeletePopupOpen(false);
     } catch (error) {
@@ -145,6 +145,9 @@ const PermissionsPopup: React.FC<{ id: number }> = ({ id }) => {
             </button>
           )}
         </div>
+        <p className="mb-4 text-sm">
+          Click "Add Page" to create add pages to this user and set permissions
+        </p>
         <table className="w-full text-sm text-left text-gray-900">
           <thead className="text-xs text-gray-900 uppercase bg-gray-200 rounded-md">
             <tr>
@@ -230,8 +233,8 @@ const PermissionsPopup: React.FC<{ id: number }> = ({ id }) => {
                   .filter(
                     (page) =>
                       !permissions.some(
-                        (perm) => perm.page_name === page.page_name
-                      )
+                        (perm) => perm.page_name === page.page_name,
+                      ),
                   )
                   .map((page: Page) => (
                     <div key={page.id} className="flex items-center gap-2">
