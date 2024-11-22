@@ -45,6 +45,13 @@ const SubscriptionPrice = ({
     }[]
   >([]);
 
+  const [usedCurrencyOptions, setUsedCurrencyOptions] = useState<
+    {
+      code: string;
+      symbol: string;
+      name: string;
+    }[]
+  >([]);
   const [prices, setPrices] = useState<SubscriptionPrice[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const userContext = useUser();
@@ -55,9 +62,10 @@ const SubscriptionPrice = ({
   const getCurrencyOptions = async () => {
     try {
       const response = await api.get(
-        `${BACKEND_API_KEY}/master/subscription/currencies/${data.id}`
+        `${BACKEND_API_KEY}/master/subscription/currencies/${data.id}`,
       );
-      setCurrencyOptions(response.data.data.currencies);
+      setCurrencyOptions(response.data.data.notUsed);
+      setUsedCurrencyOptions(response.data.data.used);
     } catch (error) {
       console.error(error);
     }
@@ -66,7 +74,7 @@ const SubscriptionPrice = ({
   const getPrices = async () => {
     try {
       const response = await api.get(
-        `${BACKEND_API_KEY}/master/subscription/price/${data.id}`
+        `${BACKEND_API_KEY}/master/subscription/price/${data.id}`,
       );
       setPrices(response.data.data);
     } catch (error) {
@@ -79,7 +87,7 @@ const SubscriptionPrice = ({
     try {
       await api.post(
         `${BACKEND_API_KEY}/master/subscription/price/${data.id}`,
-        { subscription_id: data.id, ...inputPrice }
+        { subscription_id: data.id, ...inputPrice },
       );
       toast.success("Subscription price added successfully");
 
@@ -94,7 +102,7 @@ const SubscriptionPrice = ({
   const handleDelete = async () => {
     try {
       await api.delete(
-        `${BACKEND_API_KEY}/master/subscription/price/${deleteId}`
+        `${BACKEND_API_KEY}/master/subscription/price/${deleteId}`,
       );
       toast.success("Subscription price deleted successfully");
       getPrices();
@@ -136,7 +144,7 @@ const SubscriptionPrice = ({
     try {
       await api.put(
         `${BACKEND_API_KEY}/master/subscription/price/${editPrice.id}`,
-        { ...editData }
+        { ...editData },
       );
       toast.success("Subscription price updated successfully");
 
@@ -156,21 +164,20 @@ const SubscriptionPrice = ({
   const updatePermission = hasUpdateAndCreatePermissions(
     userContext,
     "Master",
-    "can_update"
+    "can_update",
   );
 
   const createPermission = hasUpdateAndCreatePermissions(
     userContext,
     "Master",
-    "can_create"
+    "can_create",
   );
 
   const deletePermission = hasUpdateAndCreatePermissions(
     userContext,
     "Master",
-    "can_delete"
+    "can_delete",
   );
-
   return (
     <section className="flex flex-col gap-4">
       <div className="flex justify-end items-center">
@@ -299,7 +306,6 @@ const SubscriptionPrice = ({
             onSubmit={handleSubmit}
           >
             <p className="mb-4 text-xl font-bold">Add Subscription Price</p>
-
             <Select
               styles={customStyle}
               id="currency"
@@ -312,11 +318,11 @@ const SubscriptionPrice = ({
                   ? {
                       label: `${
                         currencyOptions.find(
-                          (c) => c.code === inputPrice.currency
+                          (c) => c.code === inputPrice.currency,
                         )?.name
                       } : ${inputPrice.currency} : ${
                         currencyOptions.find(
-                          (c) => c.code === inputPrice.currency
+                          (c) => c.code === inputPrice.currency,
                         )?.symbol
                       }`,
                       value: inputPrice.currency,
@@ -324,7 +330,7 @@ const SubscriptionPrice = ({
                   : undefined
               }
               onChange={(
-                selectedOption: { label: string; value: string } | null
+                selectedOption: { label: string; value: string } | null,
               ) => {
                 setInputPrice({
                   ...inputPrice,
@@ -378,7 +384,6 @@ const SubscriptionPrice = ({
             onSubmit={handleEditSubmit}
           >
             <p className="mb-4 text-xl font-bold">Edit Subscription Price</p>
-
             <Select
               styles={customStyle}
               id="currency"
@@ -390,12 +395,12 @@ const SubscriptionPrice = ({
                 editPrice?.currency
                   ? {
                       label: `${
-                        currencyOptions.find(
-                          (c) => c.code === editPrice.currency
+                        usedCurrencyOptions.find(
+                          (c) => c.code === editPrice.currency,
                         )?.name
                       } : ${editPrice.currency} : ${
-                        currencyOptions.find(
-                          (c) => c.code === editPrice.currency
+                        usedCurrencyOptions.find(
+                          (c) => c.code === editPrice.currency,
                         )?.symbol
                       }`,
                       value: editPrice.currency,
@@ -403,7 +408,7 @@ const SubscriptionPrice = ({
                   : undefined
               }
               onChange={(
-                selectedOption: { label: string; value: string } | null
+                selectedOption: { label: string; value: string } | null,
               ) => {
                 setEditPrice({
                   ...editPrice,
