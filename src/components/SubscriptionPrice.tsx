@@ -221,6 +221,9 @@ const SubscriptionPrice = ({
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" className="px-4 py-3">
+                Country
+              </th>
+              <th scope="col" className="px-4 py-3">
                 Currency
               </th>
               <th scope="col" className="px-4 py-3">
@@ -241,6 +244,13 @@ const SubscriptionPrice = ({
                   key={price.id}
                   className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                 >
+                  <td className="px-6 py-2 text-gray-900">
+                    {
+                      usedCurrencyOptions?.find(
+                        (c) => c.code === price.currency,
+                      )?.name
+                    }
+                  </td>
                   <td className="px-6 py-2 text-gray-900">{price.currency}</td>
                   <td className="px-6 py-2 text-gray-900">{price.price}</td>
                   {updatePermission && (

@@ -3,7 +3,11 @@ import api from "../../../utils/axiosInstance";
 import { Spinner, Tooltip } from "flowbite-react";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbEdit } from "react-icons/tb";
-import { MdDeleteOutline, MdOutlineRemoveRedEye } from "react-icons/md";
+import {
+  MdClose,
+  MdDeleteOutline,
+  MdOutlineRemoveRedEye,
+} from "react-icons/md";
 import { IoMdAdd, IoMdRemove } from "react-icons/io";
 import { BACKEND_API_KEY } from "../../../utils/ApiKey";
 import EntriesPerPage from "../../components/EntriesComp";
@@ -77,19 +81,19 @@ const SubscriptionPage: React.FC = () => {
   const createPermission = hasUpdateAndCreatePermissions(
     userContext,
     "Master",
-    "can_create"
+    "can_create",
   );
 
   const updatePermission = hasUpdateAndCreatePermissions(
     userContext,
     "Master",
-    "can_update"
+    "can_update",
   );
 
   const deletePermission = hasUpdateAndCreatePermissions(
     userContext,
     "Master",
-    "can_delete"
+    "can_delete",
   );
 
   useEffect(() => {
@@ -106,7 +110,7 @@ const SubscriptionPage: React.FC = () => {
             page: currentPage,
             limit: entriesPerPage,
           },
-        }
+        },
       );
       setSubscriptions(response.data.data.subscriptions || []);
       if (response.data.data.pagination) {
@@ -176,7 +180,7 @@ const SubscriptionPage: React.FC = () => {
       if (editingSubscription) {
         await api.put(
           `${BACKEND_API_KEY}/master/subscription/${editingSubscription.id}`,
-          formData
+          formData,
         );
       } else {
         await api.post(`${BACKEND_API_KEY}/master/subscription`, formData);
@@ -209,7 +213,7 @@ const SubscriptionPage: React.FC = () => {
       const loadingToast = toast.loading("Deleting subscription...");
       try {
         await api.delete(
-          `${BACKEND_API_KEY}/master/subscription/${selectedSubscriptionData?.id}`
+          `${BACKEND_API_KEY}/master/subscription/${selectedSubscriptionData?.id}`,
         );
         fetchSubscriptions();
         toast.success("Subscription deleted successfully");
@@ -247,7 +251,7 @@ const SubscriptionPage: React.FC = () => {
           `${BACKEND_API_KEY}/master/subscription/${subscriptions[targetIndex]?.id}`,
           {
             sequence: subscriptions[targetIndex]?.sequence,
-          }
+          },
         ),
       ]);
 
@@ -631,7 +635,15 @@ const SubscriptionPage: React.FC = () => {
 
       {pricePopup && (
         <div className="fixed inset-0 bg-black z-40 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full max-h-[80vh]">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full max-h-[80vh] overflow-y-scroll">
+            <div className="flex justify-end">
+              <button
+                onClick={() => setPricePopup(false)}
+                className="mb-4 px-4 py-2 bg-lime-500 text-black rounded hover:bg-lime-600 transition duration-300 ease-in-out"
+              >
+                <MdClose />
+              </button>
+            </div>
             <table className="w-full border-collapse">
               <thead>
                 <tr>
@@ -659,12 +671,6 @@ const SubscriptionPage: React.FC = () => {
                 ))}
               </tbody>
             </table>
-            <button
-              onClick={() => setPricePopup(false)}
-              className="mt-4 px-4 py-2 bg-lime-500 text-black rounded hover:bg-lime-600 transition duration-300 ease-in-out"
-            >
-              Close
-            </button>
           </div>
         </div>
       )}
