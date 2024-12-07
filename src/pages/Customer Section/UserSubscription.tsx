@@ -72,6 +72,7 @@ interface CustomerForm {
   currency: string;
   invoice_link: string;
   transaction_id: string;
+  payment_id: string;
   invoice_date: string;
   product_details: ProductDetails;
   subscription: Subscription;
@@ -97,10 +98,10 @@ const Customer: React.FC = () => {
     itemsPerPage: 10,
   });
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerForm | null>(
-    null
+    null,
   );
   const [subscriptionList, setSubscriptionList] = useState<SubscriptionList[]>(
-    []
+    [],
   );
   const [filterOpen, setFilterOpen] = useState(false);
   const [filter, setFilter] = useState<{
@@ -120,12 +121,12 @@ const Customer: React.FC = () => {
   const exportPermission = hasUpdateAndCreatePermissions(
     userContext,
     "Customer Section",
-    "can_export"
+    "can_export",
   );
 
   const getSubscriptionList = async () => {
     const response = await api.get(
-      `${BACKEND_API_KEY}/customer/subscription-list`
+      `${BACKEND_API_KEY}/customer/subscription-list`,
     );
     setSubscriptionList(response.data.data);
   };
@@ -187,7 +188,7 @@ const Customer: React.FC = () => {
         },
         {
           responseType: "blob",
-        }
+        },
       );
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
@@ -269,7 +270,7 @@ const Customer: React.FC = () => {
                   : undefined
               }
               onChange={(
-                selectedOption: { label: string; value: string } | null
+                selectedOption: { label: string; value: string } | null,
               ) => {
                 setFilter({
                   ...filter,
@@ -334,6 +335,9 @@ const Customer: React.FC = () => {
                     Subscription
                   </th>
                   <th scope="col" className="px-4 py-3">
+                    Payment Id
+                  </th>
+                  <th scope="col" className="px-4 py-3">
                     Currency
                   </th>
                   <th scope="col" className="px-4 py-3">
@@ -365,6 +369,9 @@ const Customer: React.FC = () => {
                         {customerForm.subscription.type}
                       </td>
                       <td className="p-4 text-gray-900">
+                        {customerForm.payment_id}
+                      </td>
+                      <td className="p-4 text-gray-900">
                         {customerForm.currency}
                       </td>
                       <td className="p-4 text-gray-900">
@@ -372,19 +379,19 @@ const Customer: React.FC = () => {
                       </td>
                       <td className="p-4 text-gray-900">
                         {formatDateTime(
-                          new Date(customerForm.subscription.start_date)
+                          new Date(customerForm.subscription.start_date),
                         )}
                       </td>
                       <td className="p-4 text-gray-900">
                         {formatDateTime(
-                          new Date(customerForm.subscription.end_date)
+                          new Date(customerForm.subscription.end_date),
                         )}{" "}
                       </td>
                       <td className="px-6 py-4 text-gray-900 flex">
                         <button
                           onClick={() =>
                             window.open(
-                              BACKEND_MEDIA_LINK + customerForm.invoice_link
+                              BACKEND_MEDIA_LINK + customerForm.invoice_link,
                             )
                           }
                           className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
@@ -482,6 +489,10 @@ const Customer: React.FC = () => {
               value: selectedCustomer.transaction_id,
             },
             {
+              label: "Payment ID",
+              value: selectedCustomer.payment_id,
+            },
+            {
               label: "Product Description",
               value: selectedCustomer.product_details.product_description,
             },
@@ -530,13 +541,13 @@ const Customer: React.FC = () => {
             {
               label: "Subscription Start Date",
               value: formatDateTime(
-                new Date(selectedCustomer.subscription.start_date)
+                new Date(selectedCustomer.subscription.start_date),
               ),
             },
             {
               label: "Subscription End Date",
               value: formatDateTime(
-                new Date(selectedCustomer.subscription.end_date)
+                new Date(selectedCustomer.subscription.end_date),
               ),
             },
             {

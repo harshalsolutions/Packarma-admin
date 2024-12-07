@@ -56,6 +56,7 @@ interface CreditPurchaseForm {
   currency: string;
   invoice_link: string;
   transaction_id: string;
+  payment_id: string;
   invoice_date: string;
   product_details: ProductDetails;
   createdAt: string;
@@ -93,7 +94,7 @@ const CreditPurchase: React.FC = () => {
   const exportPermission = hasUpdateAndCreatePermissions(
     userContext,
     "Customer Section",
-    "can_export"
+    "can_export",
   );
 
   useEffect(() => {
@@ -121,7 +122,7 @@ const CreditPurchase: React.FC = () => {
             limit: entriesPerPage,
             search: debouncedTitleFilter,
           },
-        }
+        },
       );
       setCreditPurchaseForm(response.data.data.invoices || []);
       if (response.data.data.pagination) {
@@ -146,7 +147,7 @@ const CreditPurchase: React.FC = () => {
         },
         {
           responseType: "blob",
-        }
+        },
       );
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
@@ -235,6 +236,9 @@ const CreditPurchase: React.FC = () => {
                     Credits
                   </th>
                   <th scope="col" className="px-4 py-3">
+                    Payment Id
+                  </th>
+                  <th scope="col" className="px-4 py-3">
                     Currency
                   </th>
                   <th scope="col" className="px-4 py-3">
@@ -267,6 +271,9 @@ const CreditPurchase: React.FC = () => {
                         {creditPurchase.no_of_credits}
                       </td>
                       <td className="p-4 text-gray-900">
+                        {creditPurchase.payment_id}
+                      </td>
+                      <td className="p-4 text-gray-900">
                         {creditPurchase.currency}
                       </td>
                       <td className="p-4 text-gray-900">
@@ -279,7 +286,7 @@ const CreditPurchase: React.FC = () => {
                         <button
                           onClick={() =>
                             window.open(
-                              BACKEND_MEDIA_LINK + creditPurchase.invoice_link
+                              BACKEND_MEDIA_LINK + creditPurchase.invoice_link,
                             )
                           }
                           className="text-2xl text-blue-600 dark:text-blue-500 hover:underline mr-4"
@@ -365,7 +372,7 @@ const CreditPurchase: React.FC = () => {
             {
               label: "Invoice Date",
               value: formatDateTime(
-                new Date(selectedCreditPurchase.invoice_date)
+                new Date(selectedCreditPurchase.invoice_date),
               ),
             },
             {
@@ -385,6 +392,10 @@ const CreditPurchase: React.FC = () => {
             {
               label: "Transaction ID",
               value: selectedCreditPurchase.transaction_id,
+            },
+            {
+              label: "Payment ID",
+              value: selectedCreditPurchase.payment_id,
             },
             {
               label: "Product Description",
